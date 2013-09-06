@@ -14,7 +14,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from clld import interfaces
 from clld.db.meta import Base, CustomModelMixin
-from clld.db.models.common import Parameter
+from clld.db.models.common import Parameter, Value, Unit
 
 
 #-----------------------------------------------------------------------------
@@ -29,3 +29,11 @@ class Glyph(Parameter, CustomModelMixin):
     @property
     def number_of_combined_glyphs(self):
         return len(self.combined_class.split('-'))
+
+
+@implementer(interfaces.IUnit)
+class Phoneme(Unit, CustomModelMixin):
+    pk = Column(Integer, ForeignKey('unit.pk'), primary_key=True)
+
+    glyph_pk = Column(Integer, ForeignKey('glyph.pk'))
+    glyph = relationship(Glyph, backref=backref('phoneme', uselist=False))
