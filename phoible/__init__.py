@@ -24,6 +24,10 @@ def link_attrs(req, obj, **kw):
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
+    settings['route_patterns'] = {
+        'contributions': '/inventories',
+        'contribution': '/inventories/view/{id:[^/\.]+}',
+    }
     config = get_configurator('phoible', (link_attrs, ILinkAttrs), settings=settings)
     config.register_adapter(GeoJsonFeature, IParameter)
     config.register_map('contribution', maps.InventoryMap)
