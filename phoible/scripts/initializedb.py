@@ -3,7 +3,7 @@ import sys
 import transaction
 from collections import defaultdict
 
-from clld.scripts.util import initializedb, Data
+from clld.scripts.util import initializedb, Data, gbs_func
 from clld.db.meta import DBSession
 from clld.db.models import common
 from clld.lib.dsv import rows
@@ -79,11 +79,11 @@ def main(args):
     dataset = data.add(
         common.Dataset, 'phoible',
         id='phoible',
-        name='Phoible',
+        name='PHOIBLE',
         description='PHOnetics Information Base and LExicon',
         domain='phoible.org',
         license='http://creativecommons.org/licenses/by-sa/3.0/',
-        contact='steven.moran@uzh.ch',
+        contact='phoible@uw.edu',
         jsondata={
             'license_icon': 'http://i.creativecommons.org/l/by-sa/3.0/88x31.png',
             'license_name': 'Creative Commons Attribution-ShareAlike 3.0 Unported License'})
@@ -165,6 +165,7 @@ def main(args):
             name=('%s %s' % (unescape(rec.get('author', rec.get('editor', ''))), year)).strip(),
             description=unescape(rec.get('title', rec.get('booktitle', ''))),
             jsondata=jsondata,
+            bibtex_type=rec.genre,
             **fields)
 
     DBSession.flush()
@@ -291,6 +292,7 @@ def prime_cache(args):
     This procedure should be separate from the db initialization, because
     it will have to be run periodiucally whenever data has been updated.
     """
+    #gbs_func('update', args)
 
 
 if __name__ == '__main__':
