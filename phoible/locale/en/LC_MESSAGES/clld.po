@@ -1,17 +1,17 @@
-# Translations template for phoible.
+# English translations for phoible.
 # Copyright (C) 2013 ORGANIZATION
 # This file is distributed under the same license as the phoible project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: phoible 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2013-10-10 10:57+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2013-10-10 10:56+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,17 +19,16 @@ msgstr ""
 
 #: phoible/__init__.py:9
 msgid "Contribution"
-msgstr ""
+msgstr "Inventory"
 
 #: phoible/__init__.py:10
 msgid "Contributions"
-msgstr ""
+msgstr "Inventories"
 
 #: phoible/__init__.py:11
 msgid "Parameter"
-msgstr ""
+msgstr "Segment"
 
 #: phoible/__init__.py:12
 msgid "Parameters"
-msgstr ""
-
+msgstr "Segments"

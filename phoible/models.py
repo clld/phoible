@@ -14,7 +14,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from clld import interfaces
 from clld.db.meta import Base, CustomModelMixin
-from clld.db.models.common import Parameter, Value, Unit
+from clld.db.models.common import Parameter, Value, Unit, Contribution, Language
 
 
 #-----------------------------------------------------------------------------
@@ -31,9 +31,21 @@ class Glyph(Parameter, CustomModelMixin):
         return len(self.combined_class.split('-'))
 
 
+@implementer(interfaces.IContribution)
+class Inventory(Contribution, CustomModelMixin):
+    pk = Column(Integer, ForeignKey('contribution.pk'), primary_key=True)
+    source = Column(String)
+
+    language_pk = Column(Integer, ForeignKey('language.pk'))
+    language = relationship(Language, backref=backref('inventories'))
+
+
 @implementer(interfaces.IUnit)
 class Phoneme(Unit, CustomModelMixin):
     pk = Column(Integer, ForeignKey('unit.pk'), primary_key=True)
 
     glyph_pk = Column(Integer, ForeignKey('glyph.pk'))
     glyph = relationship(Glyph, backref=backref('phoneme', uselist=False))
+
+    #inventory_pk = Column(Integer, ForeignKey('inventory.pk'))
+    #inventory = relationship(Inventory, backref=backref('phonemes'))
