@@ -3,6 +3,7 @@ import sys
 import transaction
 from collections import defaultdict
 
+from sqlalchemy import create_engine
 from clld.scripts.util import initializedb, Data, gbs_func
 from clld.db.meta import DBSession
 from clld.db.models import common
@@ -40,7 +41,7 @@ def coord(s):
 
 
 def language_name(s):
-    s = s.strip()
+    s = s.split(';')[0].strip()
     if s.startswith('"'):
         s = s[1:]
     if s.endswith('"'):
@@ -50,6 +51,10 @@ def language_name(s):
 
 def main(args):
     data = Data()
+    glottolog = create_engine('postgresql://robert@/glottolog3')
+    glottocodes = {}
+    for row in glottolog.execute('select ll.hid, l.id from language as l, languoid as ll where l.pk = ll.pk'):
+        glottocodes[row[0]] = row[1]
 
     #for src in SOURCES:
     #    BIBS[src] = Database.from_file(args.data_file('%s.bib' % src))
@@ -121,6 +126,20 @@ def main(args):
                 name=language_name(row.alternative_language_names),
                 latitude=coord(row.latitude),
                 longitude=coord(row.longitude))
+            iso = data.add(
+                common.Identifier, 'iso:%s' % lang.id,
+                id=lang.id,
+                name=lang.id,
+                type=common.IdentifierType.iso.value)
+            DBSession.add(common.LanguageIdentifier(language=lang, identifier=iso))
+
+            if lang.id in glottocodes:
+                code = data.add(
+                    common.Identifier, 'glottolog:%s' % lang.id,
+                    id=glottocodes[lang.id],
+                    name=glottocodes[lang.id],
+                    type=common.IdentifierType.glottolog.value)
+                DBSession.add(common.LanguageIdentifier(language=lang, identifier=code))
         else:
             lang = data['Language'][row.language_code_id]
 

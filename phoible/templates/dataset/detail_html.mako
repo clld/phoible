@@ -37,9 +37,9 @@
 
 <p>
     For a detailed description of PHOIBLE, see
-    ${h.external_link("http://students.washington.edu/stiv/Moran2012.pdf", label="Moran 2012a")}
+    ${h.external_link("http://students.washington.edu/stiv/Moran2012.pdf", label="Moran 2012a")}.
     For examples of some of the research we are doing with PHOIBLE, see:
-    ${h.external_link("http://dx.doi.org/10.1353/lan.2012.0087", label="Moran, McCloy &amp; Wright 2012")},
+    ${h.external_link("http://dx.doi.org/10.1353/lan.2012.0087", label="Moran, McCloy & Wright 2012")},
     Cysouw, Dediu &amp; Moran 2012,
     McCloy, Moran &amp; Wright 2013
     and Moran &amp; Blasi, forthcoming.

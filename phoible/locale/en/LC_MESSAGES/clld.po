@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phoible 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-10-10 10:57+0200\n"
+"POT-Creation-Date: 2013-10-10 19:44+0200\n"
 "PO-Revision-Date: 2013-10-10 10:56+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
@@ -17,18 +17,22 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: phoible/__init__.py:9
+#: phoible/__init__.py:11
 msgid "Contribution"
 msgstr "Inventory"
 
-#: phoible/__init__.py:10
+#: phoible/__init__.py:12
 msgid "Contributions"
 msgstr "Inventories"
 
-#: phoible/__init__.py:11
+#: phoible/__init__.py:13
 msgid "Parameter"
 msgstr "Segment"
 
-#: phoible/__init__.py:12
+#: phoible/__init__.py:14
 msgid "Parameters"
 msgstr "Segments"
+
+#: phoible/__init__.py:15
+msgid "Alternative names"
+msgstr "Links"

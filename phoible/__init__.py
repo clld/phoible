@@ -12,6 +12,7 @@ _('Contribution')
 _('Contributions')
 _('Parameter')
 _('Parameters')
+_('Alternative names')
 
 
 def link_attrs(req, obj, **kw):
