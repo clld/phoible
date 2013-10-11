@@ -29,6 +29,7 @@ def main(global_config, **settings):
         'contributions': '/inventories',
         'contribution': '/inventories/view/{id:[^/\.]+}',
     }
+    settings['sitemaps'] = ['language', 'source', 'parameter', 'contribution', 'valueset']
     config = get_configurator('phoible', (link_attrs, ILinkAttrs), settings=settings)
     config.register_adapter(GeoJsonFeature, IParameter)
     config.register_map('contribution', maps.InventoryMap)
