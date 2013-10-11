@@ -26,10 +26,6 @@ class Glyph(Parameter, CustomModelMixin):
     segment_class = Column(Unicode)  # consonant, ...
     combined_class = Column(Unicode)
 
-    @property
-    def number_of_combined_glyphs(self):
-        return len(self.combined_class.split('-'))
-
 
 @implementer(interfaces.IContribution)
 class Inventory(Contribution, CustomModelMixin):

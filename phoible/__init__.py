@@ -16,9 +16,9 @@ _('Alternative names')
 
 
 def link_attrs(req, obj, **kw):
-    if IUnit.providedBy(obj):
-        id_ = obj.glyph.id if obj.glyph else obj.id
-        kw['href'] = req.route_url('parameter', id=id_, **kw.pop('url_kw', {}))
+    #if IUnit.providedBy(obj):
+    #    id_ = obj.glyph.id if obj.glyph else obj.id
+    #    kw['href'] = req.route_url('parameter', id=id_, **kw.pop('url_kw', {}))
     return kw
 
 
