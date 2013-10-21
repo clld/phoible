@@ -4,13 +4,12 @@ import transaction
 from collections import defaultdict
 
 from sqlalchemy import create_engine
-from clld.scripts.util import initializedb, Data, gbs_func
+from clld.scripts.util import initializedb, Data, gbs_func, bibtex2source
 from clld.db.meta import DBSession
 from clld.db.models import common
 from clld.lib.dsv import rows
-from clld.lib.bibtex import Database, FIELDS
+from clld.lib.bibtex import Database
 from clld.util import dict_append
-from glottolog3.lib.bibtex import unescape
 
 from phoible import models
 
@@ -85,7 +84,7 @@ def main(args):
         common.Dataset, 'phoible',
         id='phoible',
         name='PHOIBLE',
-        description='PHOnetics Information Base and LExicon',
+        description='PHOnetics Information Base and LExicon Online',
         domain='phoible.org',
         license='http://creativecommons.org/licenses/by-sa/3.0/',
         contact='phoible@uw.edu',
@@ -93,9 +92,15 @@ def main(args):
             'license_icon': 'http://i.creativecommons.org/l/by-sa/3.0/88x31.png',
             'license_name': 'Creative Commons Attribution-ShareAlike 3.0 Unported License'})
 
-    DBSession.add(common.Editor(
-        dataset=dataset,
-        contributor=common.Contributor(id='stiv', name="Steven Moran")))
+    for i, spec in enumerate([
+        ('moran', "Steven Moran"),
+        ('mccloy', "Daniel McCloy"),
+        ('wright', "Richard Wright"),
+    ]):
+        DBSession.add(common.Editor(
+            dataset=dataset,
+            ord=i + 1,
+            contributor=common.Contributor(id=spec[0], name=spec[1])))
 
     """
         "ReportDate",
@@ -165,27 +170,7 @@ def main(args):
     for rec in bib:
         if rec.id not in bibkeys:
             continue
-        year = unescape(rec.get('year', 'nd'))
-        if year.endswith('}'):
-            year = year[:-1]
-        fields = {}
-        jsondata = {}
-        for field in FIELDS:
-            if field in rec:
-                value = unescape(rec[field])
-                if hasattr(common.Source, field):
-                    fields[field] = value
-                else:
-                    jsondata[field] = value
-
-        data.add(
-            common.Source, rec.id,
-            id=rec.id,
-            name=('%s %s' % (unescape(rec.get('author', rec.get('editor', ''))), year)).strip(),
-            description=unescape(rec.get('title', rec.get('booktitle', ''))),
-            jsondata=jsondata,
-            bibtex_type=rec.genre,
-            **fields)
+        data.add(common.Source, rec.id, _obj=bibtex2source(rec))
 
     DBSession.flush()
 

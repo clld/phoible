@@ -1,4 +1,13 @@
 <%inherit file="../home_comp.mako"/>
+<%namespace name="util" file="../util.mako"/>
+
+<%def name="sidebar()">
+    <% citation = h.get_adapter(h.interfaces.IRepresentation, ctx, request, ext='md.txt') %>
+    <%util:well title="Cite">
+        ${h.newline2br(citation.render(ctx, request))|n}
+        ${h.cite_button(request, ctx)}
+    </%util:well>
+</%def>
 
 <h2>PHOIBLE</h2>
 <p class="lead">
