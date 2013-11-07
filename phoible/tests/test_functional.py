@@ -20,4 +20,4 @@ class Tests(TestWithApp):
         res = self.app.get('/parameters/1.geojson')
 
     def test_source(self):
-        res = self.app.get('/sources/yuc_linn2001')
+        res = self.app.get('/sources/yuclinn2001')
