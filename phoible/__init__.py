@@ -36,5 +36,4 @@ def main(global_config, **settings):
     config.register_datatable('parameters', datatables.Glyphs)
     config.register_datatable('values', datatables.Phonemes)
     config.add_static_view('data', 'phoible:static/data')
-    config.add_route('history', '/history')
     return config.make_wsgi_app()
