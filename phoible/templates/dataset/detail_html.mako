@@ -9,23 +9,52 @@
     </%util:well>
 </%def>
 
-<h2>PHOIBLE</h2>
+<h2>Welcome to PHOIBLE Online</h2>
+
+<!--
 <p class="lead">
     <strong>PHO</strong>netics <strong>I</strong>nformation <strong>B</strong>ase and <strong>LE</strong>xicon
 </p>
+-->
 
-<h3>Introduction and Rationale</h3>
-<p>
-    Linguistics is a discipline that is reaping large advances from computational methods, computer processing and statistical models.
-    Although numerous individual languages' phonologies and phonetics have been described, the majority still reside in widely
-    inaccessible formats, including paper, proprietary software programs, antique hardware, or inoperable encodings. To date there is
-    no central repository for the sounds from all known languages that includes theoretical models of distinctive feature sets.
-</p>
+<p>The Phonetics Information Base and Lexicon (PHOIBLE) is a repository of cross-linguistic phonological segment inventory data, which have been extracted from source documents and tertiary databases and compiled into a single searchable convenience sample. There are currently N inventories that contain N segment types found in N distinct languages.</p>
 
-<p>
-    Here, we are developing the Phonetics Information Base and Lexicon (PHOIBLE), a typological phonological database to encompass
-    the feature sets and sound systems from all known languages for which resources can be discovered.
-</p>
+<p>References are provided for each source; note that some languages in PHOIBLE have multiple entries based on distinct sources that disagree about the number and/or identity of that language’s phonemes.</p>
+
+<p>Two principles guide the development of PHOIBLE, though it has proved challenging both theoretically and technologically to abide by them:</p>
+
+<ol>
+<li>be faithful to the language description in the source document (now often called ‘doculect’, for reasons indicated above)</li>
+<li>encode all character data in a consistent representation in Unicode IPA</li>
+</ol>
+
+
+<h3>How to use PHOIBLE</h3>
+
+<p>Users can browse or search PHOIBLE's inventories by clicking on the tabs "Inventories", "Languages" or "Segments" above. Data can be downloaded by clicking the download button <insert image>. If you use PHOIBLE in your research, please cite appropriately, following our recommended citation format.</p>
+
+
+
+<h3>How to cite PHOIBLE</h3>
+
+<p>If you are citing the database as a whole, or making use of the phonological distinctive feature systems in PHOIBLE, please cite as follows:</p>
+
+<% citation = h.get_adapter(h.interfaces.IRepresentation, ctx, request, ext='md.txt') %>
+    <%util:well title="Cite">
+        ${h.newline2br(citation.render(ctx, request))|n}
+        ${h.cite_button(request, ctx)}
+    </%util:well>
+
+<p>If you are citing phoneme inventory data for a particular language or languages, please use the name of the language as the title, and include the original data source as an element within PHOIBLE:<p>
+
+"Lele." Data from Frajzyngier, Zygmunt (2001). A grammar of Lele. In Moran, McCloy, & Wright (eds). PHOIBLE, vX.X. Leipzig: MPI-EvA. http://phoible.org/. Accessed on <insert date>.
+
+<p>In cases where the original language description was part of another collection or database that was absorbed into PHOIBLE, the reference is a bit more complicated.  Examples:</p>
+
+"Abidji." Data from Chanard, Christian (2006). Systèmes Alphabétiques Des Langues Africaines. In Moran, McCloy, & Wright (eds). PHOIBLE, vX.X. Leipzig: MPI-EvA. http://phoible.org/. Accessed on <insert date>.
+
+"Chiricahua Apache." Data from Hoijer, Harry (1944). Chiricahua Apache. In Cornelius Osgood (ed.), Linguistic Structures of Native America. In Moran, McCloy, & Wright (eds). PHOIBLE, vX.X. Leipzig: MPI-EvA. http://phoible.org/. Accessed on <insert date>.
+
 
 <p>
     The current database includes
