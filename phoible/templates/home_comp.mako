@@ -8,6 +8,7 @@
     ${util.contextnavitem('download')}
     % endif
     ${util.contextnavitem('history')}
+    ${util.contextnavitem('credits')}
     ${util.contextnavitem('contact')}
 </%def>
 ${next.body()}

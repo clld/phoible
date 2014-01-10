@@ -11,24 +11,19 @@ from clld.db.models.common import Contribution, ValueSet, Parameter
 from phoible.models import Glyph
 
 
-class SegmentClassCol(Col):
-    def __init__(self, dt, name, **kw):
-        kw['choices'] = get_distinct_values(Glyph.segment_class)
-        super(SegmentClassCol, self).__init__(dt, name, **kw)
-
-
-class CombinedClassCol(Col):
-    def __init__(self, dt, name, **kw):
-        kw['choices'] = get_distinct_values(Glyph.combined_class)
-        super(CombinedClassCol, self).__init__(dt, name, **kw)
+class ClassCol(Col):
+    def __init__(self, dt, name, model_col, **kw):
+        kw['model_col'] = model_col
+        kw['choices'] = get_distinct_values(model_col)
+        super(ClassCol, self).__init__(dt, name, **kw)
 
 
 class Glyphs(Parameters):
     def col_defs(self):
         return [
             LinkCol(self, 'name'),
-            SegmentClassCol(self, 'segment_class', model_col=Glyph.segment_class),
-            CombinedClassCol(self, 'combined_class', model_col=Glyph.combined_class),
+            ClassCol(self, 'segment_class', Glyph.segment_class),
+            ClassCol(self, 'combined_class', Glyph.combined_class),
         ]
 
 
@@ -54,28 +49,6 @@ class DatapointCol(ValueSetCol):
         return Parameter.id
 
 
-class _SegmentClassCol(SegmentClassCol):
-    def format(self, item):
-        return item.valueset.parameter.segment_class
-
-    def search(self, qs):
-        return Glyph.segment_class.__eq__(qs)
-
-    def order(self):
-        return Glyph.segment_class
-
-
-class _CombinedClassCol(CombinedClassCol):
-    def format(self, item):
-        return item.valueset.parameter.combined_class
-
-    def search(self, qs):
-        return Glyph.combined_class.__eq__(qs)
-
-    def order(self):
-        return Glyph.combined_class
-
-
 class Phonemes(Values):
     def col_defs(self):
         res = super(Phonemes, self).col_defs()
@@ -84,10 +57,11 @@ class Phonemes(Values):
         else:
             res = res[1:]
         if self.contribution:
+            get_param = lambda item: item.valueset.parameter
             return [
                 DatapointCol(self, 'valueset'),
-                _SegmentClassCol(self, 'segment_class'),
-                _CombinedClassCol(self, 'combined_class')]
+                ClassCol(self, 'segment_class', Glyph.segment_class, get_obj=get_param),
+                ClassCol(self, 'combined_class', Glyph.combined_class, get_obj=get_param)]
         return res
 
     def base_query(self, query):
