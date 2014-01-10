@@ -17,7 +17,7 @@
 </p>
 -->
 
-<p>The Phonetics Information Base and Lexicon (PHOIBLE) is a repository of cross-linguistic phonological segment inventory data, which have been extracted from source documents and tertiary databases and compiled into a single searchable convenience sample. There are currently N inventories that contain N segment types found in N distinct languages.</p>
+<p>The Phonetics Information Base and Lexicon (PHOIBLE) is a repository of cross-linguistic phonological segment inventory data, which have been extracted from source documents and tertiary databases and compiled into a single searchable convenience sample. There are currently ${inventory_count} inventories that contain N segment types found in N distinct languages.</p>
 
 <p>References are provided for each source; note that some languages in PHOIBLE have multiple entries based on distinct sources that disagree about the number and/or identity of that language’s phonemes.</p>
 
