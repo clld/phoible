@@ -2,9 +2,13 @@ from __future__ import unicode_literals
 import sys
 import transaction
 from collections import defaultdict
+from getpass import getuser
 
 from sqlalchemy import create_engine
-from clld.scripts.util import initializedb, Data, gbs_func, bibtex2source
+from clld.scripts.util import (
+    initializedb, Data, gbs_func, bibtex2source, glottocodes_by_isocode,
+    add_language_codes,
+)
 from clld.db.meta import DBSession
 from clld.db.models import common
 from clld.lib.dsv import rows
@@ -50,28 +54,14 @@ def language_name(s):
 
 def main(args):
     data = Data()
-    glottolog = create_engine('postgresql://robert@/glottolog3')
-    glottocodes = {}
-    for row in glottolog.execute('select ll.hid, l.id from language as l, languoid as ll where l.pk = ll.pk'):
-        glottocodes[row[0]] = row[1]
 
-    #for src in SOURCES:
-    #    BIBS[src] = Database.from_file(args.data_file('%s.bib' % src))
+    glottocodes = {}
+    if getuser() == 'robert':
+        glottocodes = glottocodes_by_isocode('postgresql://robert@/glottolog3')
 
     bib = Database.from_file(args.data_file('ALL.bib'), lowercase=True)
     refs = {}
     bibkeys = {}
-
-    #for lid, lname, src, key, year in rows(args.data_file('ALL_CODES_BIBTEX_KEYS.tab'), encoding='utf8'):
-    #    if key in bib.keymap:
-    #        k = (lid, src)
-    #        if k in refs:
-    #            refs[k].append(key)
-    #        else:
-    #            refs[k] = [key]
-    #        #print '++++', src, key
-    #    else:
-    #        print '----', src, key
 
     for row in rows(args.data_file('phoible_ids_bibtex.csv'), namedtuples=True, encoding='utf8'):
         bibkeys[row.bibtex_key] = 1
@@ -131,20 +121,7 @@ def main(args):
                 name=language_name(row.alternative_language_names),
                 latitude=coord(row.latitude),
                 longitude=coord(row.longitude))
-            iso = data.add(
-                common.Identifier, 'iso:%s' % lang.id,
-                id=lang.id,
-                name=lang.id,
-                type=common.IdentifierType.iso.value)
-            DBSession.add(common.LanguageIdentifier(language=lang, identifier=iso))
-
-            if lang.id in glottocodes:
-                code = data.add(
-                    common.Identifier, 'glottolog:%s' % lang.id,
-                    id=glottocodes[lang.id],
-                    name=glottocodes[lang.id],
-                    type=common.IdentifierType.glottolog.value)
-                DBSession.add(common.LanguageIdentifier(language=lang, identifier=code))
+            add_language_codes(data, lang, lang.id, glottocodes=glottocodes)
         else:
             lang = data['Language'][row.language_code_id]
 
@@ -173,13 +150,6 @@ def main(args):
         data.add(common.Source, rec.id, _obj=bibtex2source(rec))
 
     DBSession.flush()
-
-    #for lid, src in refs:
-    #    for key in set(refs[(lid, src)]):
-    #        if lid in data['Language']:
-    #            data['Language'][lid].sources.append(data['Source'][key])
-    #        else:
-    #            print lid, '--- missing language'
 
     """
     ReportDate
@@ -249,46 +219,45 @@ def main(args):
                 source=data['Source'][ref],
                 contribution=data['Inventory'][inventory_id])
 
-    #unitdomains = {}
-    #for i, row in enumerate(rows(args.data_file('unitvalues.tab'), encoding='utf8')):
-    #    for j, value in enumerate(row):
-    #        if j:
-    #            if i == 0:
-    #                unitdomains[j] = {}
-    #            else:
-    #                if j in unitdomains:
-    #                    unitdomains[j][value] = 1
-    #
-    #for i, row in enumerate(rows(args.data_file('unitvalues.tab'), encoding='utf8')):
-    #    if i == 0:
-    #        for j, name in enumerate(row):
-    #            if j:
-    #                p = data.add(common.UnitParameter, j, id=str(j), name=name)
-    #                for k, de in enumerate(sorted(unitdomains[j].keys())):
-    #                    data.add(
-    #                        common.UnitDomainElement, '%s%s' % (j, de),
-    #                        id='%s-%s' % (j, k + 1), name=de, parameter=p)
-    #
-    #        DBSession.flush()
-    #    else:
-    #        if row[0] not in data['Phoneme']:
-    #            print row[0]
-    #            continue
-    #        for j, value in enumerate(row):
-    #            if j:
-    #                if value == '0':
-    #                    continue
-    #                if j not in data['UnitParameter']:
-    #                    continue
-    #                data.add(
-    #                    common.UnitValue, '%s-%s' % (i, j),
-    #                    id='%s-%s' % (i, j),
-    #                    unitparameter=data['UnitParameter'][j],
-    #                    #contribution=,
-    #                    unitdomainelement=data['UnitDomainElement']['%s%s' % (j, value)],
-    #                    name=value,
-    #                    unit=data['Phoneme'][row[0]])
-    #DBSession.flush()
+    unitdomains = {}
+    for i, row in enumerate(rows(args.data_file('unitvalues.tab'), encoding='utf8')):
+        for j, value in enumerate(row):
+            if j:
+                if i == 0:
+                    unitdomains[j] = {}
+                else:
+                    if j in unitdomains:
+                        unitdomains[j][value] = 1
+
+    for i, row in enumerate(rows(args.data_file('unitvalues.tab'), encoding='utf8')):
+        if i == 0:
+            for j, name in enumerate(row):
+                if j:
+                    p = data.add(common.UnitParameter, j, id=str(j), name=name)
+                    for k, de in enumerate(sorted(unitdomains[j].keys())):
+                        data.add(
+                            common.UnitDomainElement, '%s%s' % (j, de),
+                            id='%s-%s' % (j, k + 1), name=de, parameter=p)
+
+            DBSession.flush()
+        else:
+            if row[0] not in data['Phoneme']:
+                print row[0]
+                continue
+            for j, value in enumerate(row):
+                if j:
+                    if value == '0':
+                        continue
+                    if j not in data['UnitParameter']:
+                        continue
+                    DBSession.add(common.UnitValue(
+                        id='%s-%s' % (i, j),
+                        unitparameter=data['UnitParameter'][j],
+                        #contribution=,
+                        unitdomainelement=data['UnitDomainElement']['%s%s' % (j, value)],
+                        name=value,
+                        unit=data['Phoneme'][row[0]]))
+    DBSession.flush()
 
 
 def prime_cache(args):

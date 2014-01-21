@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: phoible 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-10-10 19:44+0200\n"
+"POT-Creation-Date: 2014-01-21 10:21+0100\n"
 "PO-Revision-Date: 2013-10-10 10:56+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
@@ -36,3 +36,11 @@ msgstr "Segments"
 #: phoible/__init__.py:15
 msgid "Alternative names"
 msgstr "Links"
+
+#: phoible/__init__.py:16
+msgid "Unit Parameter"
+msgstr "Feature"
+
+#: phoible/__init__.py:17
+msgid "Unit Parameters"
+msgstr "Features"

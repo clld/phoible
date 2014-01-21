@@ -5,11 +5,6 @@
 
 <h2>${_('Language')} ${ctx.name}</h2>
 
-##<div>
-##    <% dt = request.registry.getUtility(h.interfaces.IDataTable, 'values'); dt = dt(request, h.models.Value, language=ctx) %>
-##    ${dt.render()}
-##</div>
-
 <h3>Inventories</h3>
 <ul>
     % for inventory in ctx.inventories:
@@ -18,5 +13,12 @@
 </ul>
 
 <%def name="sidebar()">
-    ${util.language_meta()}
+    ${util.codes()}
+    <div style="clear: right;"> </div>
+    % if ctx.latitude is not None:
+    <%util:well>
+        ${request.map.render()}
+        ${h.format_coordinates(ctx)}
+    </%util:well>
+    % endif
 </%def>
