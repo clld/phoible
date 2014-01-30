@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 import sys
-import transaction
 from collections import defaultdict
 
 from sqlalchemy import create_engine

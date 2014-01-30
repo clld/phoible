@@ -14,7 +14,9 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from clld import interfaces
 from clld.db.meta import Base, CustomModelMixin
-from clld.db.models.common import Parameter, Value, Unit, Contribution, Language
+from clld.db.models.common import (
+    Parameter, Value, Unit, Contribution, Language, Contributor, Source, HasSourceMixin,
+)
 
 
 #-----------------------------------------------------------------------------
@@ -45,3 +47,8 @@ class Phoneme(Unit, CustomModelMixin):
 
     #inventory_pk = Column(Integer, ForeignKey('inventory.pk'))
     #inventory = relationship(Inventory, backref=backref('phonemes'))
+
+
+class ContributorReference(Base, HasSourceMixin):
+    contributor_pk = Column(Integer, ForeignKey('contributor.pk'))
+    contributor = relationship(Contributor, backref='references')
