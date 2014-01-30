@@ -11,15 +11,16 @@
 
 <h2>Welcome to PHOIBLE Online</h2>
 
-<p>The Phonetics Information Base and Lexicon (PHOIBLE) is a repository of cross-linguistic phonological segment inventory data, which have been extracted from source documents and tertiary databases and compiled into a single searchable convenience sample. There are currently N inventories that contain N segment types found in N distinct languages.</p>
+<p>The Phonetics Information Base and Lexicon (PHOIBLE) is a repository of cross-linguistic phonological inventory data, which have been extracted from source documents and tertiary databases and compiled into a single searchable convenience sample. There are currently ${inventory_count} inventories that contain ${segment_count} segment types found in ${language_count} distinct languages.</p>
 
 <p>References are provided for each source; note that some languages in PHOIBLE have multiple entries based on distinct sources that disagree about the number and/or identity of that language’s phonemes.</p>
 
 <p>Two principles guide the development of PHOIBLE, though it has proved challenging both theoretically and technologically to abide by them:</p>
 
 <ol>
-<li>be faithful to the language description in the source document (now often called ‘doculect’, for reasons indicated above)</li>
-<li>encode all character data in a consistent representation in Unicode IPA</li>
+<li>Be faithful to the language description in the source document (now often called ‘doculect’, for reasons indicated above)</li>
+
+<li>Encode all character data in a consistent representation in Unicode IPA</li>
 </ol>
 
 <p>In addition to phoneme inventories, PHOIBLE includes distinctive feature data for every phoneme in every language. The feature system used was created by the PHOIBLE developers to be descriptively adequate cross-linguistically. In other words, if two phonemes differ in their graphemic representation, then they necessarily differ in their featural representation as well (regardless of whether those two phonemes coexist in any known doculect). The feature system is loosely based on the feature system in:</p>
