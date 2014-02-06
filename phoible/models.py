@@ -4,29 +4,43 @@ from sqlalchemy import (
     String,
     Unicode,
     Integer,
-    Boolean,
+    Float,
     ForeignKey,
-    UniqueConstraint,
 )
 from sqlalchemy.orm import relationship, backref
-from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from clld import interfaces
 from clld.db.meta import Base, CustomModelMixin
 from clld.db.models.common import (
-    Parameter, Value, Unit, Contribution, Language, Contributor, Source, HasSourceMixin,
+    Parameter, Contribution, Language, Contributor, HasSourceMixin,
 )
 
 
 #-----------------------------------------------------------------------------
 # specialized common mapper classes
 #-----------------------------------------------------------------------------
+@implementer(interfaces.ILanguage)
+class Variety(Language, CustomModelMixin):
+    pk = Column(Integer, ForeignKey('language.pk'), primary_key=True)
+    wals_genus = Column(Unicode)
+    country = Column(Unicode)
+    area = Column(Unicode)
+    population = Column(Integer)
+    population_comment = Column(Unicode)
+
+    @property
+    def wals_genus_id(self):
+        if self.wals_genus:
+            return self.wals_genus.replace(' ', '').lower()
+
+
 @implementer(interfaces.IParameter)
-class Glyph(Parameter, CustomModelMixin):
+class Segment(Parameter, CustomModelMixin):
     pk = Column(Integer, ForeignKey('parameter.pk'), primary_key=True)
     segment_class = Column(Unicode)  # consonant, ...
     combined_class = Column(Unicode)
+    frequency = Column(Float)
 
 
 @implementer(interfaces.IContribution)
@@ -36,17 +50,13 @@ class Inventory(Contribution, CustomModelMixin):
 
     language_pk = Column(Integer, ForeignKey('language.pk'))
     language = relationship(Language, backref=backref('inventories'))
+    count_tone = Column(Integer, default=0, nullable=False)
+    count_vowel = Column(Integer, default=0, nullable=False)
+    count_consonant = Column(Integer, default=0, nullable=False)
 
-
-@implementer(interfaces.IUnit)
-class Phoneme(Unit, CustomModelMixin):
-    pk = Column(Integer, ForeignKey('unit.pk'), primary_key=True)
-
-    glyph_pk = Column(Integer, ForeignKey('glyph.pk'))
-    glyph = relationship(Glyph, backref=backref('phoneme', uselist=False))
-
-    #inventory_pk = Column(Integer, ForeignKey('inventory.pk'))
-    #inventory = relationship(Inventory, backref=backref('phonemes'))
+    @hybrid_property
+    def count(self):
+        return self.count_tone + self.count_consonant + self.count_vowel
 
 
 class ContributorReference(Base, HasSourceMixin):

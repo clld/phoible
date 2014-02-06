@@ -3,17 +3,20 @@
 <%! active_menu_item = "parameters" %>
 <%block name="title">Segment ${ctx.name}</%block>
 
+<%block name="head">
+    <link href="${request.static_url('clld:web/static/css/charissil.css')}" rel="stylesheet">
+</%block>
+
 <%def name="sidebar()">
     <%util:well title="Properties">
         ${util.dl_table(('Segment class', ctx.segment_class), ('Combined class', ctx.combined_class))}
     </%util:well>
     <%util:well title="Features">
         <table class="table table-condensed">
-        % for value in ctx.phoneme.unitvalues:
+        % for d in ctx.data:
             <tr>
-                <td>${h.link(request, value.unitparameter)}</td>
-                ##<td>${h.link(request, value)}</td>
-                <td>${value}</td>
+                <td>${d.key}</td>
+                <td>${d.value}</td>
             </tr>
         % endfor
         </table>
@@ -21,7 +24,7 @@
 </%def>
 
 
-<h2>Segment ${ctx.name}</h2>
+<h2>Segment <span class="charissil">${ctx.name}</span></h2>
 ##<div style="width: 20%;">
 ##${util.dl_table(('Segment class', ctx.segment_class), ('Combined class', ctx.combined_class))}
 ##</div>

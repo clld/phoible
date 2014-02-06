@@ -8,7 +8,7 @@
     </%util:well>
 </%def>
 
-<h2>Welcome to PHOIBLE Online</h2>
+<h2>Welcome to PHOIBLE</h2>
 
 <p>The Phonetics Information Base and Lexicon (PHOIBLE) is a repository of cross-linguistic phonological inventory data, which have been extracted from source documents and tertiary databases and compiled into a single searchable convenience sample. There are currently ${inventory_count} inventories that contain ${segment_count} segment types found in ${language_count} distinct languages.</p>
 
@@ -39,7 +39,7 @@ ${h.link(request, hayes)} with some additions drawn from ${h.link(request, moisi
 
 <h3>How to use PHOIBLE</h3>
 
-<p>Users can browse or search PHOIBLE's inventories by clicking on the tabs "Inventories", "Languages" or "Segments" above. Data can be downloaded by clicking the download button <insert image>. If you use PHOIBLE in your research, please cite appropriately, following our recommended citation format.</p>
+<p>Users can browse or search PHOIBLE's inventories by clicking on the tabs <a href="${request.route_url('contributions')}">"Inventories"</a>, <a href="${request.route_url('languages')}">"Languages"</a> or <a href="${request.route_url('parameters')}">"Segments"</a> above. Data can be downloaded by clicking the download button <i class="icon icon-download-alt"> </i>. If you use PHOIBLE in your research, please cite appropriately, following our recommended citation format.</p>
 
 
 <h3>How to cite PHOIBLE</h3>

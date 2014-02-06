@@ -5,6 +5,19 @@
 
 <h2>${_('Language')} ${ctx.name}</h2>
 
+<table class="table table-nonfluid table-condensed">
+    <tbody>
+    <tr>
+        <td>WALS genus:</td>
+        <td>${h.external_link('http://wals.info/languoid/genus/' + ctx.wals_genus_id, label=ctx.wals_genus) if ctx.wals_genus else ''}</td>
+    </tr>
+    <tr>
+        <td>Number of speakers:</td>
+        <td>${ctx.population or ctx.population_comment.replace('_', ' ')}</td>
+    </tr>
+    </tbody>
+</table>
+
 <h3>Inventories</h3>
 <ul>
     % for inventory in ctx.inventories:
