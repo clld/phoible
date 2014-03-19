@@ -4,9 +4,9 @@
 
 <p>The current database includes roughly:</p>
 <ul>
-<li>200 languages' phonemic and corresponding allophonic inventories from the Stanford Phonology Archive (Crothers et al, 1979)</li>
-<li>451 languages' phonemic inventories from UPSID (Maddieson 1984, Maddieson &amp; Precoda 1990)</li>
-<li>200 African languages' phonemic and corresponding graphemic inventories (Hartell 1993, Chanard 2006)</li>
+<li>200 languages' phonemic and corresponding allophonic inventories from the Stanford Phonology Archive (SPA; Crothers et al, 1979)</li>
+<li>451 languages' phonemic inventories from the UCLA Phonological Segment Inventory Database (UPSID; Maddieson 1984, Maddieson &amp; Precoda 1990)</li>
+<li>200 African languages' phonemic inventories (Hartell 1993, Chanard 2006)</li>
 <li>and hundreds of other inventories, including descriptions of phonemes, allophones and their conditioning environments, which we extracted from secondary resources like grammars and phonological descriptions</li>
 </ul>
 
@@ -79,21 +79,6 @@
         </ul>
     </li>
 </ul>
-
-<h3>Lexicon</h3>
-
-<p>So where are the lexicons? When we started PHOIBLE our original aim was to:</p>
-
-<!--
--
--
--->
-
-<p>The challenges for </p>
-
-
-<p>We have worked on bridging this gap through the development "orthography profile" workflows and through ...</p>
-
 
 <h3>References</h3>
 <ul>
