@@ -16,12 +16,8 @@ class MetadataFromRec(md.Metadata):
         data = {}
         if interfaces.IContribution.providedBy(ctx):
             genre = 'inbook'
-            data['title'] = '"%s."' % ctx.language.name
-            if ctx.references:
-                data['title'] += ' Data from %s' % ctx.references[0].source
-            data['author'] = []#[
-                #c.name for c in
-                #list(ctx.primary_contributors) + list(ctx.secondary_contributors)]
+            data['title'] = '%s sound inventory (%s)' % (ctx.language.name, ctx.primary_contributors[0].id)
+            data['author'] = ctx.primary_contributors[0].description.split(' and ')
             data['booktitle'] = req.dataset.description
             data['editor'] = [c.contributor.name for c in list(req.dataset.editors)]
             id_ = '%s-%s' % (req.dataset.id, ctx.id)

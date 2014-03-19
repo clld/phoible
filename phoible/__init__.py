@@ -33,8 +33,7 @@ def main(global_config, **settings):
     settings['sitemaps'] = ['language', 'source', 'parameter', 'contribution', 'valueset']
     config = get_configurator('phoible', (link_attrs, ILinkAttrs), settings=settings)
     config.register_map('contribution', maps.InventoryMap)
-    config.register_datatable('parameters', datatables.Glyphs)
-    config.register_datatable('values', datatables.Phonemes)
     config.add_static_view('data', 'phoible:static/data')
+    config.include('phoible.datatables')
     config.include('phoible.adapters')
     return config.make_wsgi_app()
