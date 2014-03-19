@@ -82,6 +82,19 @@
 
 <h3>Lexicon</h3>
 
+<p>So where are the lexicons? When we started PHOIBLE our original aim was to:</p>
+
+<!--
+-
+-
+-->
+
+<p>The challenges for </p>
+
+
+<p>We have worked on bridging this gap through the development "orthography profile" workflows and through ...</p>
+
+
 <h3>References</h3>
 <ul>
     <li>Chanard, Christian. 2006. Syst&egrave;mes Alphab&eacute;tiques des langues africaines. Online: ${h.external_link("http://sumale.vjf.cnrs.fr/phono/")}.</li>
