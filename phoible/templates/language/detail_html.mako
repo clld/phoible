@@ -9,7 +9,7 @@
     <tbody>
     <tr>
         <td>WALS genus:</td>
-        <td>${h.external_link('http://wals.info/languoid/genus/' + ctx.wals_genus_id, label=ctx.wals_genus) if ctx.wals_genus else ''}</td>
+        <td>${h.external_link(ctx.wals_genus_url, label=ctx.wals_genus) if ctx.wals_genus else ''}</td>
     </tr>
     <tr>
         <td>Number of speakers:</td>

@@ -20,9 +20,7 @@ class GenusCol(Col):
     def format(self, item):
         if not item.wals_genus:
             return ''
-        return external_link(
-            'http://wals.info/languoid/genus/' + item.wals_genus_id,
-            label=item.wals_genus)
+        return external_link(item.wals_genus_url, label=item.wals_genus)
 
 
 class Varieties(Languages):

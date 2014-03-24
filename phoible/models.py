@@ -30,9 +30,10 @@ class Variety(Language, CustomModelMixin):
     population_comment = Column(Unicode)
 
     @property
-    def wals_genus_id(self):
+    def wals_genus_url(self):
         if self.wals_genus:
-            return self.wals_genus.replace(' ', '').lower()
+            return 'http://wals.info/languoid/genus/' + \
+                self.wals_genus.replace(' ', '').lower()
 
 
 @implementer(interfaces.IParameter)
@@ -47,6 +48,7 @@ class Segment(Parameter, CustomModelMixin):
 class Inventory(Contribution, CustomModelMixin):
     pk = Column(Integer, ForeignKey('contribution.pk'), primary_key=True)
     source = Column(String)
+    source_url = Column(String)
 
     language_pk = Column(Integer, ForeignKey('language.pk'))
     language = relationship(Language, backref=backref('inventories'))

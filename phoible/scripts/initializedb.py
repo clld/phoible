@@ -1,148 +1,38 @@
 from __future__ import unicode_literals
 import sys
-from getpass import getuser
 import unicodedata
 
 from sqlalchemy.orm import joinedload, joinedload_all
+import xlrd
 from clld.scripts.util import (
     initializedb, Data, gbs_func, bibtex2source, glottocodes_by_isocode,
     add_language_codes,
 )
 from clld.db.meta import DBSession
 from clld.db.models import common
-from clld.lib.dsv import rows
+from clld.lib.dsv import reader
 from clld.lib.bibtex import Database, Record
 from clld.util import dict_append
 
 from phoible import models
-
-
-SOURCES = {
-    'AA': ('C. Chanard and Rhonda L. Hartell',
-           ['Hartell1993', 'Chanard2006'],
-           'Chanard and Hartell'),
-    'PHOIBLE': ('Phonetics Information Base and Lexicon',
-                ['Moran2012a'],
-                'Steven Moran'),
-    'SPA': ('Stanford Phonology Archive',
-            ['SPA1979'],
-            'John H. Crothers et al.'),
-    'UPSID': ('UCLA Phonological Segment Inventory Database',
-              ['Maddieson1984', 'MaddiesonPrecoda1990'],
-              'Ian Maddieson and Kristin Precoda')}
-
-BIBS = {}
-
-
-def coord(s):
-    if s.endswith('-00'):
-        s = s[:-3]
-
-    if not ':' in s:
-        return
-    s = s.replace('`N', '')
-    deg, min_ = s.split(':')
-
-    def strip_leading_zeros(ss):
-        while ss.startswith('0'):
-            ss = ss[1:]
-        return ss
-
-    try:
-        return float(strip_leading_zeros(deg) or 0) + float(strip_leading_zeros(min_) or 0) / 60.0
-    except Exception:
-        print s
-        raise
-
-
-def strip_quotes(s):
-    s = s.strip()
-    if s.startswith('"'):
-        s = s[1:]
-    if s.endswith('"'):
-        s = s[:-1]
-    return s
-
-
-def language_name(s):
-    s = strip_quotes(s.split(';')[0])
-    for sep in ['-', ' ', '(']:
-        if sep in s:
-            s = sep.join(ss.capitalize() for ss in s.split(sep))
-    return s.capitalize()
+from phoible.scripts.util import coord, strip_quotes, language_name, SOURCES, BIB
 
 
 def main(args):
+    files_dir = args.data_file('files')
+    if not files_dir.exists():
+        files_dir.mkdir()
     data = Data()
-
-    glottocodes = {}
-    if getuser() == 'robert':
-        glottocodes = glottocodes_by_isocode('postgresql://robert@/glottolog3')
+    # TODO: get glottolog data
+    glottocodes = {}#glottocodes_by_isocode(args.glottolog_dburi)
 
     bib = Database.from_file(args.data_file('ALL.bib'), lowercase=True)
     refs = {}
     bibkeys = {}
-
-    special_bib = """\
-@book{Hayes2009,
-        Author = {Bruce Hayes},
-        Publisher = {Blackwell},
-        Timestamp = {2010.08.08},
-        Title = {Introductory Phonology},
-        Year = {2009}
-}
-@inproceedings{MoisikEsling2011,
-        title={The 'whole larynx' approach to laryngeal features},
-        author={Moisik, Scott R. and Esling, John H.},
-        booktitle={Proceedings of the International Congress of Phonetic Sciences (ICPhS XVII)},
-        year={2011},
-        pages={1406-1409}
-}
-@misc{Chanard2006,
-        Author = {C. Chanard},
-        Title = {Syst{\\`e}mes Alphab{\\'e}tiques Des Langues Africaines},
-        Year = {2006},
-        Url = {http://sumale.vjf.cnrs.fr/phono/}
-}
-@misc{SPA1979,
-        Author = {John H. Crothers and James P. Lorentz and Donald A. Sherman and Marilyn M. Vihman},
-        Title = {Handbook of Phonological Data From a Sample of the World's Languages: A Report of the Stanford Phonology Archive},
-        Year = {1979}
-}
-@book{Hartell1993,
-        Editor = {Hartell, Rhonda L.},
-        Publisher = {UNESCO and Soci{\\'e}t{\\'e} Internationale de Linguistique},
-        Title = {Alphabets des langues africaines},
-        Year = {1993}
-}
-@book{Maddieson1984,
-        Address = {Cambridge, UK},
-        Author = {Maddieson, Ian},
-        Publisher = {Cambridge University Press},
-        Title = {Pattern of Sounds},
-        Year = {1984}
-}
-@incollection{MaddiesonPrecoda1990,
-        Author = {Ian Maddieson and Kristin Precoda},
-        Booktitle = {UCLA Working Papers in Phonetics},
-        Pages = {104--111},
-        Publisher = {Department of Linguistics, UCLA},
-        Title = {Updating UPSID},
-        Volume = {74},
-        Year = {1990}
-}
-@phdthesis{Moran2012a,
-        Author = {Steven Moran},
-        School = {University of Washington},
-        Title = {Phonetics Information Base and Lexicon},
-        Url = {https://digital.lib.washington.edu/researchworks/handle/1773/22452}
-        Year = {2012}
-}
-    """
     special_bib = [Record.from_string('@' + s, lowercase=True)
-                   for s in filter(None, special_bib.split('@'))]
+                   for s in filter(None, BIB.split('@'))]
 
-    for row in rows(args.data_file('phoible_ids_bibtex.csv'), namedtuples=True, encoding='utf8'):
+    for row in reader(args.data_file('phoible_ids_bibtex.csv'), namedtuples=True):
         bibkeys[row.bibtex_key] = 1
         if row.bibtex_key == 'NO SOURCE GIVEN':
             refs[row.inventory_id] = []
@@ -153,7 +43,10 @@ def main(args):
         common.Dataset, 'phoible',
         id='phoible',
         name='PHOIBLE',
-        description='Phonetics Information Base and Lexicon Online',
+        description='Phonetics Information Base Online',
+        publisher_name="Max Planck Institute for Evolutionary Anthropology",
+        publisher_place="Leipzig",
+        publisher_url="http://www.eva.mpg.de",
         domain='phoible.org',
         license='http://creativecommons.org/licenses/by-sa/3.0/',
         contact='phoible@uw.edu',
@@ -174,7 +67,7 @@ def main(args):
     for rec in special_bib:
         data.add(common.Source, rec.id, _obj=bibtex2source(rec))
 
-    for row in rows(args.data_file('PHOIBLE_Aggregated_2155.tab'), namedtuples=True, encoding='utf8'):
+    for row in reader(args.data_file('PHOIBLE_Aggregated_2155.tab'), namedtuples=True):
         if row.inventory_id not in refs:
             continue
         if row.language_code_id not in data['Variety']:
@@ -185,7 +78,9 @@ def main(args):
                 wals_genus=strip_quotes(row.wals_genus),
                 country=strip_quotes(row.country),
                 area=strip_quotes(row.area),
-                population=0 if row.population in ['Extinct', 'No_known_speakers', 'No_estimate_available', 'Ancient'] else int(row.population.replace(',', '')),
+                population=0 if row.population in
+                ['Extinct', 'No_known_speakers', 'No_estimate_available', 'Ancient']
+                else int(row.population.replace(',', '')),
                 population_comment=row.population.replace('_', ' '),
                 latitude=coord(row.latitude),
                 longitude=coord(row.longitude))
@@ -218,9 +113,32 @@ def main(args):
             source=source,
             name='%s %s (%s)' % (row.inventory_id, lang.name, row.Source))
 
-        DBSession.add(common.ContributionContributor(contribution=contrib, contributor=contributor))
+        DBSession.add(common.ContributionContributor(
+            contribution=contrib, contributor=contributor))
 
     DBSession.flush()
+
+    xls = xlrd.open_workbook(args.data_file('phonological_squibs', 'phonological_squibs_index.xlsx'))
+    matrix = xls.sheet_by_name('Sheet1')
+    for i in range(1, matrix.nrows):
+        iid = str(int(matrix.cell(i, 0).value))
+
+        if iid not in data['Inventory']:
+            continue
+        inventory = data['Inventory'][iid]
+        src = matrix.cell(i, 1).value.strip()
+        if src.startswith('http://'):
+            inventory.source_url = src
+        else:
+            if not args.data_file('phonological_squibs', src).exists():
+                print 'missing squib', src
+            else:
+                f = common.Contribution_files(
+                    object=inventory,
+                    id='%s-squib.pdf' % inventory.id,
+                    name='Phonological squib',
+                    mime_type='application/pdf')
+                f.create(files_dir, file(args.data_file('phonological_squibs', src)).read())
 
     for rec in bib:
         if rec.id in bibkeys and rec.id not in data['Source']:
@@ -228,7 +146,7 @@ def main(args):
 
     DBSession.flush()
 
-    for row in rows(args.data_file('PHOIBLE_PhonemeLevel_2155.tab'), namedtuples=True, encoding='utf8'):
+    for row in reader(args.data_file('PHOIBLE_PhonemeLevel_2155.tab'), namedtuples=True):
         if row.inventory_id not in refs:
             continue
         if row.glyph not in data['Segment']:
@@ -270,7 +188,7 @@ def main(args):
                 source=data['Source'][ref],
                 contribution=data['Inventory'][inventory_id])
 
-    for i, row in enumerate(rows(args.data_file('unitvalues.tab'), encoding='utf8')):
+    for i, row in enumerate(reader(args.data_file('unitvalues.tab'))):
         if i == 0:
             features = row
             continue
@@ -293,9 +211,10 @@ def prime_cache(args):
     This procedure should be separate from the db initialization, because
     it will have to be run periodically whenever data has been updated.
     """
-    q = DBSession.query(common.Parameter)
+    q = DBSession.query(common.Parameter).join(common.ValueSet).distinct()
     n = q.count()
-    for segment in q.options(joinedload(common.Parameter.valuesets)):
+    print n
+    for segment in q:
         segment.frequency = float(len(segment.valuesets)) / float(n)
 
     for inventory in DBSession.query(models.Inventory).options(
