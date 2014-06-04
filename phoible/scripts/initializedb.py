@@ -24,7 +24,7 @@ def main(args):
         files_dir.mkdir()
     data = Data()
     # TODO: get glottolog data
-    glottocodes = {}#glottocodes_by_isocode(args.glottolog_dburi)
+    glottocodes = glottocodes_by_isocode(args.glottolog_dburi)
 
     bib = Database.from_file(args.data_file('ALL.bib'), lowercase=True)
     refs = {}
@@ -42,7 +42,7 @@ def main(args):
     dataset = data.add(
         common.Dataset, 'phoible',
         id='phoible',
-        name='PHOIBLE',
+        name='PHOIBLE Online',
         description='Phonetics Information Base Online',
         publisher_name="Max Planck Institute for Evolutionary Anthropology",
         publisher_place="Leipzig",
