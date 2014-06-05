@@ -3,20 +3,49 @@ from __future__ import unicode_literals
 
 
 SOURCES = {
-    'AA': ('C. Chanard and Rhonda L. Hartell',
-           ['Hartell1993', 'Chanard2006'],
-           'Chanard and Hartell'),
-    'PHOIBLE': ('Phonetics Information Base and Lexicon',
-                ['Moran2012a'],
-                'Steven Moran'),
-    'SPA': ('Stanford Phonology Archive',
-            ['SPA1979'],
-            'John H. Crothers et al.'),
-    'UPSID': ('UCLA Phonological Segment Inventory Database',
-              ['Maddieson1984', 'MaddiesonPrecoda1990'],
-              'Ian Maddieson and Kristin Precoda')}
+    'AA': (
+        'C. Chanard and Rhonda L. Hartell',
+        ['Hartell1993', 'Chanard2006'],
+        'Chanard and Hartell'),
+    'UW': (
+        'PHOIBLE',
+        ['Moran2012a'],
+        'Steven Moran and Daniel McCloy and Richard Wright'),
+    'SPA': (
+        'Stanford Phonology Archive',
+        ['SPA1979'],
+        'John H. Crothers et al.'),
+    'CASL': (
+        'Center for Advanced Study of Language',
+        [],
+        'Chris Green and Steven Moran'),
+    'Ramaswami': (
+        'Ramaswami, N.',
+        ['ramaswami1982'],
+        'N. Ramaswami'),
+    'SAPHON': (
+        'South American Phonological Inventory Database',
+        ['saphon'],
+        'Lev Michael and Tammy Stark and Will Chang'),
+    'UPSID': (
+        'UCLA Phonological Segment Inventory Database',
+        ['Maddieson1984', 'MaddiesonPrecoda1990'],
+        'Ian Maddieson and Kristin Precoda')}
 
 BIB = """\
+@misc{ramaswami1982,
+	Author = {Ramaswami, N.},
+	Title = {{Brokskat}},
+	Year = {1982}
+}
+@misc{saphon,
+        Author = {Michael, Lev, Tammy Stark, and Will Chang},
+        Url = {http://linguistics.berkeley.edu/~saphon/en/},
+        Title = {{South American Phonological Inventory Database}},
+        Place = {Berkeley},
+        Publisher = {University of California},
+        Year = {2012}
+}
 @book{Hayes2009,
         Author = {Bruce Hayes},
         Publisher = {Blackwell},

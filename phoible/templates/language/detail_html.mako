@@ -13,7 +13,20 @@
     </tr>
     <tr>
         <td>Number of speakers:</td>
-        <td>${ctx.population or ctx.population_comment.replace('_', ' ')}</td>
+        <td>
+            ${ctx.population or ''}
+            % if ctx.population_comment:
+            ${ctx.population_comment}
+            % endif
+        </td>
+    </tr>
+    <tr>
+        <td>Area:</td>
+        <td>${ctx.area}</td>
+    </tr>
+    <tr>
+        <td>Country:</td>
+        <td>${ctx.country}</td>
     </tr>
     </tbody>
 </table>

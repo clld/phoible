@@ -22,12 +22,12 @@
 </ol>
 
 <p>In addition to phoneme inventories, PHOIBLE includes distinctive feature data for every phoneme in every language. The feature system used was created by the PHOIBLE developers to be descriptively adequate cross-linguistically. In other words, if two phonemes differ in their graphemic representation, then they necessarily differ in their featural representation as well (regardless of whether those two phonemes coexist in any known doculect). The feature system is loosely based on the feature system in
-${h.link(request, hayes)} with some additions drawn from ${h.link(request, moisik)}.
+${h.link(request, hayes, label="Hayes 2009")} with some additions drawn from ${h.link(request, moisik, label="Moisik & Esling 2011")}.
 </p>
 
 <p>However, the final feature system goes beyond both of these sources, and is potentially subject to change as new languages are added to PHOIBLE.</p>
 
-<p>For more information on the design, development, and challenges of PHOIBLE, see Moran 2012.</p>
+<p>For more information on the design, development, and challenges of PHOIBLE, see ${h.link(request, moran, label="Moran 2012")}.</p>
 
 <h3>How to use PHOIBLE</h3>
 

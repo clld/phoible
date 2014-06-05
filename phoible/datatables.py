@@ -5,10 +5,13 @@ from clld.web.datatables.base import LinkCol, Col, PercentCol, filter_number
 from clld.web.datatables.language import Languages
 from clld.web.datatables.parameter import Parameters
 from clld.web.datatables.value import Values, ValueSetCol
-from clld.web.datatables.contribution import Contributions
+from clld.web.datatables.contribution import Contributions, ContributorsCol, CitationCol
 from clld.web.util.helpers import external_link
+from clld.db.meta import DBSession
 from clld.db.util import get_distinct_values, icontains
-from clld.db.models.common import Contribution, ValueSet, Parameter
+from clld.db.models.common import (
+    Contribution, ValueSet, Parameter, Contributor, ContributionContributor,
+)
 
 
 from phoible.models import Segment, Variety, Inventory
@@ -77,11 +80,11 @@ class InventoryCol(LinkCol):
         return cast(Contribution.id, Integer)
 
 
-class DatapointCol(ValueSetCol):
+class DatapointCol(LinkCol):
     __kw__ = {'sTitle': 'Segment'}
 
-    def get_attrs(self, item):
-        return {'label': item.valueset.parameter.name}
+    def get_obj(self, item):
+        return item.valueset.parameter
 
     def search(self, qs):
         return icontains(Parameter.name, qs)
@@ -129,14 +132,33 @@ class CountCol(Col):
         return filter_number(Inventory.col, qs, type_=int)
 
 
+class PhoibleContributorsCol(ContributorsCol):
+    __kw__ = {}
+
+    def __init__(self, dt, name, **kw):
+        kw['choices'] = [c.name for c in DBSession.query(Contributor).join(ContributionContributor)]
+        super(PhoibleContributorsCol, self).__init__(dt, name, **kw)
+
+    def order(self):
+        return Contributor.name
+
+    def search(self, qs):
+        return icontains(Contributor.name, qs)
+
+
 class Inventories(Contributions):
+    def base_query(self, query):
+        return query.join(ContributionContributor).join(Contributor).distinct()
+
     def col_defs(self):
-        res = super(Inventories, self).col_defs()
-        for c in reversed('vowel consonant tone'.split()):
-            res.insert(
-                1, Col(self, c,
-                       model_col=getattr(Inventory, 'count_' + c), sTitle='# %ss' % c))
-        res.insert(1, CountCol(self, 'all'))
+        res = [LinkCol(self, 'name'), CountCol(self, 'all')]
+        for c in 'vowel consonant tone'.split():
+            res.append(Col(
+                self, c, model_col=getattr(Inventory, 'count_' + c), sTitle='# %ss' % c))
+        res.extend([
+            PhoibleContributorsCol(self, 'contributor'),
+            CitationCol(self, 'cite'),
+        ])
         return res
 
 

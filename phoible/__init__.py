@@ -25,7 +25,7 @@ def main(global_config, **settings):
     settings['sitemaps'] = ['language', 'source', 'parameter', 'contribution', 'valueset']
     config = get_configurator('phoible', settings=settings)
     config.include('clldmpg')
-    config.register_map('contribution', maps.InventoryMap)
+    config.include('phoible.maps')
     config.add_static_view('data', 'phoible:static/data')
     config.include('phoible.datatables')
     config.include('phoible.adapters')

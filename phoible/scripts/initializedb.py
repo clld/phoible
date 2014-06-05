@@ -19,12 +19,15 @@ from phoible.scripts.util import coord, strip_quotes, language_name, SOURCES, BI
 
 
 def main(args):
-    files_dir = args.data_file('files')
-    if not files_dir.exists():
-        files_dir.mkdir()
+    #files_dir = args.data_file('files')
+    #if not files_dir.exists():
+    #    files_dir.mkdir()
     data = Data()
-    # TODO: get glottolog data
-    glottocodes = glottocodes_by_isocode(args.glottolog_dburi)
+    glottocodes, geocoords = {}, {}
+    for k, v in glottocodes_by_isocode(
+            args.glottolog_dburi, cols=['id', 'latitude', 'longitude']).items():
+        glottocodes[k] = v[0]
+        geocoords[k] = (v[1], v[2])
 
     bib = Database.from_file(args.data_file('ALL.bib'), lowercase=True)
     refs = {}
@@ -43,7 +46,7 @@ def main(args):
         common.Dataset, 'phoible',
         id='phoible',
         name='PHOIBLE Online',
-        description='Phonetics Information Base Online',
+        description='PHOIBLE Online',
         publisher_name="Max Planck Institute for Evolutionary Anthropology",
         publisher_place="Leipzig",
         publisher_url="http://www.eva.mpg.de",
@@ -67,31 +70,36 @@ def main(args):
     for rec in special_bib:
         data.add(common.Source, rec.id, _obj=bibtex2source(rec))
 
-    for row in reader(args.data_file('PHOIBLE_Aggregated_2155.tab'), namedtuples=True):
-        if row.inventory_id not in refs:
-            continue
-        if row.language_code_id not in data['Variety']:
+    def population_info(s):
+        if s in ['Missing E16 page']:
+            return 0, ''
+        if s in ['Extinct', 'No_known_speakers', 'No_estimate_available', 'Ancient']:
+            return 0, s.replace('_', ' ').lower()
+        return int(s.replace(',', '')), ''
+
+    for row in reader(args.data_file('phoible-aggregated.tsv'), namedtuples=True):
+        #if row.InventoryID not in refs:
+        #    print 'skipping inventory', row.InventoryID
+        #    continue
+        if row.LanguageCode not in data['Variety']:
+            population, population_comment = population_info(row.Population)
+            coords = map(coord, [row.Latitude, row.Longitude])
+            if coords[0] is None and row.LanguageCode in geocoords:
+                coords = geocoords[row.LanguageCode]
             lang = data.add(
-                models.Variety, row.language_code_id,
-                id=row.language_code_id,
-                name=language_name(row.alternative_language_names),
-                wals_genus=strip_quotes(row.wals_genus),
-                country=strip_quotes(row.country),
-                area=strip_quotes(row.area),
-                population=0 if row.population in
-                ['Extinct', 'No_known_speakers', 'No_estimate_available', 'Ancient']
-                else int(row.population.replace(',', '')),
-                population_comment=row.population.replace('_', ' '),
-                latitude=coord(row.latitude),
-                longitude=coord(row.longitude))
+                models.Variety, row.LanguageCode,
+                id=row.LanguageCode,
+                name=language_name(row.LanguageName),
+                wals_genus=strip_quotes(row.LanguageFamilyGenus),
+                country=strip_quotes(row.Country),
+                area=strip_quotes(row.Area),
+                population=population,
+                population_comment=population_comment,
+                latitude=coords[0],
+                longitude=coords[1])
             add_language_codes(data, lang, lang.id, glottocodes=glottocodes)
-            #
-            # TODO: add alternative names!
-            #for name in row.alternative_language_names.split(';'):
-            #    if name.strip() != lang.name:
-            #        pass
         else:
-            lang = data['Variety'][row.language_code_id]
+            lang = data['Variety'][row.LanguageCode]
 
         source = 'AA' if row.Source == 'Chanard' else row.Source
         if source in data['Contributor']:
@@ -107,11 +115,11 @@ def main(args):
                     source=data['Source'][ref], contributor=contributor))
 
         contrib = data.add(
-            models.Inventory, row.inventory_id,
-            id=row.inventory_id,
+            models.Inventory, row.InventoryID,
+            id=row.InventoryID,
             language=lang,
             source=source,
-            name='%s %s (%s)' % (row.inventory_id, lang.name, row.Source))
+            name='%s %s (%s)' % (row.InventoryID, lang.name, row.Source))
 
         DBSession.add(common.ContributionContributor(
             contribution=contrib, contributor=contributor))
@@ -129,16 +137,16 @@ def main(args):
         src = matrix.cell(i, 1).value.strip()
         if src.startswith('http://'):
             inventory.source_url = src
-        else:
-            if not args.data_file('phonological_squibs', src).exists():
-                print 'missing squib', src
-            else:
-                f = common.Contribution_files(
-                    object=inventory,
-                    id='%s-squib.pdf' % inventory.id,
-                    name='Phonological squib',
-                    mime_type='application/pdf')
-                f.create(files_dir, file(args.data_file('phonological_squibs', src)).read())
+        #else:
+        #    if not args.data_file('phonological_squibs', src).exists():
+        #        print 'missing squib', src
+        #    else:
+        #        f = common.Contribution_files(
+        #            object=inventory,
+        #            id='%s-squib.pdf' % inventory.id,
+        #            name='Phonological squib',
+        #            mime_type='application/pdf')
+        #        f.create(files_dir, file(args.data_file('phonological_squibs', src)).read())
 
     for rec in bib:
         if rec.id in bibkeys and rec.id not in data['Source']:
@@ -146,39 +154,43 @@ def main(args):
 
     DBSession.flush()
 
-    for row in reader(args.data_file('PHOIBLE_PhonemeLevel_2155.tab'), namedtuples=True):
-        if row.inventory_id not in refs:
+    for row in reader(args.data_file('phoible-phonemes.tsv'), namedtuples=True):
+        #if row.InventoryID not in refs:
+        #    continue
+        if row.LanguageCode == 'idn' and int(row.InventoryID) == 1690:
+            lcode = 'ind'
+        else:
+            lcode = row.LanguageCode
+        if lcode not in data['Variety']:
+            print 'skip phoneme with missing language code', row
             continue
-        if row.glyph not in data['Segment']:
+        if row.Phoneme not in data['Segment']:
             segment = data.add(
-                models.Segment, row.glyph,
-                id=row.glyph_id,
-                name=row.glyph,
-                description=' - '.join(unicodedata.name(c) for c in row.glyph),
-                segment_class=row.class_,
+                models.Segment, row.Phoneme,
+                id=row.GlyphID,
+                name=row.Phoneme,
+                description=' - '.join(unicodedata.name(c) for c in row.Phoneme),
+                segment_class=row.Class,
                 combined_class=row.CombinedClass)
             DBSession.flush()
         else:
-            segment = data['Segment'][row.glyph]
+            segment = data['Segment'][row.Phoneme]
 
-        vs = data.add(
-            common.ValueSet, row.phoneme_id,
-            id=row.phoneme_id,
-            contribution=data['Inventory'][row.inventory_id],
-            language=data['Variety'][row.language_code_id],
+        vs = common.ValueSet(
+            id=row.PhonemeID,
+            contribution=data['Inventory'][row.InventoryID],
+            language=data['Variety'][lcode],
             parameter=segment)
 
-        for ref in refs[row.inventory_id]:
-            data.add(
-                common.ValueSetReference, '%s-%s' % (vs.id, ref),
+        for ref in refs.get(row.InventoryID, []):
+            DBSession.add(common.ValueSetReference(
                 source=data['Source'][ref],
-                valueset=vs)
+                valueset=vs))
 
-        data.add(
-            common.Value, row.phoneme_id,
-            id=row.phoneme_id,
-            name='%s %s' % (row.glyph, data['Inventory'][row.inventory_id].name),
-            valueset=vs)
+        DBSession.add(common.Value(
+            id=row.PhonemeID,
+            name='%s %s' % (row.Phoneme, data['Inventory'][row.InventoryID].name),
+            valueset=vs))
         DBSession.flush()
 
     for inventory_id in refs:
@@ -188,13 +200,22 @@ def main(args):
                 source=data['Source'][ref],
                 contribution=data['Inventory'][inventory_id])
 
-    for i, row in enumerate(reader(args.data_file('unitvalues.tab'))):
+    def feature_name(n):
+        chars = []
+        for char in n:
+            if char.isupper():
+                chars.append(' ' + char.lower())
+            else:
+                chars.append(char)
+        return ''.join(chars)
+
+    for i, row in enumerate(reader(args.data_file('phoible-segments-features.tsv'))):
         if i == 0:
-            features = row
+            features = map(feature_name, row)
             continue
 
         if row[0] not in data['Segment']:
-            #print row[0]
+            print 'skipping feature vector:', row
             continue
         for j, value in enumerate(row):
             if j and value != '0':
@@ -225,6 +246,8 @@ def prime_cache(args):
             if hasattr(inventory, attr):
                 val = getattr(inventory, attr) or 0
                 setattr(inventory, attr, val + 1)
+
+    gbs_func('update', args)
 
 
 if __name__ == '__main__':

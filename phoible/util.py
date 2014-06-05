@@ -16,6 +16,7 @@ def dataset_detail_html(context=None, request=None, **kw):
     res['inventory_count'] = DBSession.query(Inventory).count()
     res['segment_count'] = DBSession.query(Parameter).count()
     res['language_count'] = DBSession.query(Language).count()
+    res['moran'] = Source.get('moran2012a')
     res['moisik'] = Source.get('moisikesling2011')
     res['hayes'] = Source.get('hayes2009')
     return res
