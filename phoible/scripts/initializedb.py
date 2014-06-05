@@ -78,9 +78,8 @@ def main(args):
         return int(s.replace(',', '')), ''
 
     for row in reader(args.data_file('phoible-aggregated.tsv'), namedtuples=True):
-        #if row.InventoryID not in refs:
-        #    print 'skipping inventory', row.InventoryID
-        #    continue
+        if row.InventoryID not in refs:
+            continue
         if row.LanguageCode not in data['Variety']:
             population, population_comment = population_info(row.Population)
             coords = map(coord, [row.Latitude, row.Longitude])
@@ -155,8 +154,8 @@ def main(args):
     DBSession.flush()
 
     for row in reader(args.data_file('phoible-phonemes.tsv'), namedtuples=True):
-        #if row.InventoryID not in refs:
-        #    continue
+        if row.InventoryID not in refs:
+            continue
         if row.LanguageCode == 'idn' and int(row.InventoryID) == 1690:
             lcode = 'ind'
         else:
@@ -215,7 +214,7 @@ def main(args):
             continue
 
         if row[0] not in data['Segment']:
-            print 'skipping feature vector:', row
+            #print 'skipping feature vector:', row
             continue
         for j, value in enumerate(row):
             if j and value != '0':
