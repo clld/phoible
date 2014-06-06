@@ -52,7 +52,7 @@ def main(args):
         publisher_url="http://www.eva.mpg.de",
         domain='phoible.org',
         license='http://creativecommons.org/licenses/by-sa/3.0/',
-        contact='phoible@uw.edu',
+        contact='steven.moran@uzh.ch',
         jsondata={
             'license_icon': 'http://i.creativecommons.org/l/by-sa/3.0/88x31.png',
             'license_name': 'Creative Commons Attribution-ShareAlike 3.0 Unported License'})
@@ -233,9 +233,16 @@ def prime_cache(args):
     """
     q = DBSession.query(common.Parameter).join(common.ValueSet).distinct()
     n = q.count()
+    m = DBSession.query(models.Inventory).count()
     print n
     for segment in q:
+        #
+        # TODO: this ratio (number of inventories a segment appears in by number of
+        # distinct segment total) doesn't make much sense, does it?
+        #
         segment.frequency = float(len(segment.valuesets)) / float(n)
+        segment.in_inventories = len(segment.valuesets)
+        segment.total_inventories = m
 
     for inventory in DBSession.query(models.Inventory).options(
             joinedload_all(common.Contribution.valuesets, common.ValueSet.parameter)

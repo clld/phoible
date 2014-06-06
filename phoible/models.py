@@ -50,7 +50,14 @@ class Segment(Parameter, CustomModelMixin):
     pk = Column(Integer, ForeignKey('parameter.pk'), primary_key=True)
     segment_class = Column(Unicode)  # consonant, ...
     combined_class = Column(Unicode)
+
+    in_inventories = Column(Integer)
+    total_inventories = Column(Integer)
     frequency = Column(Float)
+
+    @hybrid_property
+    def representation(self):
+        return float(self.in_inventories) / float(self.total_inventories)
 
     def __rdf__(self, request):
         cls = self.segment_class.capitalize() \

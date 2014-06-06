@@ -93,7 +93,29 @@ class DatapointCol(LinkCol):
         return Parameter.id
 
 
+class FrequencyCol(Col):
+    __kw__ = {'sClass': 'right'}
+
+    def format(self, item):
+        return '%s/%s (%.0f%%)' % (
+            item.valueset.parameter.in_inventories,
+            item.valueset.parameter.total_inventories,
+            item.valueset.parameter.representation * 100)
+
+    def search(self, qs):
+        return filter_number(Segment.in_inventories, qs)
+
+    def order(self):
+        return Segment.in_inventories
+
+
 class Phonemes(Values):
+    def get_options(self):
+        opts = super(Values, self).get_options()
+        if self.contribution:
+            opts['aaSorting'] = [[1, 'desc'], [0, 'asc']]
+        return opts
+
     def col_defs(self):
         res = super(Phonemes, self).col_defs()
         if self.parameter:
@@ -104,8 +126,9 @@ class Phonemes(Values):
             param = lambda item: item.valueset.parameter
             return [
                 DatapointCol(self, 'valueset'),
-                PercentCol(
-                    self, 'frequency', model_col=Segment.frequency, get_object=param),
+                #PercentCol(
+                #    self, 'frequency', model_col=Segment.frequency, get_object=param),
+                FrequencyCol(self, 'frequency'),
                 ClassCol(
                     self, 'segment_class', Segment.segment_class, get_object=param),
                 ClassCol(
