@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from zope.interface import implementer
 from sqlalchemy import (
     Column,
+    Boolean,
     String,
     Unicode,
     Integer,
@@ -18,28 +19,56 @@ from clld.lib.rdf import url_for_qname
 from clld.db.meta import Base, CustomModelMixin
 from clld.db.models.common import (
     Parameter, Contribution, Language, Contributor, HasSourceMixin,
+    IdNameDescriptionMixin,
 )
+
+
+class Genus(Base, IdNameDescriptionMixin):
+    __wals_map__ = {
+        'sumatra': 'northwestsumatrabarrierislands',
+        'malayic': 'malayosumbawan',
+        'southmindanao': 'bilic',
+        'northwestmalayopolynesian': 'northborneo',
+        'sundanese': 'malayosumbawan',
+        #'transnewguinea': '',
+        #'moklen': 'moklen',
+        #'gayo': 'gayo',
+    }
+    gone = Column(Boolean, default=False)
+    ficon = Column(String)
+    gicon = Column(String)
+    root = Column(String)
+
+    def wals_url(self):
+        wid = self.__wals_map__.get(self.id, self.id)
+        return 'http://wals.info/languoid/genus/' + wid
 
 
 #-----------------------------------------------------------------------------
 # specialized common mapper classes
 #-----------------------------------------------------------------------------
+#
+# TODO: turn WALS genus into first class object, with icon spec!
+#
 @implementer(interfaces.ILanguage)
 class Variety(Language, CustomModelMixin):
     pk = Column(Integer, ForeignKey('language.pk'), primary_key=True)
-    wals_genus = Column(Unicode)
+
     country = Column(Unicode)
     area = Column(Unicode)
     population = Column(Integer)
     population_comment = Column(Unicode)
+    count_inventories = Column(Integer)
+    genus_pk = Column(Integer, ForeignKey('genus.pk'))
+    genus = relationship(Genus, backref='languages')
 
     @property
     def wals_genus_url(self):
-        if self.wals_genus:
-            return 'http://wals.info/languoid/genus/' + slug(self.wals_genus)
+        if self.genus:
+            return self.genus.wals_url()
 
     def __rdf__(self, request):
-        if self.wals_genus:
+        if self.genus:
             yield 'skos:broader', self.wals_genus_url
         if self.country:
             yield 'dcterms:spatial', self.country

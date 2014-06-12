@@ -1,31 +1,14 @@
-from itertools import groupby
-
 from zope.interface import implementer
-from sqlalchemy.orm import joinedload
 
 from clld import interfaces
 from clld.lib import bibtex
 from clld.web.adapters.geojson import (
-    GeoJsonParameter, GeoJsonLanguages, pacific_centered_coordinates,
+    GeoJsonParameterMultipleValueSets, GeoJsonLanguages, pacific_centered_coordinates,
 )
 from clld.web.adapters import md
-from clld.db.meta import DBSession
-from clld.db.models.common import ValueSet, Value
 
 
-class GeoJsonFeature(GeoJsonParameter):
-    def feature_iterator(self, ctx, req):
-        q = DBSession.query(ValueSet).join(Value).filter(ValueSet.parameter_pk == ctx.pk)\
-            .options(joinedload(ValueSet.values), joinedload(ValueSet.language))\
-            .order_by(ValueSet.language_pk)
-        return groupby(q, lambda vs: vs.language)
-
-    def get_language(self, ctx, req, pair):
-        return pair[0]
-
-    def feature_properties(self, ctx, req, pair):
-        return {}
-
+class GeoJsonFeature(GeoJsonParameterMultipleValueSets):
     def get_coordinates(self, language):
         return pacific_centered_coordinates(language)
 

@@ -3,7 +3,7 @@ from clld.web.maps import LanguageMap, Map, ParameterMap
 
 class LanguagesMap(Map):
     def get_options(self):
-        return {'icon_size': 20}
+        return {'icon_size': 20, 'no_showlabels': True}
 
 
 class SegmentMap(ParameterMap):

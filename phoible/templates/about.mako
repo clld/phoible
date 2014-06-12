@@ -15,7 +15,7 @@
 <p>The PHOIBLE project also integrates the theoretical model of distinctive features from an extended phonological feature set based on International Phonetic Alphabet (IPA; International Phonetic Association 2005) and on Hayes 2009. This is accomplished by creating a mapping relationship from each IPA segment to a set of features (Moran 2012). In this way, the IPA is a pivot for interoperability across all resources in PHOIBLE because their contents are encoded in Unicode IPA.</p>
 
 <p>For a detailed description of PHOIBLE, see
-    ${h.external_link("http://students.washington.edu/stiv/Moran2012.pdf", label="Moran 2012a")}.
+    ${h.external_link("https://digital.lib.washington.edu/researchworks/handle/1773/22452", label="Moran 2012a")}.
     For examples of some of the research we are doing with PHOIBLE, see:
     ${h.external_link("http://dx.doi.org/10.1353/lan.2012.0087", label="Moran, McCloy & Wright 2012")},
     Cysouw, Dediu &amp; Moran 2012,

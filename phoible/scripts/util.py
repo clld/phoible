@@ -136,7 +136,10 @@ def strip_quotes(s):
 
 def language_name(s):
     s = strip_quotes(s.split(';')[0])
-    for sep in ['-', ' ', '(']:
+    for sep in ['-', ' ', '(', ',', "'"]:
         if sep in s:
             s = sep.join(ss.capitalize() for ss in s.split(sep))
-    return s.capitalize()
+    if s[0].islower() or (len(s) > 1 and s[1].isupper()):
+        # only capitalize if not done already - or if it's all uppercase.
+        s = s.capitalize()
+    return s

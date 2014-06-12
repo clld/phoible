@@ -1,18 +1,23 @@
 from __future__ import unicode_literals
 import sys
 import unicodedata
+from itertools import groupby, cycle
 
+import requests
+from sqlalchemy import create_engine
 from sqlalchemy.orm import joinedload, joinedload_all
 import xlrd
 from clld.scripts.util import (
     initializedb, Data, gbs_func, bibtex2source, glottocodes_by_isocode,
     add_language_codes,
 )
+from clld.scripts.internetarchive import ia_func
 from clld.db.meta import DBSession
 from clld.db.models import common
 from clld.lib.dsv import reader
 from clld.lib.bibtex import Database, Record
-from clld.util import dict_append
+from clld.util import dict_append, slug
+from clld.web.icon import ORDERED_ICONS
 
 from phoible import models
 from phoible.scripts.util import coord, strip_quotes, language_name, SOURCES, BIB
@@ -23,9 +28,23 @@ def main(args):
     #if not files_dir.exists():
     #    files_dir.mkdir()
     data = Data()
+    walsdb = create_engine('postgresql://robert@/wals3')
+    genera = {'unclassified': None}
+    unknown_genera = {}
+    for row in walsdb.execute('select g.id, g.name, f.name from genus as g, family as f where g.family_pk = f.pk'):
+        genus = data.add(models.Genus, row[0], id=row[0], name=row[1], description=row[2])
+        genera[row[0]] = genus
+        genera[slug(row[1])] = genus
+
+    for row in walsdb.execute("select key, value from config"):
+        if row[0].startswith('__Genus_'):
+            gid = row[0].replace('_', '').split('Genus', 1)[1]
+            genera[gid] = None if row[1] == '__gone__' else genera[row[1]]
+
     glottocodes, geocoords = {}, {}
     for k, v in glottocodes_by_isocode(
-            args.glottolog_dburi, cols=['id', 'latitude', 'longitude']).items():
+            'postgresql://robert@/glottolog3',
+            cols=['id', 'latitude', 'longitude']).items():
         glottocodes[k] = v[0]
         geocoords[k] = (v[1], v[2])
 
@@ -34,7 +53,6 @@ def main(args):
     bibkeys = {}
     special_bib = [Record.from_string('@' + s, lowercase=True)
                    for s in filter(None, BIB.split('@'))]
-
     for row in reader(args.data_file('phoible_ids_bibtex.csv'), namedtuples=True):
         bibkeys[row.bibtex_key] = 1
         if row.bibtex_key == 'NO SOURCE GIVEN':
@@ -81,6 +99,15 @@ def main(args):
         if row.InventoryID not in refs:
             continue
         if row.LanguageCode not in data['Variety']:
+            genus = slug(strip_quotes(row.LanguageFamilyGenus))
+            if genus not in genera:
+                print '-->', row.LanguageFamilyGenus
+                unknown_genera[genus] = 1
+                genus = None
+            else:
+                genus = genera[genus]
+                if genus and not genus.root:
+                    genus.root = row.LanguageFamilyRoot
             population, population_comment = population_info(row.Population)
             coords = map(coord, [row.Latitude, row.Longitude])
             if coords[0] is None and row.LanguageCode in geocoords:
@@ -89,7 +116,7 @@ def main(args):
                 models.Variety, row.LanguageCode,
                 id=row.LanguageCode,
                 name=language_name(row.LanguageName),
-                wals_genus=strip_quotes(row.LanguageFamilyGenus),
+                genus=genus,
                 country=strip_quotes(row.Country),
                 area=strip_quotes(row.Area),
                 population=population,
@@ -253,6 +280,22 @@ def prime_cache(args):
                 val = getattr(inventory, attr) or 0
                 setattr(inventory, attr, val + 1)
 
+    ficons = cycle(ORDERED_ICONS)
+    gicons = cycle(ORDERED_ICONS)
+    for root, genus in groupby(
+            DBSession.query(models.Genus).order_by(models.Genus.description),
+            lambda g: g.description):
+        ficon = ficons.next().name
+        for g in genus:
+            g.ficon = ficon
+            g.gicon = gicons.next().name
+
+    for variety in DBSession.query(models.Variety).options(
+            joinedload(models.Variety.inventories)):
+        variety.count_inventories = len(variety.inventories)
+
+
+    ia_func('update', args)
     gbs_func('update', args)
 
 

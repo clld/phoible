@@ -7,10 +7,12 @@
 
 <table class="table table-nonfluid table-condensed">
     <tbody>
-    <tr>
-        <td>WALS genus:</td>
-        <td>${h.external_link(ctx.wals_genus_url, label=ctx.wals_genus) if ctx.wals_genus else ''}</td>
-    </tr>
+    % if ctx.genus:
+        <tr>
+            <td>WALS genus:</td>
+            <td>${h.external_link(ctx.wals_genus_url, label=ctx.genus.name)}</td>
+        </tr>
+    % endif
     <tr>
         <td>Number of speakers:</td>
         <td>
@@ -34,7 +36,7 @@
 <h3>Inventories</h3>
 <ul>
     % for inventory in ctx.inventories:
-    <li>${h.link(request, inventory)}</li>
+    <li>${h.link(request, inventory)}, ${len(inventory.valuesets)} segments.</li>
     % endfor
 </ul>
 

@@ -1,36 +1,69 @@
 from sqlalchemy import Integer
 from sqlalchemy.sql.expression import cast
 
-from clld.web.datatables.base import LinkCol, Col, PercentCol, filter_number
+from clld.web.datatables.base import LinkCol, Col, PercentCol, filter_number, LinkToMapCol
 from clld.web.datatables.language import Languages
 from clld.web.datatables.parameter import Parameters
-from clld.web.datatables.value import Values, ValueSetCol
+from clld.web.datatables.value import Values, RefsCol
 from clld.web.datatables.contribution import Contributions, ContributorsCol, CitationCol
-from clld.web.util.helpers import external_link
+from clld.web.util.helpers import external_link, map_marker_img
+from clld.web.util.htmllib import HTML
 from clld.db.meta import DBSession
 from clld.db.util import get_distinct_values, icontains
 from clld.db.models.common import (
-    Contribution, ValueSet, Parameter, Contributor, ContributionContributor,
+    Contribution, ValueSet, Parameter, Contributor, ContributionContributor, Language,
 )
 
 
-from phoible.models import Segment, Variety, Inventory
+from phoible.models import Segment, Variety, Inventory, Genus
+
+
+class FamilyCol(Col):
+    __kw__ = dict(sTitle='WALS family')
+
+    def format(self, item):
+        return HTML.span(
+            map_marker_img(self.dt.req, item),
+            ' ',
+            item.genus.description if item.genus else '',
+        )
+
+    def order(self):
+        return Genus.description
+
+    def search(self, qs):
+        return icontains(Genus.description, qs)
 
 
 class GenusCol(Col):
     __kw__ = dict(sTitle='WALS genus')
 
     def format(self, item):
-        if not item.wals_genus:
+        if not item.genus:
             return ''
-        return external_link(item.wals_genus_url, label=item.wals_genus)
+        return external_link(item.wals_genus_url, label=item.genus.name)
+
+    def order(self):
+        return Genus.name
+
+    def search(self, qs):
+        return icontains(Genus.name, qs)
 
 
 class Varieties(Languages):
+    def base_query(self, query):
+        return query.join(Genus)
+
     def col_defs(self):
         return [
             LinkCol(self, 'name'),
-            GenusCol(self, 'WALS genus', model_col=Variety.wals_genus),
+            Col(self,
+                '#',
+                bSearchable=False,
+                sDescription='Number of inventories',
+                model_col=Variety.count_inventories),
+            GenusCol(self, 'WALS genus'),
+            FamilyCol(self, 'WALS family'),
             Col(self, 'latitude'),
             Col(self, 'longitude'),
             Col(self, 'country', model_col=Variety.country),
@@ -53,11 +86,28 @@ class DescCol(LinkCol):
         return {'label': item.description}
 
 
+class FrequencyCol(Col):
+    __kw__ = {'sClass': 'right', 'sTitle': 'Representation'}
+
+    def format(self, item):
+        segment = self.get_obj(item)
+        return '%s/%s (%.0f%%)' % (
+            segment.in_inventories,
+            segment.total_inventories,
+            segment.representation * 100)
+
+    def search(self, qs):
+        return filter_number(Segment.in_inventories, qs)
+
+    def order(self):
+        return Segment.in_inventories
+
+
 class Segments(Parameters):
     def col_defs(self):
         return [
             LinkCol(self, 'name'),
-            PercentCol(self, 'frequency', model_col=Segment.frequency),
+            FrequencyCol(self, 'frequency'),
             DescCol(self, 'description'),
             ClassCol(self, 'segment_class', Segment.segment_class),
             ClassCol(self, 'combined_class', Segment.combined_class),
@@ -93,22 +143,6 @@ class DatapointCol(LinkCol):
         return Parameter.id
 
 
-class FrequencyCol(Col):
-    __kw__ = {'sClass': 'right'}
-
-    def format(self, item):
-        return '%s/%s (%.0f%%)' % (
-            item.valueset.parameter.in_inventories,
-            item.valueset.parameter.total_inventories,
-            item.valueset.parameter.representation * 100)
-
-    def search(self, qs):
-        return filter_number(Segment.in_inventories, qs)
-
-    def order(self):
-        return Segment.in_inventories
-
-
 class Phonemes(Values):
     def get_options(self):
         opts = super(Values, self).get_options()
@@ -117,18 +151,23 @@ class Phonemes(Values):
         return opts
 
     def col_defs(self):
-        res = super(Phonemes, self).col_defs()
         if self.parameter:
-            res[0] = InventoryCol(self, 'inventory')
-        else:
-            res = res[1:]
+            return [
+                InventoryCol(self, 'inventory'),
+                LinkCol(self,
+                        'language',
+                        model_col=Language.name,
+                        get_object=lambda i: i.valueset.language),
+                RefsCol(self, 'source'),
+                LinkToMapCol(self, 'm', get_object=lambda i: i.valueset.language),
+            ]
+
+        res = super(Phonemes, self).col_defs()[1:]
         if self.contribution:
             param = lambda item: item.valueset.parameter
             return [
                 DatapointCol(self, 'valueset'),
-                #PercentCol(
-                #    self, 'frequency', model_col=Segment.frequency, get_object=param),
-                FrequencyCol(self, 'frequency'),
+                FrequencyCol(self, 'frequency', get_object=param),
                 ClassCol(
                     self, 'segment_class', Segment.segment_class, get_object=param),
                 ClassCol(
@@ -159,7 +198,8 @@ class PhoibleContributorsCol(ContributorsCol):
     __kw__ = {}
 
     def __init__(self, dt, name, **kw):
-        kw['choices'] = [c.name for c in DBSession.query(Contributor).join(ContributionContributor)]
+        kw['choices'] = [c.name for c in
+                         DBSession.query(Contributor).join(ContributionContributor)]
         super(PhoibleContributorsCol, self).__init__(dt, name, **kw)
 
     def order(self):
