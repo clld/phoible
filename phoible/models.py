@@ -94,12 +94,6 @@ class Segment(Parameter, CustomModelMixin):
         yield 'rdf:type', url_for_qname('gold:' + cls)
         if self.segment_class:
             yield 'dcterms:description', self.segment_class
-        #
-        # TODO: features! something useful in GOLD?
-        #http://purl.org/linguistics/gold/feature
-        #http://purl.org/linguistics/gold/PhoneticProperty
-        #for d in self.data:
-        #    yield 'gold:feature', request.resource_url(self, _anchor=d.key)
 
 
 @implementer(interfaces.IContribution)

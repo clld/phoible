@@ -22,12 +22,6 @@ class PhoibleMapMarker(MapMarker):
         if interfaces.ILanguage.providedBy(ctx) and ctx.genus:
             return ctx.genus.ficon
 
-        if interfaces.IValueSet.providedBy(ctx) and ctx.language.genus:
-            return ctx.language.genus.ficon
-
-        if interfaces.IValue.providedBy(ctx) and ctx.valueset.language.genus:
-            return ctx.valueset.language.genus.ficon
-
         if isinstance(ctx, (list, tuple)) and ctx[0].genus:
             return ctx[0].genus.ficon
 

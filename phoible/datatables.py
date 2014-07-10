@@ -172,7 +172,7 @@ class Phonemes(Values):
                     self, 'segment_class', Segment.segment_class, get_object=param),
                 ClassCol(
                     self, 'combined_class', Segment.combined_class, get_object=param)]
-        return res
+        return res  # pragma: no cover
 
     def base_query(self, query):
         query = super(Phonemes, self).base_query(query)
@@ -191,7 +191,7 @@ class CountCol(Col):
         return Inventory.count
 
     def search(self, qs):
-        return filter_number(Inventory.col, qs, type_=int)
+        return filter_number(Inventory.count, qs, type_=int)
 
 
 class PhoibleContributorsCol(ContributorsCol):

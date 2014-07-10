@@ -15,28 +15,18 @@ class GeoJsonFeature(GeoJsonParameterMultipleValueSets):
 
 class MetadataFromRec(md.Metadata):
     def rec(self, ctx, req):
-        data = {}
-        if interfaces.IContribution.providedBy(ctx):
-            genre = 'inbook'
-            data['title'] = '%s sound inventory (%s)' % (ctx.language.name, ctx.primary_contributors[0].id)
-            data['author'] = ctx.primary_contributors[0].description.split(' and ')
-            data['booktitle'] = req.dataset.description
-            data['editor'] = [c.contributor.name for c in list(req.dataset.editors)]
-            id_ = '%s-%s' % (req.dataset.id, ctx.id)
-        else:
-            genre = 'book'
-            data['editor'] = [c.contributor.name for c in list(ctx.editors)]
-            id_ = req.dataset.id
-            data['title'] = getattr(ctx, 'citation_name', ctx.__unicode__())
-
         return bibtex.Record(
-            genre,
-            id_,
+            'inbook',
+            '%s-%s' % (req.dataset.id, ctx.id),
             url=req.resource_url(ctx),
             address=req.dataset.publisher_place,
             publisher=req.dataset.publisher_name,
             year=str(req.dataset.published.year),
-            **data)
+            title='%s sound inventory (%s)' % (
+                ctx.language.name, ctx.primary_contributors[0].id),
+            author=ctx.primary_contributors[0].description.split(' and '),
+            booktitle=req.dataset.description,
+            editor=[c.contributor.name for c in list(req.dataset.editors)])
 
 
 @implementer(interfaces.IRepresentation, interfaces.IMetadata)
@@ -75,13 +65,7 @@ class TxtCitation(md.Metadata):
     __label__ = 'Text'
     extension = 'md.txt'
     mimetype = 'text/plain'
-
-    def render(self, ctx, req):
-        if interfaces.IContribution.providedBy(ctx):
-            self.template = 'contribution/md_txt.mako'
-        else:  # if interfaces.IDataset.providedBy(ctx):
-            self.template = 'dataset/md_txt.mako'
-        return super(TxtCitation, self).render(ctx, req)
+    template = 'contribution/md_txt.mako'
 
 
 class GeoJsonVarieties(GeoJsonLanguages):

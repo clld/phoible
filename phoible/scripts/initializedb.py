@@ -4,44 +4,28 @@ import unicodedata
 from itertools import groupby, cycle
 from collections import defaultdict
 
-import requests
-from sqlalchemy import create_engine
 from sqlalchemy.orm import joinedload, joinedload_all
-import xlrd
 from clld.scripts.util import (
-    initializedb, Data, gbs_func, bibtex2source, glottocodes_by_isocode,
-    add_language_codes,
+    initializedb, Data, gbs_func, glottocodes_by_isocode, add_language_codes,
 )
 from clld.scripts.internetarchive import ia_func
 from clld.db.meta import DBSession
 from clld.db.models import common
 from clld.lib.dsv import reader
-from clld.lib.bibtex import Database, Record
 from clld.util import slug
 from clld.web.icon import ORDERED_ICONS
 
 from phoible import models
-from phoible.scripts.util import coord, strip_quotes, language_name, SOURCES, BIB
+from phoible.scripts.util import (
+    coord, strip_quotes, language_name, SOURCES, get_genera, population_info,
+    get_rows, add_sources, feature_name,
+)
 
 
 def main(args):
-    #files_dir = args.data_file('files')
-    #if not files_dir.exists():
-    #    files_dir.mkdir()
     data = Data()
-    walsdb = create_engine('postgresql://robert@/wals3')
-    genera = {'unclassified': None}
     unknown_genera = {}
-    for row in walsdb.execute('select g.id, g.name, f.name from genus as g, family as f where g.family_pk = f.pk'):
-        genus = data.add(models.Genus, row[0], id=row[0], name=row[1], description=row[2])
-        genera[row[0]] = genus
-        genera[slug(row[1])] = genus
-
-    for row in walsdb.execute("select key, value from config"):
-        if row[0].startswith('__Genus_'):
-            gid = row[0].replace('_', '').split('Genus', 1)[1]
-            genera[gid] = None if row[1] == '__gone__' else genera[row[1]]
-
+    genera = get_genera(data)
     glottocodes, geocoords = {}, {}
     for k, v in glottocodes_by_isocode(
             'postgresql://robert@/glottolog3',
@@ -49,15 +33,13 @@ def main(args):
         glottocodes[k] = v[0]
         geocoords[k] = (v[1], v[2])
 
-    bib = Database.from_file(args.data_file('phoible-references.bib'), lowercase=True)
     refs = defaultdict(list)
-    special_bib = [Record.from_string('@' + s, lowercase=True)
-                   for s in filter(None, BIB.split('@'))]
-    for row in reader(args.data_file('InventoryID-BibtexKey.csv'), namedtuples=True):
-        if row.BibtexKey == 'NO SOURCE GIVEN':
-            refs[row.InventoryID] = []
+    for row in get_rows(args, 'BibtexKey'):
+        if row[1] == 'NO SOURCE GIVEN':
+            refs[row[0]] = []
         else:
-            refs[row.InventoryID].append(row.BibtexKey)
+            refs[row[0]].append(row[1])
+    add_sources(args, data)
 
     dataset = data.add(
         common.Dataset, 'phoible',
@@ -84,28 +66,12 @@ def main(args):
             ord=i + 1,
             contributor=common.Contributor(id=spec[0], name=spec[1])))
 
-    for rec in special_bib:
-        data.add(common.Source, rec.id, _obj=bibtex2source(rec))
-
-    def population_info(s):
-        if s in ['Missing E16 page']:
-            return 0, ''
-        if s in ['Extinct', 'No_known_speakers', 'No_estimate_available', 'Ancient']:
-            return 0, s.replace('_', ' ').lower()
-        return int(s.replace(',', '')), ''
-
-    def get_rows(name):
-        for i, row in enumerate(reader(args.data_file('InventoryID-%s.csv' % name))):
-            if i:
-                if row[1] != 'NA':
-                    yield row
-
     squibs = defaultdict(list)
-    for row in get_rows('Squib'):
+    for row in get_rows(args, 'Squib'):
         squibs[row[0]].append(row[1])
 
-    source_urls = dict(get_rows('URL'))
-    ia_urls = dict(get_rows('InternetArchive'))
+    source_urls = dict(get_rows(args, 'URL'))
+    ia_urls = dict(get_rows(args, 'InternetArchive'))
 
     for row in reader(args.data_file('phoible-aggregated.tsv'), namedtuples=True):
         if row.InventoryID not in refs:
@@ -175,26 +141,6 @@ def main(args):
             #f.create(files_dir, file(args.data_file('phonological_squibs', src)).read())
 
     DBSession.flush()
-
-    for rec in bib:
-        if rec.id not in data['Source']:
-            data.add(common.Source, rec.id, _obj=bibtex2source(rec))
-
-    #
-    # add aliases to lookup records with bibtex keys with numeric prefixes without
-    # specifying the prefix
-    #
-    for key in list(data['Source'].keys()):
-        if '_' in key:
-            no, rem = key.split('_', 1)
-            try:
-                int(no)
-                if rem not in data['Source']:
-                    data['Source'][rem] = data['Source'][key]
-            except (ValueError, TypeError):
-                pass
-
-    DBSession.flush()
     unknown_refs = {}
 
     for row in reader(args.data_file('phoible-phonemes.tsv'), namedtuples=True):
@@ -244,27 +190,15 @@ def main(args):
     for inventory_id in refs:
         for ref in refs[inventory_id]:
             if ref not in data['Source']:
-                if ref not in unknown_refs:
-                    print '-------', ref
-                unknown_refs[ref] = 1
                 continue
             data.add(
                 common.ContributionReference, '%s-%s' % (inventory_id, ref),
                 source=data['Source'][ref],
                 contribution=data['Inventory'][inventory_id])
 
-    def feature_name(n):
-        chars = []
-        for char in n:
-            if char.isupper():
-                chars.append(' ' + char.lower())
-            else:
-                chars.append(char)
-        return ''.join(chars)
-
     for i, row in enumerate(reader(args.data_file('phoible-segments-features.tsv'))):
         if i == 0:
-            features = map(feature_name, row)
+            features = list(map(feature_name, row))
             continue
 
         if row[0] not in data['Segment']:
