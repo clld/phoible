@@ -4,22 +4,24 @@
 <%namespace name="util" file="../util.mako"/>
 <%! active_menu_item = "contributions" %>
 <% ia = [ref.source for ref in ctx.references if ref.source.jsondatadict.get('internetarchive_id')] %>
+<% if ia: ia = ia[0].jsondatadict['internetarchive_id'] %>
 
 <%block name="head">
     <link type="text/css" rel="stylesheet" href="${request.static_url('phoible:static/ipa.css')}"/>
 </%block>
 
-<h2>${_('Contribution')} ${ctx.name}</h2>
-
-% if ctx.source_url:
-    <p>${h.external_link(ctx.source_url, label=ctx.source)}</p>
-% endif
+<h2>
+    ${_('Contribution')} ${ctx.name}
+    % if ctx.source_url:
+        ${h.external_link(ctx.source_url, label=' ', title=ctx.source_url)}
+    % endif
+</h2>
 
 <div class="tabbable">
     <ul class="nav nav-tabs">
         <li class="active"><a href="#segments" data-toggle="tab">Segment list</a></li>
         <li><a href="#ipa" data-toggle="tab">IPA chart</a></li>
-        % if ia:
+        % if ctx.internetarchive_url or ia:
         <li><a href="#source" data-toggle="tab">Source</a></li>
         % endif
     </ul>
@@ -30,9 +32,13 @@
         <div id="ipa" class="tab-pane">
             ${ipa.chart({vs.parameter.name: vs.parameter for vs in ctx.valuesets}, u.segment_link)}
         </div>
-        % if ia:
+        % if ctx.internetarchive_url or ia:
         <div id="source" class="tab-pane">
-            <iframe src='https://archive.org/stream/${ia[0].jsondatadict.get('internetarchive_id')}?ui=embed#mode/1up' width='680px' height='750px' frameborder='1' ></iframe>
+            % if ctx.internetarchive_url:
+                <iframe src='https://archive.org/stream/${ctx.internetarchive_url.split('/')[-1]}?ui=embed#mode/1up' width='680px' height='750px' frameborder='1' ></iframe>
+            % else:
+                <iframe src='https://archive.org/stream/${ia}?ui=embed#mode/1up' width='680px' height='750px' frameborder='1' ></iframe>
+            % endif
         </div>
         % endif
     </div>
@@ -52,7 +58,6 @@ $(document).ready(function() {
     <%util:well title="Contributor">
         ${h.linked_contributors(request, ctx)}
         ${h.cite_button(request, ctx)}
-        ${util.stacked_links(ref.source for ref in ctx.primary_contributors[0].references)}
     </%util:well>
     <%util:well title="Sources">
         ${util.stacked_links(ref.source for ref in ctx.references)}

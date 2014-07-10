@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 import sys
 import unicodedata
 from itertools import groupby, cycle
+from collections import defaultdict
 
 import requests
 from sqlalchemy import create_engine
@@ -16,7 +17,7 @@ from clld.db.meta import DBSession
 from clld.db.models import common
 from clld.lib.dsv import reader
 from clld.lib.bibtex import Database, Record
-from clld.util import dict_append, slug
+from clld.util import slug
 from clld.web.icon import ORDERED_ICONS
 
 from phoible import models
@@ -48,17 +49,15 @@ def main(args):
         glottocodes[k] = v[0]
         geocoords[k] = (v[1], v[2])
 
-    bib = Database.from_file(args.data_file('ALL.bib'), lowercase=True)
-    refs = {}
-    bibkeys = {}
+    bib = Database.from_file(args.data_file('phoible-references.bib'), lowercase=True)
+    refs = defaultdict(list)
     special_bib = [Record.from_string('@' + s, lowercase=True)
                    for s in filter(None, BIB.split('@'))]
-    for row in reader(args.data_file('phoible_ids_bibtex.csv'), namedtuples=True):
-        bibkeys[row.bibtex_key] = 1
-        if row.bibtex_key == 'NO SOURCE GIVEN':
-            refs[row.inventory_id] = []
+    for row in reader(args.data_file('InventoryID-BibtexKey.csv'), namedtuples=True):
+        if row.BibtexKey == 'NO SOURCE GIVEN':
+            refs[row.InventoryID] = []
         else:
-            dict_append(refs, row.inventory_id, row.bibtex_key)
+            refs[row.InventoryID].append(row.BibtexKey)
 
     dataset = data.add(
         common.Dataset, 'phoible',
@@ -95,8 +94,22 @@ def main(args):
             return 0, s.replace('_', ' ').lower()
         return int(s.replace(',', '')), ''
 
+    def get_rows(name):
+        for i, row in enumerate(reader(args.data_file('InventoryID-%s.csv' % name))):
+            if i:
+                if row[1] != 'NA':
+                    yield row
+
+    squibs = defaultdict(list)
+    for row in get_rows('Squib'):
+        squibs[row[0]].append(row[1])
+
+    source_urls = dict(get_rows('URL'))
+    ia_urls = dict(get_rows('InternetArchive'))
+
     for row in reader(args.data_file('phoible-aggregated.tsv'), namedtuples=True):
         if row.InventoryID not in refs:
+            print '--- skipping inventory', row.InventoryID
             continue
         if row.LanguageCode not in data['Variety']:
             genus = slug(strip_quotes(row.LanguageFamilyGenus))
@@ -145,40 +158,44 @@ def main(args):
             id=row.InventoryID,
             language=lang,
             source=source,
+            source_url=source_urls.get(row.InventoryID),
+            internetarchive_url=ia_urls.get(row.InventoryID),
             name='%s %s (%s)' % (row.InventoryID, lang.name, row.Source))
 
         DBSession.add(common.ContributionContributor(
             contribution=contrib, contributor=contributor))
 
+        for j, squib in enumerate(squibs.get(row.InventoryID, [])):
+            f = common.Contribution_files(
+                object=contrib,
+                id='squib-%s-%s.pdf' % (contrib.id, j + 1),
+                name='Phonological squib',
+                description=squib,
+                mime_type='application/pdf')
+            #f.create(files_dir, file(args.data_file('phonological_squibs', src)).read())
+
     DBSession.flush()
-
-    xls = xlrd.open_workbook(args.data_file('phonological_squibs', 'phonological_squibs_index.xlsx'))
-    matrix = xls.sheet_by_name('Sheet1')
-    for i in range(1, matrix.nrows):
-        iid = str(int(matrix.cell(i, 0).value))
-
-        if iid not in data['Inventory']:
-            continue
-        inventory = data['Inventory'][iid]
-        src = matrix.cell(i, 1).value.strip()
-        if src.startswith('http://'):
-            inventory.source_url = src
-        #else:
-        #    if not args.data_file('phonological_squibs', src).exists():
-        #        print 'missing squib', src
-        #    else:
-        #        f = common.Contribution_files(
-        #            object=inventory,
-        #            id='%s-squib.pdf' % inventory.id,
-        #            name='Phonological squib',
-        #            mime_type='application/pdf')
-        #        f.create(files_dir, file(args.data_file('phonological_squibs', src)).read())
 
     for rec in bib:
-        if rec.id in bibkeys and rec.id not in data['Source']:
+        if rec.id not in data['Source']:
             data.add(common.Source, rec.id, _obj=bibtex2source(rec))
 
+    #
+    # add aliases to lookup records with bibtex keys with numeric prefixes without
+    # specifying the prefix
+    #
+    for key in list(data['Source'].keys()):
+        if '_' in key:
+            no, rem = key.split('_', 1)
+            try:
+                int(no)
+                if rem not in data['Source']:
+                    data['Source'][rem] = data['Source'][key]
+            except (ValueError, TypeError):
+                pass
+
     DBSession.flush()
+    unknown_refs = {}
 
     for row in reader(args.data_file('phoible-phonemes.tsv'), namedtuples=True):
         if row.InventoryID not in refs:
@@ -209,6 +226,11 @@ def main(args):
             parameter=segment)
 
         for ref in refs.get(row.InventoryID, []):
+            if ref not in data['Source']:
+                if ref not in unknown_refs:
+                    print '-------', ref
+                unknown_refs[ref] = 1
+                continue
             DBSession.add(common.ValueSetReference(
                 source=data['Source'][ref],
                 valueset=vs))
@@ -221,6 +243,11 @@ def main(args):
 
     for inventory_id in refs:
         for ref in refs[inventory_id]:
+            if ref not in data['Source']:
+                if ref not in unknown_refs:
+                    print '-------', ref
+                unknown_refs[ref] = 1
+                continue
             data.add(
                 common.ContributionReference, '%s-%s' % (inventory_id, ref),
                 source=data['Source'][ref],
@@ -261,7 +288,6 @@ def prime_cache(args):
     q = DBSession.query(common.Parameter).join(common.ValueSet).distinct()
     n = q.count()
     m = DBSession.query(models.Inventory).count()
-    print n
     for segment in q:
         #
         # TODO: this ratio (number of inventories a segment appears in by number of

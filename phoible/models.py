@@ -107,6 +107,7 @@ class Inventory(Contribution, CustomModelMixin):
     pk = Column(Integer, ForeignKey('contribution.pk'), primary_key=True)
     source = Column(String)
     source_url = Column(String)
+    internetarchive_url = Column(String)
 
     language_pk = Column(Integer, ForeignKey('language.pk'))
     language = relationship(Language, backref=backref('inventories'))

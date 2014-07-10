@@ -52,7 +52,7 @@ class GenusCol(Col):
 
 class Varieties(Languages):
     def base_query(self, query):
-        return query.join(Genus)
+        return query.outerjoin(Genus)
 
     def col_defs(self):
         return [
