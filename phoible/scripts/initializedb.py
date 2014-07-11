@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+from __future__ import unicode_literals, print_function
 import sys
 import unicodedata
 from itertools import groupby, cycle
@@ -54,7 +54,8 @@ def main(args):
         contact='steven.moran@uzh.ch',
         jsondata={
             'license_icon': 'http://i.creativecommons.org/l/by-sa/3.0/88x31.png',
-            'license_name': 'Creative Commons Attribution-ShareAlike 3.0 Unported License'})
+            'license_name':
+                'Creative Commons Attribution-ShareAlike 3.0 Unported License'})
 
     for i, spec in enumerate([
         ('moran', "Steven Moran"),
@@ -75,12 +76,12 @@ def main(args):
 
     for row in reader(args.data_file('phoible-aggregated.tsv'), namedtuples=True):
         if row.InventoryID not in refs:
-            print '--- skipping inventory', row.InventoryID
+            print('--- skipping inventory', row.InventoryID)
             continue
         if row.LanguageCode not in data['Variety']:
             genus = slug(strip_quotes(row.LanguageFamilyGenus))
             if genus not in genera:
-                print '-->', row.LanguageFamilyGenus
+                print('-->', row.LanguageFamilyGenus)
                 unknown_genera[genus] = 1
                 genus = None
             else:
@@ -138,7 +139,8 @@ def main(args):
                 name='Phonological squib',
                 description=squib,
                 mime_type='application/pdf')
-            #f.create(files_dir, file(args.data_file('phonological_squibs', src)).read())
+            assert f
+            # f.create(files_dir, file(args.data_file('phonological_squibs', src)).read())
 
     DBSession.flush()
     unknown_refs = {}
@@ -151,7 +153,7 @@ def main(args):
         else:
             lcode = row.LanguageCode
         if lcode not in data['Variety']:
-            print 'skip phoneme with missing language code', row
+            print('skip phoneme with missing language code', row)
             continue
         if row.Phoneme not in data['Segment']:
             segment = data.add(
@@ -174,7 +176,7 @@ def main(args):
         for ref in refs.get(row.InventoryID, []):
             if ref not in data['Source']:
                 if ref not in unknown_refs:
-                    print '-------', ref
+                    print('-------', ref)
                 unknown_refs[ref] = 1
                 continue
             DBSession.add(common.ValueSetReference(
@@ -202,7 +204,7 @@ def main(args):
             continue
 
         if row[0] not in data['Segment']:
-            #print 'skipping feature vector:', row
+            # print('skipping feature vector:', row)
             continue
         for j, value in enumerate(row):
             if j and value != '0':
@@ -253,7 +255,6 @@ def prime_cache(args):
     for variety in DBSession.query(models.Variety).options(
             joinedload(models.Variety.inventories)):
         variety.count_inventories = len(variety.inventories)
-
 
     ia_func('update', args)
     gbs_func('update', args)

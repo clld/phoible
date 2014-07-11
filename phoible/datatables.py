@@ -1,7 +1,7 @@
 from sqlalchemy import Integer
 from sqlalchemy.sql.expression import cast
 
-from clld.web.datatables.base import LinkCol, Col, PercentCol, filter_number, LinkToMapCol
+from clld.web.datatables.base import LinkCol, Col, filter_number, LinkToMapCol
 from clld.web.datatables.language import Languages
 from clld.web.datatables.parameter import Parameters
 from clld.web.datatables.value import Values, RefsCol
@@ -172,7 +172,7 @@ class Phonemes(Values):
                     self, 'segment_class', Segment.segment_class, get_object=param),
                 ClassCol(
                     self, 'combined_class', Segment.combined_class, get_object=param)]
-        return res  # pragma: no cover
+        return res
 
     def base_query(self, query):
         query = super(Phonemes, self).base_query(query)
@@ -230,4 +230,3 @@ def includeme(config):
     config.register_datatable('parameters', Segments)
     config.register_datatable('values', Phonemes)
     config.register_datatable('contributions', Inventories)
-

@@ -43,6 +43,7 @@ class Tests(TestWithApp):
         self.app.get_xml('/languages/ktz.rdf')
 
     def test_phonemes(self):
+        self.app.get_dt('/values')
         self.app.get_dt('/values?parameter=1')
         self.app.get_dt('/values?parameter=1&sSearch_0=a&iSortingCols=1&iSortCol_0=0')
         self.app.get_dt(

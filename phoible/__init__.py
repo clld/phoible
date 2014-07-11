@@ -3,9 +3,7 @@ from clld import interfaces, RESOURCES
 from clld.web.adapters.download import N3Dump
 
 from phoible import models
-from phoible import maps
-from phoible import datatables
-
+assert models
 
 _ = lambda s: s
 _('Contribution')

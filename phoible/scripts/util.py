@@ -44,9 +44,9 @@ SOURCES = {
 
 BIB = """\
 @misc{ramaswami1982,
-	Author = {Ramaswami, N.},
-	Title = {{Brokskat}},
-	Year = {1982}
+        Author = {Ramaswami, N.},
+        Title = {{Brokskat}},
+        Year = {1982}
 }
 @misc{saphon,
         Author = {Michael, Lev, Tammy Stark, and Will Chang},
@@ -66,7 +66,8 @@ BIB = """\
 @inproceedings{MoisikEsling2011,
         title={The 'whole larynx' approach to laryngeal features},
         author={Moisik, Scott R. and Esling, John H.},
-        booktitle={Proceedings of the International Congress of Phonetic Sciences (ICPhS XVII)},
+        booktitle={Proceedings of the International Congress of Phonetic Sciences \
+(ICPhS XVII)},
         year={2011},
         pages={1406-1409}
 }
@@ -77,8 +78,10 @@ BIB = """\
         Url = {http://sumale.vjf.cnrs.fr/phono/}
 }
 @misc{SPA1979,
-        Author = {John H. Crothers and James P. Lorentz and Donald A. Sherman and Marilyn M. Vihman},
-        Title = {Handbook of Phonological Data From a Sample of the World's Languages: A Report of the Stanford Phonology Archive},
+        Author = {John H. Crothers and James P. Lorentz and Donald A. Sherman and \
+Marilyn M. Vihman},
+        Title = {Handbook of Phonological Data From a Sample of the World's Languages: \
+A Report of the Stanford Phonology Archive},
         Year = {1979}
 }
 @book{Hartell1993,
@@ -140,7 +143,7 @@ def coord(s):
     if s.endswith('-00'):
         s = s[:-3]
 
-    if not ':' in s:
+    if ':' not in s:
         return
     s = s.replace('`N', '')
     deg, min_ = s.split(':')
@@ -195,9 +198,12 @@ def feature_name(n):
 
 
 def get_genera(data):
+    sql = """select g.id, g.name, f.name
+from genus as g, family as f
+where g.family_pk = f.pk"""
     walsdb = create_engine('postgresql://robert@/wals3')
     genera = {'unclassified': None}
-    for row in walsdb.execute('select g.id, g.name, f.name from genus as g, family as f where g.family_pk = f.pk'):
+    for row in walsdb.execute(sql):
         genus = data.add(models.Genus, row[0], id=row[0], name=row[1], description=row[2])
         genera[row[0]] = genus
         genera[slug(row[1])] = genus

@@ -14,7 +14,6 @@ from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from clld import interfaces
-from clld.util import slug
 from clld.lib.rdf import url_for_qname
 from clld.db.meta import Base, CustomModelMixin
 from clld.db.models.common import (
@@ -30,9 +29,9 @@ class Genus(Base, IdNameDescriptionMixin):
         'southmindanao': 'bilic',
         'northwestmalayopolynesian': 'northborneo',
         'sundanese': 'malayosumbawan',
-        #'transnewguinea': '',
-        #'moklen': 'moklen',
-        #'gayo': 'gayo',
+        # 'transnewguinea': '',
+        # 'moklen': 'moklen',
+        # 'gayo': 'gayo',
     }
     gone = Column(Boolean, default=False)
     ficon = Column(String)
@@ -44,12 +43,9 @@ class Genus(Base, IdNameDescriptionMixin):
         return 'http://wals.info/languoid/genus/' + wid
 
 
-#-----------------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # specialized common mapper classes
-#-----------------------------------------------------------------------------
-#
-# TODO: turn WALS genus into first class object, with icon spec!
-#
+# ----------------------------------------------------------------------------
 @implementer(interfaces.ILanguage)
 class Variety(Language, CustomModelMixin):
     pk = Column(Integer, ForeignKey('language.pk'), primary_key=True)
