@@ -1,4 +1,5 @@
 from zope.interface import implementer
+from sqlalchemy.orm import joinedload_all
 
 from clld import interfaces
 from clld.lib import bibtex
@@ -6,9 +7,16 @@ from clld.web.adapters.geojson import (
     GeoJsonParameterMultipleValueSets, GeoJsonLanguages, pacific_centered_coordinates,
 )
 from clld.web.adapters import md
+from clld.db.models.common import ValueSet
+
+from phoible.models import Variety
 
 
 class GeoJsonFeature(GeoJsonParameterMultipleValueSets):
+    def get_query(self, ctx, req):
+        query = GeoJsonParameterMultipleValueSets.get_query(self, ctx, req)
+        return query.options(joinedload_all(ValueSet.language, Variety.genus))
+
     def get_coordinates(self, language):
         return pacific_centered_coordinates(language)
 

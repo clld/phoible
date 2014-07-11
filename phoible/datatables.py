@@ -1,5 +1,6 @@
 from sqlalchemy import Integer
 from sqlalchemy.sql.expression import cast
+from sqlalchemy.orm import joinedload_all, joinedload
 
 from clld.web.datatables.base import LinkCol, Col, filter_number, LinkToMapCol
 from clld.web.datatables.language import Languages
@@ -12,6 +13,7 @@ from clld.db.meta import DBSession
 from clld.db.util import get_distinct_values, icontains
 from clld.db.models.common import (
     Contribution, ValueSet, Parameter, Contributor, ContributionContributor, Language,
+    Value,
 )
 
 
@@ -52,7 +54,7 @@ class GenusCol(Col):
 
 class Varieties(Languages):
     def base_query(self, query):
-        return query.outerjoin(Genus)
+        return query.outerjoin(Genus).options(joinedload(Variety.genus))
 
     def col_defs(self):
         return [
@@ -177,7 +179,9 @@ class Phonemes(Values):
     def base_query(self, query):
         query = super(Phonemes, self).base_query(query)
         if self.parameter:
-            query = query.join(ValueSet.contribution)
+            query = query.join(ValueSet.contribution).options(
+                joinedload_all(Value.valueset, ValueSet.language),
+                joinedload_all(Value.valueset, ValueSet.contribution))
         return query
 
 
@@ -211,7 +215,12 @@ class PhoibleContributorsCol(ContributorsCol):
 
 class Inventories(Contributions):
     def base_query(self, query):
-        return query.join(ContributionContributor).join(Contributor).distinct()
+        return query\
+            .join(ContributionContributor)\
+            .join(Contributor)\
+            .distinct()\
+            .options(joinedload_all(
+                Contribution.contributor_assocs, ContributionContributor.contributor))
 
     def col_defs(self):
         res = [LinkCol(self, 'name'), CountCol(self, 'all')]

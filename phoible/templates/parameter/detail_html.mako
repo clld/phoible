@@ -26,6 +26,9 @@
 
 
 <h2>Segment <span class="charissil">${ctx.name}</span></h2>
+<p class="alert alert-info">
+    ${ctx.description}
+</p>
 ##<div style="width: 20%;">
 ##${util.dl_table(('Segment class', ctx.segment_class), ('Combined class', ctx.combined_class))}
 ##</div>

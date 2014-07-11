@@ -10,7 +10,7 @@
 
 <h2>Welcome to PHOIBLE Online</h2>
 
-<p>PHOIBLE Online is a repository of cross-linguistic phonological inventory data, which have been extracted from source documents and tertiary databases and compiled into a single searchable convenience sample. There are currently ${inventory_count} inventories that contain ${segment_count} segment types found in ${language_count} distinct languages.</p>
+<p class="lead">PHOIBLE Online is a repository of cross-linguistic phonological inventory data, which have been extracted from source documents and tertiary databases and compiled into a single searchable convenience sample. There are currently ${inventory_count} inventories that contain ${segment_count} segment types found in ${language_count} distinct languages.</p>
 
 <p>References are provided for each source; note that some languages in PHOIBLE have multiple entries based on distinct sources that disagree about the number and/or identity of that language’s phonemes.</p>
 

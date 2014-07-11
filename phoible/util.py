@@ -26,7 +26,8 @@ def dataset_detail_html(context=None, request=None, **kw):
 
 def segment_link(req, glyph, segments):
     if glyph not in segments:
-        return HTML.span(glyph, style='font-size: 1em; color: lightgray;')
+        return HTML.a(
+            glyph, name="glyph-" + glyph, style='font-size: 1em; color: lightgray;')
     res = link(req, segments[glyph])
     del segments[glyph]
     return res

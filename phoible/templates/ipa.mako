@@ -19,7 +19,7 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ##/
 <%def name="chart(segments, segment_handler)">
-    <div id="pulmonicConsonants">
+    <div class="ipa" id="pulmonicConsonants">
 		<h2>Consonants (Pulmonic)</h2>
 		<table>
 			<!--<caption>Where symbols appear in pairs, the one to the right
@@ -277,7 +277,7 @@
 		impossible.</p>
 		</div>
 
-		<div id="nonPulmonicConsonants">
+		<div class="ipa" id="nonPulmonicConsonants">
 		<h2>Consonants (Non-Pulmonic)</h2>
 		<table>
 			<colgroup span="2" />
@@ -324,7 +324,7 @@
 		</table>
 		</div>
 
-		<div id="vowels">
+		<div class="ipa" id="vowels">
 		<h2>Vowels</h2>
 		<div id="vowelQuadrilateral">
 			<img id="vowelBackground" src="${request.static_url('phoible:static/vowelBackground.png')}" alt="Vowel Quadrilateral" />
@@ -340,61 +340,61 @@
 			</div>
 			<div id="vowelSymbols">
 				<div id="closeVowels">
-					<span title="U+0069: LATIN SMALL LETTER I" style="right:85.31%; top:10.81%;">${segment_handler(request, u'i', segments)}</span>
-					<span title="U+0079: LATIN SMALL LETTER Y" style="right:73.77%; top:10.81%">${segment_handler(request, u'y', segments)}</span>
+					<span title="U+0069: LATIN SMALL LETTER I" style="right:83.31%; top:10.81%;">${segment_handler(request, u'i', segments)}</span>
+					<span title="U+0079: LATIN SMALL LETTER Y" style="right:71.77%; top:10.81%">${segment_handler(request, u'y', segments)}</span>
 
-					<span title="U+0268: LATIN SMALL LETTER I WITH STROKE" style="right:48.85%; top:10.81%">${segment_handler(request, u'ɨ', segments)}</span>
-					<span title="U+0289: LATIN SMALL LETTER U BAR" style="right:38.85%; top:10.81%">${segment_handler(request, u'ʉ', segments)}</span>
+					<span title="U+0268: LATIN SMALL LETTER I WITH STROKE" style="right:44.85%; top:10.81%">${segment_handler(request, u'ɨ', segments)}</span>
+					<span title="U+0289: LATIN SMALL LETTER U BAR" style="right:35.85%; top:10.81%">${segment_handler(request, u'ʉ', segments)}</span>
 
-					<span title="U+026F: LATIN SMALL LETTER TURNED M" style="right:13.00%; top:10.81%">${segment_handler(request, u'ɯ', segments)}</span>
-					<span title="U+0075: LATIN SMALL LETTER U" style="right:3.15%; top:10.81%">${segment_handler(request, u'u', segments)}</span>
+					<span title="U+026F: LATIN SMALL LETTER TURNED M" style="right:9.00%; top:10.81%">${segment_handler(request, u'ɯ', segments)}</span>
+					<span title="U+0075: LATIN SMALL LETTER U" style="right:0.15%; top:10.81%">${segment_handler(request, u'u', segments)}</span>
 				</div>
 				<div id="closeLaxVowels">
-					<span title="U+026A: LATIN LETTER SMALL CAPITAL I" style="right:67.15%; top:22.90%">${segment_handler(request, u'ɪ', segments)}</span>
-					<span title="U+028F: LATIN LETTER SMALL CAPITAL Y" style="right:61.46%; top:22.90%">${segment_handler(request, u'ʏ', segments)}</span>
+					<span title="U+026A: LATIN LETTER SMALL CAPITAL I" style="right:62.15%; top:22.90%">${segment_handler(request, u'ɪ', segments)}</span>
+					<span title="U+028F: LATIN LETTER SMALL CAPITAL Y" style="right:56.46%; top:22.90%">${segment_handler(request, u'ʏ', segments)}</span>
 
 					<span title="U+028A: LATIN SMALL LETTER UPSILON" style="right:19.62%; top:22.90%">${segment_handler(request, u'ʊ', segments)}</span>
 				</div>
 				<div id="close-midVowels">
-					<span title="U+0065: LATIN SMALL LETTER E" style="right:74.85%; top:36.53%">${segment_handler(request, u'e', segments)}</span>
-					<span title="U+00F8: LATIN SMALL LETTER O WITH STROKE" style="right:64.85%; top:36.53%">${segment_handler(request, u'ø', segments)}</span>
+					<span title="U+0065: LATIN SMALL LETTER E" style="right:70.85%; top:36.53%">${segment_handler(request, u'e', segments)}</span>
+					<span title="U+00F8: LATIN SMALL LETTER O WITH STROKE" style="right:60.85%; top:36.53%">${segment_handler(request, u'ø', segments)}</span>
 
-					<span title="U+0258: LATIN SMALL LETTER REVERSED E" style="right:44.23%; top:36.53%">${segment_handler(request, u'ɘ', segments)}</span>
-					<span title="U+0275: LATIN SMALL LETTER BARRED O" style="right:35.77%; top:36.53%">${segment_handler(request, u'ɵ', segments)}</span>
+					<span title="U+0258: LATIN SMALL LETTER REVERSED E" style="right:39.23%; top:36.53%">${segment_handler(request, u'ɘ', segments)}</span>
+					<span title="U+0275: LATIN SMALL LETTER BARRED O" style="right:30.77%; top:36.53%">${segment_handler(request, u'ɵ', segments)}</span>
 
-					<span title="U+0264: LATIN SMALL LETTER RAMS HORN" style="right:13.00%; top:36.53%">${segment_handler(request, u'ɤ', segments)}</span>
-					<span title="U+006F: LATIN SMALL LETTER O" style="right:3.15%; top:36.53%">${segment_handler(request, u'o', segments)}</span>
+					<span title="U+0264: LATIN SMALL LETTER RAMS HORN" style="right:9.00%; top:36.53%">${segment_handler(request, u'ɤ', segments)}</span>
+					<span title="U+006F: LATIN SMALL LETTER O" style="right:0.15%; top:36.53%">${segment_handler(request, u'o', segments)}</span>
 				</div>
 				<div id="middleVowels">
-					<span title="U+0259: LATIN SMALL LETTER SCHWA" style="right:36.00%; top:49.27%">${segment_handler(request, u'ə', segments)}</span>
+					<span title="U+0259: LATIN SMALL LETTER SCHWA" style="right:32.00%; top:49.27%">${segment_handler(request, u'ə', segments)}</span>
 				</div>
 				<div id="open-midVowels">
-					<span title="U+025B: LATIN SMALL LETTER OPEN E" style="right:64.15%; top:62.90%">${segment_handler(request, u'ɛ', segments)}</span>
-					<span title="U+0153: LATIN SMALL LIGATURE OE" style="right:52.77%; top:62.90%">${segment_handler(request, u'œ', segments)}</span>
+					<span title="U+025B: LATIN SMALL LETTER OPEN E" style="right:58.15%; top:62.90%">${segment_handler(request, u'ɛ', segments)}</span>
+					<span title="U+0153: LATIN SMALL LIGATURE OE" style="right:46.77%; top:62.90%">${segment_handler(request, u'œ', segments)}</span>
 
-					<span title="U+025C: LATIN SMALL LETTER REVERSED OPEN E" style="right:37.08%; top:62.90%">${segment_handler(request, u'ɜ', segments)}</span>
-					<span title="U+025E: LATIN SMALL LETTER CLOSED REVERSED OPEN E" style="right:28.15%; top:62.90%">${segment_handler(request, u'ɞ', segments)}</span>
+					<span title="U+025C: LATIN SMALL LETTER REVERSED OPEN E" style="right:33.08%; top:62.90%">${segment_handler(request, u'ɜ', segments)}</span>
+					<span title="U+025E: LATIN SMALL LETTER CLOSED REVERSED OPEN E" style="right:24.15%; top:62.90%">${segment_handler(request, u'ɞ', segments)}</span>
 
-					<span title="U+028C: LATIN SMALL LETTER TURNED V" style="right:12.54%; top:62.90%">${segment_handler(request, u'ʌ', segments)}</span>
-					<span title="U+0254: LATIN SMALL LETTER OPEN O" style="right:3.15%; top:62.90%">${segment_handler(request, u'ɔ', segments)}</span>
+					<span title="U+028C: LATIN SMALL LETTER TURNED V" style="right:9.00%; top:62.90%">${segment_handler(request, u'ʌ', segments)}</span>
+					<span title="U+0254: LATIN SMALL LETTER OPEN O" style="right:0.15%; top:62.90%">${segment_handler(request, u'ɔ', segments)}</span>
 				</div>
 				<div id="openLaxVowels">
-					<span title="U+00E6: LATIN SMALL LETTER AE" style="right:54.23%; top:77.41%">${segment_handler(request, u'æ', segments)}</span>
-					<span title="U+0250: LATIN SMALL LETTER TURNED A" style="right:29.00%; top:75.65%">${segment_handler(request, u'ɐ', segments)}</span>
+					<span title="U+00E6: LATIN SMALL LETTER AE" style="right:50.23%; top:77.41%">${segment_handler(request, u'æ', segments)}</span>
+					<span title="U+0250: LATIN SMALL LETTER TURNED A" style="right:25.00%; top:75.65%">${segment_handler(request, u'ɐ', segments)}</span>
 				</div>
 				<div id="openVowels">
-					<span title="U+0061: LATIN SMALL LETTER A" style="right:46.23%; top:90.84%">${segment_handler(request, u'a', segments)}</span>
-					<span title="U+0276: LATIN LETTER SMALL CAPITAL OE" style="right:39.38%; top:90.84%">${segment_handler(request, u'ɶ', segments)}</span>
+					<span title="U+0061: LATIN SMALL LETTER A" style="right:44.23%; top:89.84%">${segment_handler(request, u'a', segments)}</span>
+					<span title="U+0276: LATIN LETTER SMALL CAPITAL OE" style="right:34.38%; top:89.84%">${segment_handler(request, u'ɶ', segments)}</span>
 
-					<span title="U+0251: LATIN SMALL LETTER ALPHA" style="right:12.23%; top:90.84%">${segment_handler(request, u'ɑ', segments)}</span>
-					<span title="U+0252: LATIN SMALL LETTER TURNED ALPHA" style="right:3.15%; top:90.84%">${segment_handler(request, u'ɒ', segments)}</span>
+					<span title="U+0251: LATIN SMALL LETTER ALPHA" style="right:9.00%; top:89.84%">${segment_handler(request, u'ɑ', segments)}</span>
+					<span title="U+0252: LATIN SMALL LETTER TURNED ALPHA" style="right:0.15%; top:89.84%">${segment_handler(request, u'ɒ', segments)}</span>
 				</div>
 			</div>
 		</div>
 		<p class='caption'>Where symbols appear in pairs, the one to the right represents a rounded vowel.</p>
 		</div>
         % if segments:
-		<div id="otherSymbols">
+		<div class="ipa" id="otherSymbols">
 		<h2>Other Segments</h2>
             <table>
                 <tbody>
