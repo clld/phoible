@@ -32,6 +32,7 @@ def main(global_config, **settings):
         'contribution': '/inventories/view/{id:[^/\.]+}',
     }
     settings['sitemaps'] = ['language', 'source', 'parameter', 'contribution', 'valueset']
+    settings['navbar.inverse'] = True
     config = get_configurator(
         'phoible', (PhoibleMapMarker(), interfaces.IMapMarker), settings=settings)
     config.include('clldmpg')
