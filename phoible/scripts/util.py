@@ -16,11 +16,14 @@ SOURCES = {
     'AA': (
         'C. Chanard and Rhonda L. Hartell',
         ['Hartell1993', 'Chanard2006'],
-        'Chanard and Hartell'),
+        'Chanard and Hartell',
+    ),
     'UW': (
         'PHOIBLE',
         ['Moran2012a'],
-        'Steven Moran and Daniel McCloy and Richard Wright'),
+        'Steven Moran and Daniel McCloy and Richard Wright.',
+        #'Inventories, including descriptions of phonemes, allophones and their conditioning environments, which we extracted from secondary resources like grammars and phonological descriptions.'
+    ),
     'SPA': (
         'Stanford Phonology Archive',
         ['SPA1979'],
@@ -113,6 +116,56 @@ A Report of the Stanford Phonology Archive},
         Url = {https://digital.lib.washington.edu/researchworks/handle/1773/22452}
         Year = {2012}
 }
+@techreport{IPA2005,
+        Author = {{International {P}honetic {A}ssociation}},
+        Institution = {International Phonetic Association},
+        Title = {{International Phonetic Alphabet}},
+        Url = {http://www.arts.gla.ac.uk/IPA/},
+        Year = {2005}
+}
+@article{Cysouw_etal2012,
+	Author = {Michael Cysouw and Dan Dediu and Steven Moran},
+	Journal = {Science},
+	Pages = {657--b},
+	Publisher = {Science},
+	Title = {{Still No Evidence for an Ancient Language Expansion From Africa}},
+	Url = {http://www.sciencemag.org/content/335/6069/657.2.full},
+	Volume = {335},
+	Year = {2012}}
+
+@misc{mccloy_etal2013,
+	author = {{McCloy}, Daniel R. and Moran, Steven and Wright, Richard A.},
+	title = {Revisiting `The role of features in phonological inventories'},
+	year = {2013},
+	month = jan,
+	howpublished = {CUNY Conference on the Feature in Phonology and Phonetics},
+	address = {New York, {NY}},
+	type = {paper},
+	url = {http://students.washington.edu/drmccloy/pubs/McCloyEtAl2013_cunyFeatureConf.pdf},
+}
+@incollection{Moran2012b,
+	Address = {Heidelberg},
+	Author = {Moran, Steven},
+	Booktitle = {Linked Data in Linguistics: Representing and Connecting Language Data and Language Metadata},
+	Editor = {Chiarcos, Christian and Nordhoff, Sebastian and Hellmann, Sebastian},
+	Isbn = {978-3-642-28249-2},
+	Note = {doi:10.1007/978-3-642-28249-2\_13},
+	Pages = {129--138},
+	Publisher = {Springer},
+	Title = {{Using Linked Data to Create a Typological Knowledge Base}},
+	Url = {http://www.springer.com/computer/ai/book/978-3-642-28248-5},
+	Year = {2012}}
+
+@article{Moran_etal2012,
+	Author = {Steven Moran and Daniel McCloy and Richard Wright},
+	Journal = {Language},
+	Number = {4},
+	Pages = {877--893},
+	Title = {{Revisiting Population Size vs. Phoneme Inventory Size}},
+	Volume = {88},
+	Url = {http://dx.doi.org/10.1353/lan.2012.0087},
+	Year = {2012}}
+
 """
 
 
@@ -170,16 +223,31 @@ def strip_quotes(s):
     return s
 
 
+def capitalize(s):
+    if not s:
+        return s
+
+    if s.lower() in ['dialect)', 'dialects)', 'and', 'do', 'del', 'de']:
+        return s.lower()
+
+    return s[0].upper() + s[1:]
+
+
 def language_name(s):
     """normalize a language name
     """
     s = strip_quotes(s.split(';')[0])
-    for sep in ['-', ' ', '(', ',', "'"]:
+    for sep in ['-', '(', ' ']:
         if sep in s:
-            s = sep.join(ss.capitalize() for ss in s.split(sep))
+            #print(sep)
+            s = sep.join(capitalize(ss) for ss in s.split(sep))
+            #print(s)
     if s[0].islower() or (len(s) > 1 and s[1].isupper()):
         # only capitalize if not done already - or if it's all uppercase.
-        s = s.capitalize()
+        if len(s) > 1 and s[1].isupper():
+            s = s.capitalize()
+        else:
+            s = capitalize(s)
     return s
 
 
@@ -198,15 +266,42 @@ def feature_name(n):
 
 
 def get_genera(data):
+    """
+    Zo'e: tupiguarani
+    """
     sql = """select g.id, g.name, f.name
 from genus as g, family as f
 where g.family_pk = f.pk"""
     walsdb = create_engine('postgresql://robert@/wals3')
-    genera = {'unclassified': None}
+    genera = {}
     for row in walsdb.execute(sql):
         genus = data.add(models.Genus, row[0], id=row[0], name=row[1], description=row[2])
         genera[row[0]] = genus
         genera[slug(row[1])] = genus
+
+    sql = """select l.iso_codes, g.id
+from walslanguage as l, genus as g
+where l.genus_pk = g.pk and l.iso_codes is not null"""
+    for row in walsdb.execute(sql):
+        for code in row[0].split(', '):
+            if code not in genera:
+                genera[code] = genera[row[1]]
+
+    #
+    # TODO: add families as well: "Tupian"!
+    #
+
+
+    """
+    Tagalog: Greater Central Philippine
+    Island Carib: Northern Arawakan
+    Wapishana: Northern Arawakan
+    Goajiro: Northern Arawakan
+    Campa: Pre-Andine Arawakan
+    Moxo: Bolivia-Parana
+    Amuesha: Western Arawakan
+
+    """
 
     for row in walsdb.execute("select key, value from config"):
         if row[0].startswith('__Genus_'):

@@ -43,6 +43,8 @@ class GenusCol(Col):
     def format(self, item):
         if not item.genus:
             return ''
+        if not item.genus.active:
+            return item.genus.name
         return external_link(item.wals_genus_url, label=item.genus.name)
 
     def order(self):

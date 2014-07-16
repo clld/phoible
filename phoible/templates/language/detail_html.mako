@@ -9,8 +9,13 @@
     <tbody>
     % if ctx.genus:
         <tr>
-            <td>WALS genus:</td>
-            <td>${h.external_link(ctx.wals_genus_url, label=ctx.genus.name)}</td>
+            % if ctx.genus.active:
+                <td>WALS genus:</td>
+                <td>${h.external_link(ctx.wals_genus_url, label=ctx.genus.name)}</td>
+            % else:
+                <td>Genus:</td>
+                <td>${ctx.genus.name}</td>
+            % endif
         </tr>
     % endif
     <tr>

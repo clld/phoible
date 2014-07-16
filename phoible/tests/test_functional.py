@@ -12,6 +12,7 @@ class Tests(TestWithApp):
 
     def test_home(self):
         self.app.get('/')
+        self.app.get_html('/about')
         self.app.get('/void.md.txt')
 
     def test_segments(self):
@@ -39,8 +40,8 @@ class Tests(TestWithApp):
         self.app.get_dt('/languages?sSearch_3=a&iSortingCols=1&iSortCol_0=3')
         self.app.get('/languages')
         self.app.get_json('/languages.geojson')
-        self.app.get('/languages/ktz')
-        self.app.get_xml('/languages/ktz.rdf')
+        self.app.get('/languages/1')
+        self.app.get_xml('/languages/1.rdf')
 
     def test_phonemes(self):
         self.app.get_dt('/values')

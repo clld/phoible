@@ -3,6 +3,7 @@ import sys
 import unicodedata
 from itertools import groupby, cycle
 from collections import defaultdict
+import socket
 
 from sqlalchemy.orm import joinedload, joinedload_all
 from clld.scripts.util import (
@@ -23,15 +24,19 @@ from phoible.scripts.util import (
 
 
 def main(args):
+    # determine if we run on a machine where other databases are available for lookup
+    # locally:
+    astroman = socket.gethostname() == 'astroman'
     data = Data()
     unknown_genera = {}
-    genera = get_genera(data)
+    genera = get_genera(data) if astroman else {}
     glottocodes, geocoords = {}, {}
-    for k, v in glottocodes_by_isocode(
-            'postgresql://robert@/glottolog3',
-            cols=['id', 'latitude', 'longitude']).items():
-        glottocodes[k] = v[0]
-        geocoords[k] = (v[1], v[2])
+    if astroman:
+        for k, v in glottocodes_by_isocode(
+                'postgresql://robert@/glottolog3',
+                cols=['id', 'latitude', 'longitude']).items():
+            glottocodes[k] = v[0]
+            geocoords[k] = (v[1], v[2])
 
     refs = defaultdict(list)
     for row in get_rows(args, 'BibtexKey'):
@@ -74,27 +79,57 @@ def main(args):
     source_urls = dict(get_rows(args, 'URL'))
     ia_urls = dict(get_rows(args, 'InternetArchive'))
 
-    for row in reader(args.data_file('phoible-aggregated.tsv'), namedtuples=True):
-        if row.InventoryID not in refs:
-            print('--- skipping inventory', row.InventoryID)
-            continue
-        if row.LanguageCode not in data['Variety']:
-            genus = slug(strip_quotes(row.LanguageFamilyGenus))
-            if genus not in genera:
-                print('-->', row.LanguageFamilyGenus)
-                unknown_genera[genus] = 1
+    lcount = 0
+    aggregated = list(reader(args.data_file('phoible-aggregated.tsv'), namedtuples=True))
+    inventory_names = {}
+    for key, items in groupby(
+            sorted(aggregated, key=lambda t: (language_name(t.LanguageName), t.Source)),
+            key=lambda t: (language_name(t.LanguageName), t.Source)):
+        items = list(items)
+        if len(items) == 1:
+            inventory_names[items[0].InventoryID] = '%s (%s)' % key
+        else:
+            for i, item in enumerate(items):
+                inventory_names[item.InventoryID] = '%s %s (%s)' % (key[0], i + 1, key[1])
+
+    for row in aggregated:
+        lid = (
+            row.LanguageCode,
+            row.Latitude, row.Longitude,
+            #slug(language_name(row.LanguageName))
+        )
+        lang = data['Variety'].get(lid)
+        if lang:
+            if slug(lang.name) != slug(language_name(row.LanguageName)):
+                print(lang.jsondata['inventory_id'], lang.name, '->', row.InventoryID, language_name(row.LanguageName))
+        else:
+            lcount += 1
+            if row.LanguageFamilyGenus == 'UNCLASSIFIED':
                 genus = None
             else:
-                genus = genera[genus]
-                if genus and not genus.root:
+                genus_id = slug(strip_quotes(row.LanguageFamilyGenus))
+                genus = genera.get(genus_id)
+                if not genus:
+                    genus = genera.get(row.LanguageCode)
+                    if not genus:
+                        genus = genera[genus_id] = data.add(
+                            models.Genus, genus_id,
+                            id=genus_id,
+                            name=row.LanguageFamilyGenus,
+                            description=row.LanguageFamilyRoot,
+                            active=False,
+                            root=row.LanguageFamilyRoot)
+
+                if not genus.root:
                     genus.root = row.LanguageFamilyRoot
+
             population, population_comment = population_info(row.Population)
-            coords = map(coord, [row.Latitude, row.Longitude])
+            coords = list(map(coord, [row.Latitude, row.Longitude]))
             if coords[0] is None and row.LanguageCode in geocoords:
                 coords = geocoords[row.LanguageCode]
             lang = data.add(
-                models.Variety, row.LanguageCode,
-                id=row.LanguageCode,
+                models.Variety, lid,
+                id=str(lcount),
                 name=language_name(row.LanguageName),
                 genus=genus,
                 country=strip_quotes(row.Country),
@@ -102,15 +137,13 @@ def main(args):
                 population=population,
                 population_comment=population_comment,
                 latitude=coords[0],
-                longitude=coords[1])
-            add_language_codes(data, lang, lang.id, glottocodes=glottocodes)
-        else:
-            lang = data['Variety'][row.LanguageCode]
+                longitude=coords[1],
+                jsondata=dict(inventory_id=row.InventoryID))
+            add_language_codes(data, lang, row.LanguageCode, glottocodes=glottocodes)
 
         source = 'AA' if row.Source == 'Chanard' else row.Source
-        if source in data['Contributor']:
-            contributor = data['Contributor'][source]
-        else:
+        contributor = data['Contributor'].get(source)
+        if not contributor:
             contributor = data.add(
                 common.Contributor, source,
                 id=source,
@@ -127,7 +160,7 @@ def main(args):
             source=source,
             source_url=source_urls.get(row.InventoryID),
             internetarchive_url=ia_urls.get(row.InventoryID),
-            name='%s %s (%s)' % (row.InventoryID, lang.name, row.Source))
+            name=inventory_names[row.InventoryID])
 
         DBSession.add(common.ContributionContributor(
             contribution=contrib, contributor=contributor))
@@ -146,16 +179,9 @@ def main(args):
     unknown_refs = {}
 
     for row in reader(args.data_file('phoible-phonemes.tsv'), namedtuples=True):
-        if row.InventoryID not in refs:
-            continue
-        if row.LanguageCode == 'idn' and int(row.InventoryID) == 1690:
-            lcode = 'ind'
-        else:
-            lcode = row.LanguageCode
-        if lcode not in data['Variety']:
-            print('skip phoneme with missing language code', row)
-            continue
-        if row.Phoneme not in data['Segment']:
+        inventory = data['Inventory'][row.InventoryID]
+        segment = data['Segment'].get(row.Phoneme)
+        if not segment:
             segment = data.add(
                 models.Segment, row.Phoneme,
                 id=row.GlyphID,
@@ -164,13 +190,11 @@ def main(args):
                 segment_class=row.Class,
                 combined_class=row.CombinedClass)
             DBSession.flush()
-        else:
-            segment = data['Segment'][row.Phoneme]
 
         vs = common.ValueSet(
             id=row.PhonemeID,
-            contribution=data['Inventory'][row.InventoryID],
-            language=data['Variety'][lcode],
+            contribution=inventory,
+            language=inventory.language,
             parameter=segment)
 
         for ref in refs.get(row.InventoryID, []):
