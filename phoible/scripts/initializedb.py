@@ -23,12 +23,13 @@ from phoible.scripts.util import (
 )
 
 
+astroman = socket.gethostname() == 'astroman'
+
+
 def main(args):
     # determine if we run on a machine where other databases are available for lookup
     # locally:
-    astroman = socket.gethostname() == 'astroman'
     data = Data()
-    unknown_genera = {}
     genera = get_genera(data) if astroman else {}
     glottocodes, geocoords = {}, {}
     if astroman:
@@ -280,8 +281,9 @@ def prime_cache(args):
             joinedload(models.Variety.inventories)):
         variety.count_inventories = len(variety.inventories)
 
-    ia_func('update', args)
-    gbs_func('update', args)
+    if astroman:
+        ia_func('update', args)
+        gbs_func('update', args)
 
 
 if __name__ == '__main__':
