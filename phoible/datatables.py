@@ -225,7 +225,10 @@ class Inventories(Contributions):
                 Contribution.contributor_assocs, ContributionContributor.contributor))
 
     def col_defs(self):
-        res = [LinkCol(self, 'name'), CountCol(self, 'all')]
+        res = [
+            LinkCol(self, 'name'),
+            Col(self, 'source_name', model_col=Inventory.description),
+            CountCol(self, 'all')]
         for c in 'vowel consonant tone'.split():
             res.append(Col(
                 self, c, model_col=getattr(Inventory, 'count_' + c), sTitle='# %ss' % c))

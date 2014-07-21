@@ -31,13 +31,14 @@ def main(args):
     # locally:
     data = Data()
     genera = get_genera(data) if astroman else {}
-    glottocodes, geocoords = {}, {}
+    glottocodes, lnames, geocoords = {}, {}, {}
     if astroman:
         for k, v in glottocodes_by_isocode(
                 'postgresql://robert@/glottolog3',
-                cols=['id', 'latitude', 'longitude']).items():
+                cols=['id', 'name', 'latitude', 'longitude']).items():
             glottocodes[k] = v[0]
-            geocoords[k] = (v[1], v[2])
+            lnames[k] = v[1]
+            geocoords[k] = (v[2], v[3])
 
     refs = defaultdict(list)
     for row in get_rows(args, 'BibtexKey'):
@@ -80,31 +81,27 @@ def main(args):
     source_urls = dict(get_rows(args, 'URL'))
     ia_urls = dict(get_rows(args, 'InternetArchive'))
 
-    lcount = 0
     aggregated = list(reader(args.data_file('phoible-aggregated.tsv'), namedtuples=True))
     inventory_names = {}
     for key, items in groupby(
-            sorted(aggregated, key=lambda t: (language_name(t.LanguageName), t.Source)),
-            key=lambda t: (language_name(t.LanguageName), t.Source)):
+            sorted(aggregated, key=lambda t: (t.LanguageCode, t.Source)),
+            key=lambda t: (t.LanguageCode, t.Source)):
         items = list(items)
+
+        lname = lnames.get(key[0])
+        if not lname:
+            lname = items[0].LanguageName
+            lnames[key[0]] = lname
+
         if len(items) == 1:
-            inventory_names[items[0].InventoryID] = '%s (%s)' % key
+            inventory_names[items[0].InventoryID] = '%s (%s)' % (lname, key[1])
         else:
             for i, item in enumerate(items):
-                inventory_names[item.InventoryID] = '%s %s (%s)' % (key[0], i + 1, key[1])
+                inventory_names[item.InventoryID] = '%s %s (%s)' % (lname, i + 1, key[1])
 
     for row in aggregated:
-        lid = (
-            row.LanguageCode,
-            row.Latitude, row.Longitude,
-            #slug(language_name(row.LanguageName))
-        )
-        lang = data['Variety'].get(lid)
-        if lang:
-            if slug(lang.name) != slug(language_name(row.LanguageName)):
-                print(lang.jsondata['inventory_id'], lang.name, '->', row.InventoryID, language_name(row.LanguageName))
-        else:
-            lcount += 1
+        lang = data['Variety'].get(row.LanguageCode)
+        if not lang:
             if row.LanguageFamilyGenus == 'UNCLASSIFIED':
                 genus = None
             else:
@@ -125,13 +122,14 @@ def main(args):
                     genus.root = row.LanguageFamilyRoot
 
             population, population_comment = population_info(row.Population)
-            coords = list(map(coord, [row.Latitude, row.Longitude]))
-            if coords[0] is None and row.LanguageCode in geocoords:
+            if row.LanguageCode in geocoords:
                 coords = geocoords[row.LanguageCode]
+            elif row.Latitude != 'NULL' and row.Longitude != 'NULL':
+                coords = (float(row.Latitude), float(row.Longitude))
             lang = data.add(
-                models.Variety, lid,
-                id=str(lcount),
-                name=language_name(row.LanguageName),
+                models.Variety, row.LanguageCode,
+                id=row.LanguageCode,
+                name=lnames[row.LanguageCode],
                 genus=genus,
                 country=strip_quotes(row.Country),
                 area=strip_quotes(row.Area),
@@ -161,7 +159,8 @@ def main(args):
             source=source,
             source_url=source_urls.get(row.InventoryID),
             internetarchive_url=ia_urls.get(row.InventoryID),
-            name=inventory_names[row.InventoryID])
+            name=inventory_names[row.InventoryID],
+            description=row.LanguageName)
 
         DBSession.add(common.ContributionContributor(
             contribution=contrib, contributor=contributor))
