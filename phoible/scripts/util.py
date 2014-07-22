@@ -1,13 +1,16 @@
 # coding: utf8
 from __future__ import unicode_literals
 from itertools import chain
+from io import open
 
+from bs4 import BeautifulSoup as bs
 from sqlalchemy import create_engine
 from clld.util import slug, nfilter
 from clld.lib.dsv import reader
 from clld.lib.bibtex import Database, Record
 from clld.scripts.util import bibtex2source
-from clld.db.models.common import Source
+from clld.db.meta import DBSession
+from clld.db.models.common import Source, Parameter
 
 from phoible import models
 
@@ -322,3 +325,19 @@ def get_rows(args, name):
     for i, row in enumerate(reader(args.data_file('InventoryID-%s.csv' % name))):
         if i and row[1] != 'NA':
             yield row
+
+
+def add_wikipedia_urls(args):
+    links = {}
+    with open(
+            args.data_file('International_Phonetic_Alphabet.htm'), encoding='utf8') as fp:
+        for a in bs(fp.read()).find_all('a', href=True):
+            links[a.text] = a['href']
+
+    count = 0
+    for p in DBSession.query(Parameter):
+        if p.name in links:
+            p.update_jsondata(wikipedia_url='http://en.wikipedia.org' + links[p.name])
+            count += 1
+
+    return count

@@ -25,7 +25,15 @@
 </%def>
 
 
-<h2>Segment <span class="charissil">${ctx.name}</span></h2>
+<h2>
+    Segment <span class="charissil">${ctx.name}</span>
+    % if ctx.jsondatadict.get('wikipedia_url'):
+        <a href="${ctx.jsondatadict['wikipedia_url']}"
+           title="go to related article on wikipedia">
+            <img src="${request.static_url('phoible:static/wikipedia_32.png')}"/>
+        </a>
+    % endif
+</h2>
 <p class="alert alert-info">
     ${ctx.description}
 </p>

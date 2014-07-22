@@ -19,7 +19,7 @@ from clld.web.icon import ORDERED_ICONS
 from phoible import models
 from phoible.scripts.util import (
     coord, strip_quotes, language_name, SOURCES, get_genera, population_info,
-    get_rows, add_sources, feature_name,
+    get_rows, add_sources, feature_name, add_wikipedia_urls,
 )
 
 
@@ -283,6 +283,7 @@ def prime_cache(args):
     if astroman:
         ia_func('update', args)
         gbs_func('update', args)
+        add_wikipedia_urls(args)
 
 
 if __name__ == '__main__':
