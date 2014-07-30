@@ -4,6 +4,8 @@ import unicodedata
 from itertools import groupby, cycle
 from collections import defaultdict
 import socket
+from base64 import b16encode
+from hashlib import md5
 
 from sqlalchemy.orm import joinedload, joinedload_all
 from clld.scripts.util import (
@@ -182,11 +184,16 @@ def main(args):
         inventory = data['Inventory'][row.InventoryID]
         segment = data['Segment'].get(row.Phoneme)
         if not segment:
+            unicode_desc = [(c, unicodedata.name(c)) for c in row.Phoneme]
+            description = ' - '.join([t[1] for t in unicode_desc])
             segment = data.add(
                 models.Segment, row.Phoneme,
-                id=row.GlyphID,
+                id=b16encode(md5(description).digest()),
                 name=row.Phoneme,
-                description=' - '.join(unicodedata.name(c) for c in row.Phoneme),
+                description=description,
+                equivalence_class=''.join(
+                    [t[0] for t in unicode_desc
+                     if t[1].split()[0] not in ['COMBINING', 'MODIFIER']]),
                 segment_class=row.Class,
                 combined_class=row.CombinedClass)
             DBSession.flush()
@@ -260,6 +267,9 @@ def prime_cache(args):
     for inventory in DBSession.query(models.Inventory).options(
             joinedload_all(common.Contribution.valuesets, common.ValueSet.parameter)
     ):
+        if '(UPSID)' not in inventory.name:
+            inventory.count_tone = 0
+
         for vs in inventory.valuesets:
             attr = 'count_' + vs.parameter.segment_class
             if hasattr(inventory, attr):
@@ -283,7 +293,7 @@ def prime_cache(args):
     if astroman:
         ia_func('update', args)
         gbs_func('update', args)
-        add_wikipedia_urls(args)
+        print('added', add_wikipedia_urls(args), 'wikipedia urls')
 
 
 if __name__ == '__main__':

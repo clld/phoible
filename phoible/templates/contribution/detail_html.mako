@@ -17,6 +17,12 @@
     % endif
 </h2>
 
+% if ctx.description:
+    <p>
+        Source name: <i>${ctx.description}</i>
+    </p>
+% endif
+
 <div class="tabbable">
     <ul class="nav nav-tabs">
         <li class="active"><a href="#segments" data-toggle="tab">Segment list</a></li>

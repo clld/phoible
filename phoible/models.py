@@ -74,6 +74,7 @@ class Variety(Language, CustomModelMixin):
 class Segment(Parameter, CustomModelMixin):
     pk = Column(Integer, ForeignKey('parameter.pk'), primary_key=True)
     segment_class = Column(Unicode)  # consonant, ...
+    equivalence_class = Column(Unicode)
     combined_class = Column(Unicode)
 
     in_inventories = Column(Integer)
@@ -101,13 +102,13 @@ class Inventory(Contribution, CustomModelMixin):
 
     language_pk = Column(Integer, ForeignKey('language.pk'))
     language = relationship(Language, backref=backref('inventories'))
-    count_tone = Column(Integer, default=0, nullable=False)
+    count_tone = Column(Integer)
     count_vowel = Column(Integer, default=0, nullable=False)
     count_consonant = Column(Integer, default=0, nullable=False)
 
-    @hybrid_property
+    @property
     def count(self):
-        return self.count_tone + self.count_consonant + self.count_vowel
+        return (self.count_tone or 0) + self.count_consonant + self.count_vowel
 
     def __rdf__(self, request):
         if self.source_url:
