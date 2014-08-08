@@ -339,5 +339,8 @@ def add_wikipedia_urls(args):
         if p.name in links:
             p.update_jsondata(wikipedia_url='http://en.wikipedia.org' + links[p.name])
             count += 1
+        elif p.equivalence_class in links:
+            p.update_jsondata(wikipedia_url='http://en.wikipedia.org' + links[p.equivalence_class])
+            count += 1
 
     return count

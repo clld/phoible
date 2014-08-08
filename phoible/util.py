@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from clld.web.util.helpers import get_referents
 from clld.db.meta import DBSession
 from clld.db.models.common import Parameter, Language, Source
@@ -24,8 +26,17 @@ def dataset_detail_html(context=None, request=None, **kw):
     return res
 
 
-def segment_link(req, glyph, segments):
+def segment_link(req, glyph, segments, ns=False):
+    #if glyph not in segments:
+    #    for modifier in ['\u0303', '\u02d0']:
+    #        if not glyph.endswith(modifier):
+    #            if glyph + modifier in segments:
+    #                glyph += modifier
+    #                break
+
     if glyph not in segments:
+        if ns:
+            return ''
         return HTML.a(
             glyph, name="glyph-" + glyph, style='font-size: 1em; color: lightgray;')
     res = link(req, segments[glyph])

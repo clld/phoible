@@ -19,9 +19,9 @@ class Tests(TestWithApp):
         self.app.get_dt('/parameters')
         self.app.get_dt('/parameters?sSearch_1=>100&iSortingCols=1&iSortCol_0=1')
         self.app.get_html('/parameters')
-        self.app.get_html('/parameters/1')
-        self.app.get_xml('/parameters/1.rdf')
-        self.app.get_json('/parameters/1.geojson')
+        self.app.get_html('/parameters/5AE9663626770D1D4B97AAE5769AB83C')
+        self.app.get_xml('/parameters/5AE9663626770D1D4B97AAE5769AB83C.rdf')
+        self.app.get_json('/parameters/5AE9663626770D1D4B97AAE5769AB83C.geojson')
 
     def test_inventories(self):
         self.app.get_dt('/inventories')
@@ -40,13 +40,13 @@ class Tests(TestWithApp):
         self.app.get_dt('/languages?sSearch_3=a&iSortingCols=1&iSortCol_0=3')
         self.app.get('/languages')
         self.app.get_json('/languages.geojson')
-        self.app.get('/languages/1')
-        self.app.get_xml('/languages/1.rdf')
+        self.app.get('/languages/mij')
+        self.app.get_xml('/languages/mij.rdf')
 
     def test_phonemes(self):
         self.app.get_dt('/values')
-        self.app.get_dt('/values?parameter=1')
-        self.app.get_dt('/values?parameter=1&sSearch_0=a&iSortingCols=1&iSortCol_0=0')
+        self.app.get_dt('/values?parameter=5AE9663626770D1D4B97AAE5769AB83C')
+        self.app.get_dt('/values?parameter=5AE9663626770D1D4B97AAE5769AB83C&sSearch_0=a&iSortingCols=1&iSortCol_0=0')
         self.app.get_dt(
             '/values?contribution=1003&sSearch_0=a&iSortingCols=1&iSortCol_0=0')
 

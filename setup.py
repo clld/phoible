@@ -8,13 +8,12 @@ CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 requires = [
     'clld',
+    'clldmpg',
     'pyramid',
     'SQLAlchemy',
     'transaction',
     'pyramid_tm',
     'zope.sqlalchemy',
-    'gunicorn',
-    'psycopg2',
     'waitress',
     ]
 

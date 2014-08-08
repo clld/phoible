@@ -228,7 +228,7 @@ class Inventories(Contributions):
         res = [
             LinkCol(self, 'name'),
             Col(self, 'source_name', model_col=Inventory.description),
-            CountCol(self, 'all')]
+            CountCol(self, 'all', bSearchable=False, bSortable=False)]
         for c in 'vowel consonant tone'.split():
             res.append(Col(
                 self, c, model_col=getattr(Inventory, 'count_' + c), sTitle='# %ss' % c))
