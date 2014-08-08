@@ -23,7 +23,7 @@
     <td class="right">${len(item.contribution_assocs)}</td>
 </%util:table>
 
-<p>The data set also includes additional genealogical and geographical information about each language.</p>
+<p>The data set also includes additional genealogical and geographical information about each language from the Glottolog.</p>
 
 <p>
     The PHOIBLE project also integrates the theoretical model of distinctive features from
@@ -44,8 +44,3 @@
     ${h.link(request, sources['mccloyetal2013'])}
     and Moran &amp; Blasi, Cross-linguistic comparison of complexity measures in phonological systems, forthcoming.
 </p>
-
-<p>
-    PHOIBLE was funded in 2009 by a grant from the Royalty Research Fund at the University of Washington.
-</p>
-##    moran2012b ##<li>Moran, Steven. 2012b. Using Linked Data to Create a Typological Knowledge Base. In Linked Data in Linguistics: Representing and Connecting Language Data and Language Metadata, Christian Chiarcos, Sebastian Nordhoff and Sebastian Hellmann (eds). Springer, Heidelberg.</li>
