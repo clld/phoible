@@ -17,36 +17,36 @@ from phoible import models
 
 SOURCES = {
     'AA': (
-        'C. Chanard and Rhonda L. Hartell',
+        'Christian Chanard and Rhonda L. Hartell',
         ['Hartell1993', 'Chanard2006'],
-        'Chanard and Hartell',
+        "The inventories in Alphabets of Africa (AA) come from the work of Christian Chanard's <a href="http://sumale.vjf.cnrs.fr/phono/">Syst&egrave;mes alphab&eacute;tiques des langues africaines</a>, an online database of the work of <em>Alphabets des langues africaines</em>, published in 1993 by the Regional Office in Dakar, Senegal, and edited by Rhonda L. Hartell. AA contains the phoneme inventories and orthographies of 200 languages. Incorrect ISO 639-3 language name identifiers and incorrect Unicode IPA characters were updated before the inventories from the online version were added to PHOIBLE (see Moran 2012, chp 4 for details). Christopher Green verified the inventories' contents and in cases where there were discrepencies between Chanard and Hartell, additional resources were consulted to resolve these issues (ibid.).",
     ),
-    'UW': (
+    'PH': (
         'PHOIBLE',
         ['Moran2012a'],
         'Steven Moran and Daniel McCloy and Richard Wright.',
-        #'Inventories, including descriptions of phonemes, allophones and their conditioning environments, which we extracted from secondary resources like grammars and phonological descriptions.'
+        'PHOIBLE inventories were extracted from secondary resources including grammars and phonological descriptions by members of the Phonetics Lab and the University of Washington (see credits page and Moran 2012, chp 4). Inventories include descriptions of phonemes, allophones and their conditioning environments, although in the current version of PHOIBLE Online only phoneme inventories are available.'
     ),
     'SPA': (
         'Stanford Phonology Archive',
         ['SPA1979'],
-        'John H. Crothers et al.'),
-    'CASL': (
-        'Center for Advanced Study of Language',
+        "The Stanford Phonology Archive (SPA) was the first computerized database of phonological segment inventories. It was inspired by Joseph Greenberg's research on universals and his personal archive of data from notebooks and his memory (Crothers et al 1979, i-ii). The inventories in PHOIBLE Online come from the <em>Handbook of Phonological Data From a Sample of the World's Languages</em>, compiled and edited by Crothers et al 1979, and kindly provided to the Phonetics Lab (University of Washington) by Marilyn M. Vihman. The inventories in SPA include descriptions of phonemes, allophones and comments on phonological contexts for 197 languages. The inventory descriptions were digitized and each phoneme was mapped from its original written description, e.g. d-pharyngealized, to a Unicode IPA representation. Each inventory were also assigned an ISO 639-3 language name identifer. Details are given in Moran 2012, chp 4, and the SPA-to-Unicode IPA mappings are given in Moran 2012, appendix E."),
+    'G&M': (
+        'Christopher Green and Steven Moran',
         [],
-        'Chris Green and Steven Moran'),
-    'Ramaswami': (
+        'Christopher Green and Steven Moran extracted phonological inventories from secondary sources including grammars and phonological descriptions with the goal of attaining pan-Africa coverage. This is a work in progress.'),
+    'RA': (
         'Ramaswami, N.',
         ['ramaswami1982'],
-        'N. Ramaswami'),
+        "These inventories come from <em>Common Linguistic Features in Indian Languages: Phoentics</em>, by N. Ramaswami. This source contains 100 languages' phoneme inventories, as compiled from various works on languages of India."),
     'SAPHON': (
         'South American Phonological Inventory Database',
         ['saphon'],
-        'Lev Michael and Tammy Stark and Will Chang'),
+        'The South American Phonological Inventory Database (SAPHON), compiled and edited by Lev Michael, Tammy Stark and Will Chang, is a comprehensive resource describing phoneme inventories from languages spoken in South America. It contains over 300 data points and is available online at: <a href="http://linguistics.berkeley.edu/~saphon/">http://linguistics.berkeley.edu/~saphon/</a>.'),
     'UPSID': (
         'UCLA Phonological Segment Inventory Database',
         ['Maddieson1984', 'MaddiesonPrecoda1990'],
-        'Ian Maddieson and Kristin Precoda')}
+        "In the early 1980's, Ian Maddieson developed the UCLA Phonological Segment Inventory Database (UPSID), a computer-accessible database of contrastive segment inventories (Maddieson 1984). The initial sample of 317 languages drew on the work of the Stanford Phonology Archive (Crothers et al 1979), but decisions regarding the phonemic status and phonetic descriptions of some segments do not coincide between the compilers of the two databases and were therefore updated in UPSID (Maddieson 1984, pg 6). Maddieson and Precoda (1990) expanded the sample of languages from 317 to 451; both datasets have been based on a quota sampling technique that aims to include one language from each small language family. UPSID inventories contain no descriptions of tone. The UPSID-451 data used in PHOIBLE Online were extracted from a DOS software package. Each segment description, originally given in an ASCII encoding (e.g. XW9:) was mapped to Unicode IPA and each inventory was assigned an ISO 639-3 language name identifier. For details, see Moran 2012, chp 4.")}
 
 BIB = """\
 @misc{ramaswami1982,
