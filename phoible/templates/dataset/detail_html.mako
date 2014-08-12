@@ -22,12 +22,57 @@
 </ol>
 
 <p>In addition to phoneme inventories, PHOIBLE includes distinctive feature data for every phoneme in every language. The feature system used was created by the PHOIBLE developers to be descriptively adequate cross-linguistically. In other words, if two phonemes differ in their graphemic representation, then they necessarily differ in their featural representation as well (regardless of whether those two phonemes coexist in any known doculect). The feature system is loosely based on the feature system in
-${h.link(request, hayes, label="Hayes 2009")} with some additions drawn from ${h.link(request, moisik, label="Moisik & Esling 2011")}.
+${h.link(request, sources['hayes2009'], label="Hayes 2009")} with some additions drawn from ${h.link(request, sources['moisikesling2011'], label="Moisik & Esling 2011")}.
 </p>
 
 <p>However, the final feature system goes beyond both of these sources, and is potentially subject to change as new languages are added to PHOIBLE.</p>
 
-<p>For more information on the design, development, and challenges of PHOIBLE, see ${h.link(request, moran, label="Moran 2012")}.</p>
+##<p>For more information on the design, development, and challenges of PHOIBLE, see ${h.link(request, sources['moran2012a'], label="Moran 2012")}.</p>
+
+<p>The current database includes inventories from the following contributors:</p>
+<%util:table args="item" options="${dict(bFilter=False)}" items="${[c for c in contributors if c.contribution_assocs]}" class_="table-nonfluid table-striped">
+    <%def name="head()">
+        <th>Contributor</th>
+        <th>Description</th>
+        <th>Sources</th>
+        <th>Number of inventories</th>
+    </%def>
+    <td>${item.name} (${item.id})</td>
+    <td>${item.description|n}</td>
+    <td>
+        <ul class="unstyled inline">
+            % for ref in item.references:
+            <li>${h.link(request, ref.source)}</li>
+            % endfor
+        </ul>
+    </td>
+    <td class="right">${len(item.contribution_assocs)}</td>
+</%util:table>
+
+<p>The data set also includes additional genealogical and geographical information about each language from the Glottolog.</p>
+
+<p>
+    The PHOIBLE project also integrates the theoretical model of distinctive features from
+    an extended phonological feature set based on International Phonetic Alphabet
+    (${h.link(request, sources['ipa2005'])}) and on ${h.link(request, sources['hayes2009'])}.
+    This is accomplished by creating a mapping relationship from each IPA segment to a set
+    of features (Moran 2012). In this way, the IPA is a pivot for interoperability across
+    all resources in PHOIBLE because their contents are encoded in Unicode IPA.
+</p>
+
+<p>For a detailed description of PHOIBLE, see
+    ${h.link(request, sources['moran2012a'])}
+    ${h.external_link("https://digital.lib.washington.edu/researchworks/handle/1773/22452", label=" ")}.
+    For examples of some of the research we are doing with PHOIBLE, see:
+
+    ${h.link(request, sources['moranetal2012'])},
+    ${h.link(request, sources['cysouwetal2012'])},
+    ${h.link(request, sources['mccloyetal2013'])}
+    and Moran &amp; Blasi, Cross-linguistic comparison of complexity measures in phonological systems, forthcoming.
+</p>
+
+
+
 
 <h3>How to use PHOIBLE</h3>
 

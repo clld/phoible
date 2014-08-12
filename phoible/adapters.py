@@ -32,7 +32,7 @@ class MetadataFromRec(md.Metadata):
             year=str(req.dataset.published.year),
             title='%s sound inventory (%s)' % (
                 ctx.language.name, ctx.primary_contributors[0].id),
-            author=ctx.primary_contributors[0].description.split(' and '),
+            author=ctx.primary_contributors[0].name.split(' and '),
             booktitle=req.dataset.description,
             editor=[c.contributor.name for c in list(req.dataset.editors)])
 

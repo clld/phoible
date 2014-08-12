@@ -142,15 +142,14 @@ def main(args):
                 jsondata=dict(inventory_id=row.InventoryID))
             add_language_codes(data, lang, row.LanguageCode, glottocodes=glottocodes)
 
-        source = 'AA' if row.Source == 'Chanard' else row.Source
-        contributor = data['Contributor'].get(source)
+        contributor = data['Contributor'].get(row.Source)
         if not contributor:
             contributor = data.add(
-                common.Contributor, source,
-                id=source,
-                name=SOURCES[source][0],
-                description=SOURCES[source][2])
-            for ref in SOURCES[source][1]:
+                common.Contributor, row.Source,
+                id=row.Source,
+                name=SOURCES[row.Source][0],
+                description=SOURCES[row.Source][2])
+            for ref in SOURCES[row.Source][1]:
                 DBSession.add(models.ContributorReference(
                     source=data['Source'][ref], contributor=contributor))
 
@@ -158,7 +157,7 @@ def main(args):
             models.Inventory, row.InventoryID,
             id=row.InventoryID,
             language=lang,
-            source=source,
+            source=row.Source,
             source_url=source_urls.get(row.InventoryID),
             internetarchive_url=ia_urls.get(row.InventoryID),
             name=inventory_names[row.InventoryID],
