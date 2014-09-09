@@ -10,9 +10,9 @@
 
 <h2>Welcome to PHOIBLE Online</h2>
 
-<p>PHOIBLE Online is a repository of cross-linguistic phonological inventory data, which have been extracted from source documents and tertiary databases and compiled into a single searchable convenience sample. There are currently ${inventory_count} inventories that contain ${segment_count} segment types found in ${language_count} distinct languages.</p>
+<p>PHOIBLE Online is a repository of cross-linguistic phonological inventory data, which have been extracted from source documents and tertiary databases and compiled into a single searchable convenience sample. The 2014 edition includes ${inventory_count} inventories that contain ${segment_count} segment types found in ${language_count} distinct languages.</p>
 
-<p>References are provided for each source; note that some languages in PHOIBLE have multiple entries based on distinct sources that disagree about the number and/or identity of that language’s phonemes.</p>
+<p>A bibliographic record is provided for each source document; note that some languages in PHOIBLE have multiple entries based on distinct sources that disagree about the number and/or identity of that language’s phonemes.</p>
 
 <p>Two principles guide the development of PHOIBLE, though it has proved challenging both theoretically and technologically to abide by them:</p>
 
@@ -25,11 +25,11 @@
 ${h.link(request, sources['hayes2009'], label="Hayes 2009")} with some additions drawn from ${h.link(request, sources['moisikesling2011'], label="Moisik & Esling 2011")}.
 </p>
 
-<p>However, the final feature system goes beyond both of these sources, and is potentially subject to change as new languages are added to PHOIBLE.</p>
+<p>However, the final feature system goes beyond both of these sources, and is potentially subject to change as new languages are added in subsequent editions of PHOIBLE.</p>
 
 ##<p>For more information on the design, development, and challenges of PHOIBLE, see ${h.link(request, sources['moran2012a'], label="Moran 2012")}.</p>
 
-<p>The current database includes inventories from the following contributors:</p>
+<p>The 2014 edition includes inventories from the following contributors:</p>
 <%util:table args="item" options="${dict(bFilter=False)}" items="${[c for c in contributors if c.contribution_assocs]}" class_="table-nonfluid table-striped">
     <%def name="head()">
         <th>Contributor</th>
