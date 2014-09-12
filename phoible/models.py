@@ -52,8 +52,6 @@ class Variety(Language, CustomModelMixin):
 
     country = Column(Unicode)
     area = Column(Unicode)
-    population = Column(Integer)
-    population_comment = Column(Unicode)
     count_inventories = Column(Integer)
     genus_pk = Column(Integer, ForeignKey('genus.pk'))
     genus = relationship(Genus, backref='languages')
@@ -114,6 +112,8 @@ class Inventory(Contribution, CustomModelMixin):
         if self.source_url:
             yield 'dcterms:related', self.source_url
         yield 'dcterms:about', request.resource_url(self.language)
+        for vs in self.valuesets:
+            yield 'dcterms:hasPart', request.resource_url(vs)
 
 
 class ContributorReference(Base, HasSourceMixin):

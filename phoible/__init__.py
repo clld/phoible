@@ -1,6 +1,9 @@
-from clld.web.app import get_configurator, MapMarker
+from sqlalchemy.orm import joinedload_all
+
+from clld.web.app import get_configurator, MapMarker, CtxFactoryQuery
 from clld import interfaces, RESOURCES
-from clld.web.adapters.download import N3Dump
+from clld.web.adapters.download import Sqlite
+from clld.db.models.common import Dataset, Contributor, ContributionContributor
 
 from phoible import models
 assert models
@@ -15,6 +18,18 @@ _('Unit Parameter')
 _('Unit Parameters')
 
 
+class PhoibleCtxFactoryQuery(CtxFactoryQuery):
+    def refined_query(self, query, model, req):
+        if model == Contributor:
+            query = query.options(
+                joinedload_all(
+                    Contributor.contribution_assocs,
+                    ContributionContributor.contribution,
+                )
+            )
+        return query
+
+
 class PhoibleMapMarker(MapMarker):
     def get_icon(self, ctx, req):
         if interfaces.ILanguage.providedBy(ctx) and ctx.genus:
@@ -22,6 +37,10 @@ class PhoibleMapMarker(MapMarker):
 
         if isinstance(ctx, (list, tuple)) and ctx[0].genus:
             return ctx[0].genus.ficon
+
+
+class RdfDump(Sqlite):
+    ext = 'n3'
 
 
 def main(global_config, **settings):
@@ -33,7 +52,10 @@ def main(global_config, **settings):
     }
     settings['sitemaps'] = ['language', 'source', 'parameter', 'contribution', 'valueset']
     config = get_configurator(
-        'phoible', (PhoibleMapMarker(), interfaces.IMapMarker), settings=settings)
+        'phoible',
+        (PhoibleMapMarker(), interfaces.IMapMarker),
+        (PhoibleCtxFactoryQuery(), interfaces.ICtxFactoryQuery),
+        settings=settings)
 
     config.include('clldmpg')
     config.include('phoible.maps')
@@ -41,16 +63,16 @@ def main(global_config, **settings):
     config.include('phoible.datatables')
     config.include('phoible.adapters')
 
-    rsc_map = {
-        'language': 'Languages',
-        'parameter': 'Segments',
-        'contribution': 'Inventories',
-        'valueset': 'PhonemeMatrix',
-    }
-
-    for rsc in RESOURCES:
-        if rsc.name in rsc_map:
-            config.register_download(N3Dump(
-                rsc.model, 'phoible', description="%s as RDF" % rsc_map[rsc.name]))
+    #rsc_map = {
+    #    'language': 'Languages',
+    #    'parameter': 'Segments',
+    #    'contribution': 'Inventories',
+    #    'valueset': 'PhonemeMatrix',
+    #}
+    config.register_download(RdfDump(Dataset, 'phoible', description='RDF dump'))
+    #for rsc in RESOURCES:
+    #    if rsc.name in rsc_map:
+    #        config.register_download(N3Dump(
+    #            rsc.model, 'phoible', description="%s as RDF" % rsc_map[rsc.name]))
 
     return config.make_wsgi_app()

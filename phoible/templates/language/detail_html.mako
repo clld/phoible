@@ -19,15 +19,6 @@
         </tr>
     % endif
     <tr>
-        <td>Number of speakers:</td>
-        <td>
-            ${ctx.population or ''}
-            % if ctx.population_comment:
-            ${ctx.population_comment}
-            % endif
-        </td>
-    </tr>
-    <tr>
         <td>Area:</td>
         <td>${ctx.area}</td>
     </tr>
