@@ -38,7 +38,7 @@ ${h.link(request, sources['hayes2009'], label="Hayes 2009")} with some additions
         <th>Number of inventories</th>
     </%def>
     <td>${item.name} (${item.id})</td>
-    <td>${item.description|n}</td>
+    <td>${descriptions[item.id]|n}</td>
     <td>
         <ul class="unstyled inline">
             % for ref in item.references:
@@ -56,13 +56,12 @@ ${h.link(request, sources['hayes2009'], label="Hayes 2009")} with some additions
     an extended phonological feature set based on International Phonetic Alphabet
     (${h.link(request, sources['ipa2005'])}) and on ${h.link(request, sources['hayes2009'])}.
     This is accomplished by creating a mapping relationship from each IPA segment to a set
-    of features (Moran 2012). In this way, the IPA is a pivot for interoperability across
+    of features (${h.link(request, sources['moran2012a'])}). In this way, the IPA is a pivot for interoperability across
     all resources in PHOIBLE because their contents are encoded in Unicode IPA.
 </p>
 
 <p>For a detailed description of PHOIBLE, see
-    ${h.link(request, sources['moran2012a'])}
-    ${h.external_link("https://digital.lib.washington.edu/researchworks/handle/1773/22452", label=" ")}.
+    ${h.link(request, sources['moran2012a'])}.
     For examples of some of the research we are doing with PHOIBLE, see:
 
     ${h.link(request, sources['moranetal2012'])},

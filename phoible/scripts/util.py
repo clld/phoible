@@ -31,13 +31,13 @@ SOURCES = {
         'Stanford Phonology Archive',
         ['SPA1979'],
         "The Stanford Phonology Archive (SPA) was the first computerized database of phonological segment inventories. It was inspired by Joseph Greenberg's research on universals and his personal archive of data from notebooks and his memory (Crothers et al 1979, i-ii). The inventories in PHOIBLE Online come from the <em>Handbook of Phonological Data From a Sample of the World's Languages</em>, compiled and edited by Crothers et al 1979, and kindly provided to the Phonetics Lab (University of Washington) by Marilyn M. Vihman. The inventories in SPA include descriptions of phonemes, allophones and comments on phonological contexts for 197 languages. The inventory descriptions were digitized and each phoneme was mapped from its original written description, e.g. d-pharyngealized, to a Unicode IPA representation. Each inventory was also assigned an ISO 639-3 language name identifer. Details are given in Moran 2012, chp 4, and the SPA-to-Unicode IPA mappings are given in Moran 2012, appendix E."),
-    'G&M': (
+    'GM': (
         'Christopher Green and Steven Moran',
         [],
         'Christopher Green and Steven Moran extracted phonological inventories from secondary sources including grammars and phonological descriptions with the goal of attaining pan-Africa coverage. This is a work in progress.'),
     'RA': (
         'Ramaswami, N.',
-        ['ramaswami1982'],
+        ['ramaswami1999'],
         "These inventories come from <em>Common Linguistic Features in Indian Languages: Phoentics</em>, by N. Ramaswami. This source contains 100 languages' phoneme inventories, as compiled from various works on languages of India."),
     'SAPHON': (
         'South American Phonological Inventory Database',
@@ -49,6 +49,14 @@ SOURCES = {
         "In the early 1980's, Ian Maddieson developed the UCLA Phonological Segment Inventory Database (UPSID), a computer-accessible database of contrastive segment inventories (Maddieson 1984). The initial sample of 317 languages drew on the work of the Stanford Phonology Archive (Crothers et al 1979), but decisions regarding the phonemic status and phonetic descriptions of some segments do not coincide between the compilers of the two databases and were therefore updated in UPSID (Maddieson 1984, pg 6). Maddieson and Precoda (1990) expanded the sample of languages from 317 to 451; both datasets have been based on a quota sampling technique that aims to include one language from each small language family. UPSID inventories contain no descriptions of tone. The UPSID-451 data used in PHOIBLE Online were extracted from a DOS software package. Each segment description, originally given in an ASCII encoding (e.g. XW9:) was mapped to Unicode IPA and each inventory was assigned an ISO 639-3 language name identifier. For details, see Moran 2012, chp 4; the UPSID-to-Unicode mappings are given in Moran 2012, appendix F.")}
 
 BIB = """\
+@book{ramaswami1999,
+        Author = {Ramaswami, N.},
+        Title = {Common Linguistic Features in Indian Languages: Phonetics},
+        Publisher = {Central	Institute of Indian Languages},
+        Place = {Mysore, India},
+        Year = {1999}
+}
+
 @misc{ramaswami1982,
         Author = {Ramaswami, N.},
         Title = {{Brokskat}},
@@ -311,14 +319,6 @@ where l.genus_pk = g.pk and l.iso_codes is not null"""
             gid = row[0].replace('_', '').split('Genus', 1)[1]
             genera[gid] = None if row[1] == '__gone__' else genera[row[1]]
     return genera
-
-
-def population_info(s):
-    if s in ['Missing E16 page']:
-        return 0, ''
-    if s in ['Extinct', 'No_known_speakers', 'No_estimate_available', 'Ancient']:
-        return 0, s.replace('_', ' ').lower()
-    return int(s.replace(',', '')), ''
 
 
 def get_rows(args, name):

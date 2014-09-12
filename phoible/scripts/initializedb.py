@@ -1,3 +1,4 @@
+# coding: utf8
 from __future__ import unicode_literals, print_function
 import sys
 import unicodedata
@@ -20,7 +21,7 @@ from clld.web.icon import ORDERED_ICONS
 
 from phoible import models
 from phoible.scripts.util import (
-    coord, strip_quotes, language_name, SOURCES, get_genera, population_info,
+    strip_quotes, SOURCES, get_genera,
     get_rows, add_sources, feature_name, add_wikipedia_urls,
 )
 
@@ -101,6 +102,22 @@ def main(args):
             for i, item in enumerate(items):
                 inventory_names[item.InventoryID] = '%s %s (%s)' % (lname, i + 1, key[1])
 
+    family_map = {
+        ("Arawakan", "arwk"): "Arawakan",
+        ("Trans-New Guinea", "trng"): "Trans-New Guinea",
+        ("Moklen", "anes"): "Austronesian",
+        ("Oko", "ncon"): "Niger-Congo",
+        ("Muniche", "saso"): "Muniche",
+        ("Tinigua", "saso"): "Tinigua",
+        ("Vilela", "luvi"): "Vilela",
+        ("Ofayé", "macg"): "Kamakanan",
+        ("Purian", "macg"): "PurianPrint",
+        ("Mixed language", "saml"): "Mixed language",
+        ("Tupian", "tupi"): "Tupian",
+        ("Yuwana", "saun"): "YuwanaPrint",
+    }
+    family_code_map = {k[1]: v for k, v in family_map.items()}
+
     for row in aggregated:
         lang = data['Variety'].get(row.LanguageCode)
         if not lang:
@@ -112,18 +129,23 @@ def main(args):
                 if not genus:
                     genus = genera.get(row.LanguageCode)
                     if not genus:
+                        #print(row.LanguageFamilyGenus, row.LanguageFamilyRoot)
+                        family = family_map.get(
+                            (row.LanguageFamilyGenus, row.LanguageFamilyRoot))
                         genus = genera[genus_id] = data.add(
                             models.Genus, genus_id,
                             id=genus_id,
                             name=row.LanguageFamilyGenus,
-                            description=row.LanguageFamilyRoot,
+                            description=family or row.LanguageFamilyRoot,
                             active=False,
                             root=row.LanguageFamilyRoot)
 
                 if not genus.root:
                     genus.root = row.LanguageFamilyRoot
 
-            population, population_comment = population_info(row.Population)
+                if genus.description in family_code_map:
+                    genus.description = family_code_map[genus.description]
+
             if row.LanguageCode in geocoords:
                 coords = geocoords[row.LanguageCode]
             elif row.Latitude != 'NULL' and row.Longitude != 'NULL':
@@ -135,8 +157,6 @@ def main(args):
                 genus=genus,
                 country=strip_quotes(row.Country),
                 area=strip_quotes(row.Area),
-                population=population,
-                population_comment=population_comment,
                 latitude=coords[0],
                 longitude=coords[1],
                 jsondata=dict(inventory_id=row.InventoryID))

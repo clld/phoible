@@ -74,7 +74,6 @@ class Varieties(Languages):
             Col(self, 'area',
                 model_col=Variety.area,
                 choices=get_distinct_values(Variety.area)),
-            Col(self, 'population', model_col=Variety.population),
         ]
 
 
@@ -226,7 +225,7 @@ class Inventories(Contributions):
 
     def col_defs(self):
         res = [
-            LinkCol(self, 'name'),
+            LinkCol(self, 'name', sTitle='Language (Contributor)'),
             Col(self, 'source_name', model_col=Inventory.description),
             CountCol(self, 'all', bSearchable=False, bSortable=False)]
         for c in 'vowel consonant tone'.split():

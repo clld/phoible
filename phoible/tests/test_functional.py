@@ -12,7 +12,6 @@ class Tests(TestWithApp):
 
     def test_home(self):
         self.app.get('/')
-        self.app.get_html('/about')
         self.app.get('/void.md.txt')
 
     def test_segments(self):
