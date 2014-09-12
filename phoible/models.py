@@ -104,7 +104,7 @@ class Inventory(Contribution, CustomModelMixin):
     count_vowel = Column(Integer, default=0, nullable=False)
     count_consonant = Column(Integer, default=0, nullable=False)
 
-    @property
+    @hybrid_property
     def count(self):
         return (self.count_tone or 0) + self.count_consonant + self.count_vowel
 

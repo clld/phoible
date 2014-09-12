@@ -1,7 +1,7 @@
 from sqlalchemy.orm import joinedload_all
 
 from clld.web.app import get_configurator, MapMarker, CtxFactoryQuery
-from clld import interfaces, RESOURCES
+from clld import interfaces
 from clld.web.adapters.download import Sqlite
 from clld.db.models.common import Dataset, Contributor, ContributionContributor
 
@@ -63,16 +63,5 @@ def main(global_config, **settings):
     config.include('phoible.datatables')
     config.include('phoible.adapters')
 
-    #rsc_map = {
-    #    'language': 'Languages',
-    #    'parameter': 'Segments',
-    #    'contribution': 'Inventories',
-    #    'valueset': 'PhonemeMatrix',
-    #}
     config.register_download(RdfDump(Dataset, 'phoible', description='RDF dump'))
-    #for rsc in RESOURCES:
-    #    if rsc.name in rsc_map:
-    #        config.register_download(N3Dump(
-    #            rsc.model, 'phoible', description="%s as RDF" % rsc_map[rsc.name]))
-
     return config.make_wsgi_app()

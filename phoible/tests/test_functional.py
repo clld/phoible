@@ -13,6 +13,7 @@ class Tests(TestWithApp):
     def test_home(self):
         self.app.get('/')
         self.app.get('/void.md.txt')
+        self.app.get_html('/contributors/GM')
 
     def test_segments(self):
         self.app.get_dt('/parameters')
@@ -26,6 +27,7 @@ class Tests(TestWithApp):
         self.app.get_dt('/inventories')
         self.app.get_dt('/inventories?sSearch_1=>20&iSortingCols=1&iSortCol_0=1')
         self.app.get_dt('/inventories?sSearch_5=a&iSortingCols=1&iSortCol_0=5')
+        self.app.get_dt('/inventories?sSearch_6=a&iSortingCols=1&iSortCol_0=6')
         self.app.get_html('/inventories')
         self.app.get_html('/inventories/view/432')
         self.app.get_xml('/inventories/view/432.rdf')
@@ -45,7 +47,9 @@ class Tests(TestWithApp):
     def test_phonemes(self):
         self.app.get_dt('/values')
         self.app.get_dt('/values?parameter=5AE9663626770D1D4B97AAE5769AB83C')
-        self.app.get_dt('/values?parameter=5AE9663626770D1D4B97AAE5769AB83C&sSearch_0=a&iSortingCols=1&iSortCol_0=0')
+        self.app.get_dt(
+            '/values?parameter=5AE9663626770D1D4B97AAE5769AB83C&sSearch_0=a&'
+            'iSortingCols=1&iSortCol_0=0')
         self.app.get_dt(
             '/values?contribution=1003&sSearch_0=a&iSortingCols=1&iSortCol_0=0')
 

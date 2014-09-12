@@ -192,12 +192,6 @@ class CountCol(Col):
     def format(self, item):
         return item.count
 
-    def order(self):
-        return Inventory.count
-
-    def search(self, qs):
-        return filter_number(Inventory.count, qs, type_=int)
-
 
 class PhoibleContributorsCol(ContributorsCol):
     __kw__ = {}

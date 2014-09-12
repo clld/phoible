@@ -19,7 +19,8 @@ def source_detail_html(context=None, request=None, **kw):
 
 def desc(req, d, sources=None):
     if sources is None:
-        sources = {k: Source.get(k) for k in 'moisikesling2011 hayes2009 moran2012a moranetal2012'.split()}
+        sources = {k: Source.get(k) for k in
+                   'moisikesling2011 hayes2009 moran2012a moranetal2012'.split()}
     if not d:
         return d
     for k, v in sources.items():
@@ -35,26 +36,19 @@ def dataset_detail_html(context=None, request=None, **kw):
     res['inventory_count'] = DBSession.query(Inventory).count()
     res['segment_count'] = DBSession.query(Parameter).count()
     res['language_count'] = DBSession.query(Language).count()
-    #res['moran'] = Source.get('moran2012a')
-    #res['moisik'] = Source.get('moisikesling2011')
-    #res['hayes'] = Source.get('hayes2009')
     res['contributors'] = DBSession.query(Contributor).order_by(Contributor.name).options(
-            joinedload(Contributor.contribution_assocs),
-            joinedload(Contributor.references)).all()
-    res['sources'] = {k: Source.get(k) for k in 'moisikesling2011 ipa2005 hayes2009 moran2012a moranetal2012 cysouwetal2012 mccloyetal2013'.split()}
+        joinedload(Contributor.contribution_assocs),
+        joinedload(Contributor.references)).all()
+    res['sources'] = {
+        k: Source.get(k) for k in
+        ['moisikesling2011', 'ipa2005', 'hayes2009', 'moran2012a', 'moranetal2012',
+         'cysouwetal2012', 'mccloyetal2013']}
     res['descriptions'] = {c.id: desc(request, c.description, res['sources'])
                            for c in res['contributors']}
     return res
 
 
 def segment_link(req, glyph, segments, ns=False):
-    #if glyph not in segments:
-    #    for modifier in ['\u0303', '\u02d0']:
-    #        if not glyph.endswith(modifier):
-    #            if glyph + modifier in segments:
-    #                glyph += modifier
-    #                break
-
     if glyph not in segments:
         if ns:
             return ''
