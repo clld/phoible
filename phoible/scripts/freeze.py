@@ -1,4 +1,4 @@
-from clld.scripts.util import freeze
+from clld.scripts.freeze import freeze
 
 
 if __name__ == '__main__':
