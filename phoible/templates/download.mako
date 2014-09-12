@@ -29,11 +29,10 @@
 
     <li>
         Supplemental data for the paper
-        <blockquote>
+        <br/>
             Moran, Steven, Daniel McCloy and Richard Wright. 2012. Revisiting population size vs. phoneme inventory size.
             <em>Language</em>, 88(4), 877-893.
             <a href="http://dx.doi.org/10.1353/lan.2012.0087" title="doi:10.1353/lan.2012.0087"><i class="icon-share"></i> doi:10.1353/lan.2012.0087</a>
-        </blockquote>
         <ul>
             <li>
                 <a href="/static/data/MoranMcCloyWright2012.bib">BibTeX</a>
