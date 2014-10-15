@@ -1,9 +1,14 @@
+import re
+
 from sqlalchemy.orm import joinedload_all
+from pyramid.httpexceptions import HTTPMovedPermanently, HTTPNotFound
 
 from clld.web.app import get_configurator, MapMarker, CtxFactoryQuery
 from clld import interfaces
 from clld.web.adapters.download import Sqlite
-from clld.db.models.common import Dataset, Contributor, ContributionContributor
+from clld.db.models.common import (
+    Dataset, Contributor, ContributionContributor, Parameter, Config,
+)
 
 from phoible import models
 assert models
@@ -28,6 +33,19 @@ class PhoibleCtxFactoryQuery(CtxFactoryQuery):
                 )
             )
         return query
+
+    def __call__(self, model, req):
+        if model == Parameter:
+            # responses for no longer supported legacy codes
+            if re.match('[0-9]{1,4}$', req.matchdict['id']):
+                rec = req.db.query(Config)\
+                    .filter(Config.key == '__glyphid_%s__' % req.matchdict['id']).first()
+                if rec:
+                    raise HTTPMovedPermanently(
+                        location=req.route_url('parameter', id=rec.value))
+                else:
+                    raise HTTPNotFound()
+        return super(PhoibleCtxFactoryQuery, self).__call__(model, req)
 
 
 class PhoibleMapMarker(MapMarker):

@@ -16,6 +16,8 @@ class Tests(TestWithApp):
         self.app.get_html('/contributors/GM')
 
     def test_segments(self):
+        self.app.get('/parameters/1', status=301)
+        self.app.get('/parameters/0', status=404)
         self.app.get_dt('/parameters')
         self.app.get_dt('/parameters?sSearch_1=>100&iSortingCols=1&iSortCol_0=1')
         self.app.get_html('/parameters')
