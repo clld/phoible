@@ -6,4 +6,4 @@
 
 <p>Special thanks to Emily Bender, Balthasar Bickel, Bernard Comrie, Michael Cysouw, Robert Forkel and Martin Haspelmath.</p>
 
-<p>The development of PHOIBLE was partially funded in 2009 by the Royalty Research Fund at the University of Washington in Seattle. The electonric resource is published by the Max Planck Institute for Evolutionary Anthropology.</p>
+<p>The development of PHOIBLE was partially funded in 2009 by the Royalty Research Fund at the University of Washington in Seattle. The electronic resource is published by the Max Planck Institute for Evolutionary Anthropology.</p>
