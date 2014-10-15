@@ -24,6 +24,9 @@
     </%util:well>
 </%def>
 
+<div style="float: right; margin-top: 10px;">
+    ${h.alt_representations(request, ctx, doc_position='left', exclude=['md.html'])}
+</div>
 
 <h2>
     Segment <span class="charissil">${ctx.name}</span>
