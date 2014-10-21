@@ -53,6 +53,12 @@ $(document).ready(function() {
     if (location.hash !== '') {
         $('a[href="#' + location.hash.substr(2) + '"]').tab('show');
     }
+    $('a[data-toggle="tab"]').on('show', function(e) {
+        if ($(e.target).attr('href') == '#source') {
+            window.location = '${request.resource_url(ctx)}#tsource';
+            location.reload();
+        }
+    });
     return $('a[data-toggle="tab"]').on('shown', function(e) {
         return location.hash = 't' + $(e.target).attr('href').substr(1);
     });
