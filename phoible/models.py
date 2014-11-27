@@ -47,7 +47,7 @@ class Genus(Base, IdNameDescriptionMixin):
 # specialized common mapper classes
 # ----------------------------------------------------------------------------
 @implementer(interfaces.ILanguage)
-class Variety(Language, CustomModelMixin):
+class Variety(CustomModelMixin, Language):
     pk = Column(Integer, ForeignKey('language.pk'), primary_key=True)
 
     country = Column(Unicode)
@@ -69,7 +69,7 @@ class Variety(Language, CustomModelMixin):
 
 
 @implementer(interfaces.IParameter)
-class Segment(Parameter, CustomModelMixin):
+class Segment(CustomModelMixin, Parameter):
     pk = Column(Integer, ForeignKey('parameter.pk'), primary_key=True)
     segment_class = Column(Unicode)  # consonant, ...
     equivalence_class = Column(Unicode)
@@ -92,7 +92,7 @@ class Segment(Parameter, CustomModelMixin):
 
 
 @implementer(interfaces.IContribution)
-class Inventory(Contribution, CustomModelMixin):
+class Inventory(CustomModelMixin, Contribution):
     pk = Column(Integer, ForeignKey('contribution.pk'), primary_key=True)
     source = Column(String)
     source_url = Column(String)
