@@ -1,17 +1,8 @@
-import os
-
 from setuptools import setup, find_packages
 
-
 requires = [
-    'clld>=0.19.2',
+    'clld>=0.28',
     'clldmpg>=0.5',
-    'pyramid',
-    'SQLAlchemy',
-    'transaction',
-    'pyramid_tm',
-    'zope.sqlalchemy',
-    'waitress',
     ]
 
 tests_require = [
