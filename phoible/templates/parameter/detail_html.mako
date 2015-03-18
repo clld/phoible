@@ -30,8 +30,8 @@
 
 <h2>
     Segment <span class="charissil">${ctx.name}</span>
-    % if ctx.jsondatadict.get('wikipedia_url'):
-        <a href="${ctx.jsondatadict['wikipedia_url']}"
+    % if ctx.jsondata.get('wikipedia_url'):
+        <a href="${ctx.jsondata['wikipedia_url']}"
            title="go to related article on wikipedia">
             <img src="${request.static_url('phoible:static/wikipedia_32.png')}"/>
         </a>

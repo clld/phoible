@@ -3,8 +3,8 @@
 <%namespace name="ipa" file="../ipa.mako"/>
 <%namespace name="util" file="../util.mako"/>
 <%! active_menu_item = "contributions" %>
-<% ia = [ref.source for ref in ctx.references if ref.source.jsondatadict.get('internetarchive_id')] %>
-<% if ia: ia = ia[0].jsondatadict['internetarchive_id'] %>
+<% ia = [ref.source for ref in ctx.references if ref.source.jsondata.get('internetarchive_id')] %>
+<% if ia: ia = ia[0].jsondata['internetarchive_id'] %>
 
 <%block name="head">
     <link type="text/css" rel="stylesheet" href="${request.static_url('phoible:static/ipa.css')}"/>

@@ -17,7 +17,7 @@
     % for vs in ctx.valuesets:
     <dcterms:isReferencedBy rdf:resource="${request.resource_url(vs)}"/>
     % endfor
-    % if ctx.jsondatadict.get('wikipedia_url'):
-    <rdfs:seeAlso rdf:resource="${ctx.jsondatadict['wikipedia_url'].replace('en.wikipedia.org/wiki', 'dbpedia.org/resource')}"/>
+    % if ctx.jsondata.get('wikipedia_url'):
+    <rdfs:seeAlso rdf:resource="${ctx.jsondata['wikipedia_url'].replace('en.wikipedia.org/wiki', 'dbpedia.org/resource')}"/>
     % endif
 </%block>
