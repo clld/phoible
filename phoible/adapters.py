@@ -3,9 +3,7 @@ from sqlalchemy.orm import joinedload_all
 
 from clld import interfaces
 from clld.lib import bibtex
-from clld.web.adapters.geojson import (
-    GeoJsonParameterMultipleValueSets, GeoJsonLanguages, pacific_centered_coordinates,
-)
+from clld.web.adapters.geojson import GeoJsonParameterMultipleValueSets, GeoJsonLanguages
 from clld.web.adapters import md
 from clld.db.models.common import ValueSet
 
@@ -16,9 +14,6 @@ class GeoJsonFeature(GeoJsonParameterMultipleValueSets):
     def get_query(self, ctx, req):
         query = GeoJsonParameterMultipleValueSets.get_query(self, ctx, req)
         return query.options(joinedload_all(ValueSet.language, Variety.genus))
-
-    def get_coordinates(self, language):
-        return pacific_centered_coordinates(language)
 
 
 class MetadataFromRec(md.Metadata):
@@ -76,14 +71,8 @@ class TxtCitation(md.Metadata):
     template = 'contribution/md_txt.mako'
 
 
-class GeoJsonVarieties(GeoJsonLanguages):
-    def get_coordinates(self, language):
-        return pacific_centered_coordinates(language)
-
-
 def includeme(config):
     config.register_adapter(GeoJsonFeature, interfaces.IParameter)
-    config.register_adapter(GeoJsonVarieties, interfaces.ILanguage, interfaces.IIndex)
 
     for cls in [BibTex, TxtCitation, ReferenceManager]:
         for if_ in [interfaces.IRepresentation, interfaces.IMetadata]:

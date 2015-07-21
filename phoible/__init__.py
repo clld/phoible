@@ -2,8 +2,9 @@ import re
 
 from sqlalchemy.orm import joinedload_all
 from pyramid.httpexceptions import HTTPMovedPermanently, HTTPNotFound
+from pyramid.config import Configurator
 
-from clld.web.app import get_configurator, MapMarker, CtxFactoryQuery
+from clld.web.app import MapMarker, CtxFactoryQuery
 from clld import interfaces
 from clld.web.adapters.download import Sqlite
 from clld.db.models.common import (
@@ -69,17 +70,10 @@ def main(global_config, **settings):
         'contribution': '/inventories/view/{id:[^/\.]+}',
     }
     settings['sitemaps'] = ['language', 'source', 'parameter', 'contribution', 'valueset']
-    config = get_configurator(
-        'phoible',
-        (PhoibleMapMarker(), interfaces.IMapMarker),
-        (PhoibleCtxFactoryQuery(), interfaces.ICtxFactoryQuery),
-        settings=settings)
-
+    config = Configurator(settings=settings)
     config.include('clldmpg')
-    config.include('phoible.maps')
+    config.registry.registerUtility(PhoibleMapMarker(), interfaces.IMapMarker)
+    config.registry.registerUtility(PhoibleCtxFactoryQuery(), interfaces.ICtxFactoryQuery)
     config.add_static_view('data', 'phoible:static/data')
-    config.include('phoible.datatables')
-    config.include('phoible.adapters')
-
     config.register_download(RdfDump(Dataset, 'phoible', description='RDF dump'))
     return config.make_wsgi_app()
