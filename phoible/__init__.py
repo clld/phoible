@@ -69,7 +69,6 @@ def main(global_config, **settings):
         'contributions': '/inventories',
         'contribution': '/inventories/view/{id:[^/\.]+}',
     }
-    settings['sitemaps'] = ['language', 'source', 'parameter', 'contribution', 'valueset']
     config = Configurator(settings=settings)
     config.include('clldmpg')
     config.registry.registerUtility(PhoibleMapMarker(), interfaces.IMapMarker)
