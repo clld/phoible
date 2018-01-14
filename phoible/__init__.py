@@ -6,7 +6,7 @@ from pyramid.config import Configurator
 
 from clld.web.app import MapMarker, CtxFactoryQuery
 from clld import interfaces
-from clld.web.adapters.download import Sqlite
+from clld.web.adapters.download import Download
 from clld.db.models.common import (
     Dataset, Contributor, ContributionContributor, Parameter, Config,
 )
@@ -58,7 +58,7 @@ class PhoibleMapMarker(MapMarker):
             return ctx[0].genus.ficon
 
 
-class RdfDump(Sqlite):
+class RdfDump(Download):
     ext = 'n3'
 
 

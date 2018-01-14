@@ -1,59 +1,47 @@
-# coding: utf8
-from path import path
+import pytest
 
-from clld.tests.util import TestWithApp
-
-import phoible
+pytest_plugins = ['clld']
 
 
-class Tests(TestWithApp):
-    __cfg__ = path(phoible.__file__).dirname().joinpath('..', 'development.ini').abspath()
-    __setup_db__ = False
+@pytest.mark.parametrize(
+    "method,path",
+    [
+        ('get_html', '/'),
+        ('get', '/void.md.txt'),
+        ('get_html', '/contributors/GM'),
+        ('get_dt', '/parameters'),
+        ('get_dt', '/parameters?sSearch_1=>100&iSortingCols=1&iSortCol_0=1'),
+        ('get_html', '/parameters'),
+        ('get_html', '/parameters/5AE9663626770D1D4B97AAE5769AB83C'),
+        ('get_xml', '/parameters/5AE9663626770D1D4B97AAE5769AB83C.rdf'),
+        ('get_json', '/parameters/5AE9663626770D1D4B97AAE5769AB83C.geojson'),
+        ('get_dt', '/inventories'),
+        ('get_dt', '/inventories?sSearch_1=>20&iSortingCols=1&iSortCol_0=1'),
+        ('get_dt', '/inventories?sSearch_5=a&iSortingCols=1&iSortCol_0=5'),
+        ('get_dt', '/inventories?sSearch_6=a&iSortingCols=1&iSortCol_0=6'),
+        ('get_html', '/inventories'),
+        ('get_html', '/inventories/view/432'),
+        ('get_xml', '/inventories/view/432.rdf'),
+        ('get', '/inventories/view/432.md.ris'),
+        ('get', '/inventories/view/432.md.bib'),
+        ('get', '/inventories/view/432.md.html'),
+        ('get_dt', '/languages'),
+        ('get_dt', '/languages?sSearch_2=a&iSortingCols=1&iSortCol_0=2'),
+        ('get_dt', '/languages?sSearch_3=a&iSortingCols=1&iSortCol_0=3'),
+        ('get_html', '/languages'),
+        ('get_json', '/languages.geojson'),
+        ('get', '/languages/mij'),
+        ('get_xml', '/languages/mij.rdf'),
+        ('get_dt', '/values'),
+        ('get_dt', '/values?parameter=5AE9663626770D1D4B97AAE5769AB83C'),
+        ('get_dt', '/values?parameter=5AE9663626770D1D4B97AAE5769AB83C&sSearch_0=a&iSortingCols=1&iSortCol_0=0'),
+        ('get_dt', '/values?contribution=1003&sSearch_0=a&iSortingCols=1&iSortCol_0=0'),
+        ('get_html', '/sources/saphon'),
+    ])
+def test_pages(app, method, path):
+    getattr(app, method)(path)
 
-    def test_home(self):
-        self.app.get('/')
-        self.app.get('/void.md.txt')
-        self.app.get_html('/contributors/GM')
 
-    def test_segments(self):
-        self.app.get('/parameters/1', status=301)
-        self.app.get('/parameters/0', status=404)
-        self.app.get_dt('/parameters')
-        self.app.get_dt('/parameters?sSearch_1=>100&iSortingCols=1&iSortCol_0=1')
-        self.app.get_html('/parameters')
-        self.app.get_html('/parameters/5AE9663626770D1D4B97AAE5769AB83C')
-        self.app.get_xml('/parameters/5AE9663626770D1D4B97AAE5769AB83C.rdf')
-        self.app.get_json('/parameters/5AE9663626770D1D4B97AAE5769AB83C.geojson')
-
-    def test_inventories(self):
-        self.app.get_dt('/inventories')
-        self.app.get_dt('/inventories?sSearch_1=>20&iSortingCols=1&iSortCol_0=1')
-        self.app.get_dt('/inventories?sSearch_5=a&iSortingCols=1&iSortCol_0=5')
-        self.app.get_dt('/inventories?sSearch_6=a&iSortingCols=1&iSortCol_0=6')
-        self.app.get_html('/inventories')
-        self.app.get_html('/inventories/view/432')
-        self.app.get_xml('/inventories/view/432.rdf')
-        self.app.get('/inventories/view/432.md.ris')
-        self.app.get('/inventories/view/432.md.bib')
-        self.app.get('/inventories/view/432.md.html')
-
-    def test_languages(self):
-        self.app.get_dt('/languages')
-        self.app.get_dt('/languages?sSearch_2=a&iSortingCols=1&iSortCol_0=2')
-        self.app.get_dt('/languages?sSearch_3=a&iSortingCols=1&iSortCol_0=3')
-        self.app.get('/languages')
-        self.app.get_json('/languages.geojson')
-        self.app.get('/languages/mij')
-        self.app.get_xml('/languages/mij.rdf')
-
-    def test_phonemes(self):
-        self.app.get_dt('/values')
-        self.app.get_dt('/values?parameter=5AE9663626770D1D4B97AAE5769AB83C')
-        self.app.get_dt(
-            '/values?parameter=5AE9663626770D1D4B97AAE5769AB83C&sSearch_0=a&'
-            'iSortingCols=1&iSortCol_0=0')
-        self.app.get_dt(
-            '/values?contribution=1003&sSearch_0=a&iSortingCols=1&iSortCol_0=0')
-
-    def test_sources(self):
-        self.app.get_html('/sources/saphon')
+def test_redirect(app):
+    app.get('/parameters/1', status=301)
+    app.get('/parameters/0', status=404)

@@ -3,7 +3,7 @@ from sqlalchemy.orm import joinedload_all
 
 from clld import interfaces
 from clld.lib import bibtex
-from clld.web.adapters.geojson import GeoJsonParameterMultipleValueSets, GeoJsonLanguages
+from clld.web.adapters.geojson import GeoJsonParameterMultipleValueSets
 from clld.web.adapters import md
 from clld.db.models.common import ValueSet
 

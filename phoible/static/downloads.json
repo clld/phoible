@@ -1,0 +1,56 @@
+{
+    "1.0": {
+        "bitstreams": [
+            {
+                "last-modified": 1515937416974,
+                "checksum": "7fb398f9636c2dd104dbd8e4c260096d",
+                "created": 1515937416954,
+                "checksum-algorithm": "MD5",
+                "bitstreamid": "phoible_contribution.n3.gz",
+                "filesize": 31587,
+                "content-type": "application/octet-stream"
+            },
+            {
+                "last-modified": 1515937387902,
+                "checksum": "3c9e5aba828d0eae9532efcccd686f78",
+                "created": 1515937387771,
+                "checksum-algorithm": "MD5",
+                "bitstreamid": "phoible_dataset.n3.gz",
+                "filesize": 5030164,
+                "content-type": "application/octet-stream"
+            },
+            {
+                "last-modified": 1515937393875,
+                "checksum": "7c4a89d29b37d72ebfc8a69784cc7983",
+                "created": 1515937393862,
+                "checksum-algorithm": "MD5",
+                "bitstreamid": "phoible_language.n3.gz",
+                "filesize": 186482,
+                "content-type": "application/octet-stream"
+            },
+            {
+                "last-modified": 1515937400931,
+                "checksum": "1277fb9bb29b38dfeac990c403cfc2dd",
+                "created": 1515937400914,
+                "checksum-algorithm": "MD5",
+                "bitstreamid": "phoible_parameter.n3.gz",
+                "filesize": 395137,
+                "content-type": "application/octet-stream"
+            },
+            {
+                "last-modified": 1515937416098,
+                "checksum": "86719d833ed27a3ae18e4758591dc45a",
+                "created": 1515937416050,
+                "checksum-algorithm": "MD5",
+                "bitstreamid": "phoible_valueset.n3.gz",
+                "filesize": 848739,
+                "content-type": "application/octet-stream"
+            }
+        ],
+        "oid": "EAEA0-DAEC-55A7-3896-0",
+        "metadata": {
+            "title": "phoible 1.0 - downloads",
+            "creator": "pycdstar"
+        }
+    }
+}

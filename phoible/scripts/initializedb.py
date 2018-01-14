@@ -4,45 +4,188 @@ import sys
 import unicodedata
 from itertools import groupby, cycle
 from collections import defaultdict
-import socket
 from base64 import b16encode
 from hashlib import md5
 
+from six import text_type
 from sqlalchemy.orm import joinedload, joinedload_all
 from clld.scripts.util import (
-    initializedb, Data, gbs_func, glottocodes_by_isocode, add_language_codes,
+    initializedb, Data, gbs_func, add_language_codes,
 )
 from clld.scripts.internetarchive import ia_func
 from clld.db.meta import DBSession
 from clld.db.models import common
-from clld.lib.dsv import reader
-from clld.util import slug
+from clldutils.dsv import reader as _reader
+from clldutils.misc import slug
+from clldutils.path import Path
 from clld.web.icon import ORDERED_ICONS
+from pyglottolog.api import Glottolog
+from pyglottolog.languoids import Level
+from clld_glottologfamily_plugin.util import load_families
 
+import phoible
 from phoible import models
 from phoible.scripts.util import (
-    strip_quotes, SOURCES, get_genera,
+    strip_quotes, SOURCES,
     get_rows, add_sources, feature_name, add_wikipedia_urls,
 )
 
 
-astroman = socket.gethostname() == 'astroman'
+def reader(*args, **kw):
+    for d in _reader(*args, delimiter='\t', dicts=True, **kw):
+        for k in d:
+            if d[k] == 'NA':
+                d[k] = None
+        yield d
+
+
+
+#mappings/InventoryID-ISO-gcode-Bibkey-Source.tsv
+#InventoryID	LanguageCode	Glottocode	BibtexKey	Source
+
+#data/phoible-by-phoneme.tsv
+"""
+LanguageCode
+LanguageName
+SpecificDialect
+Phoneme
+Allophones
+Source
+GlyphID
+InventoryID
+
+tone
+stress
+syllabic
+short
+long
+consonantal
+sonorant
+continuant
+delayedRelease
+approximant
+tap
+trill
+nasal
+lateral
+labial
+round
+labiodental
+coronal
+anterior
+distributed
+strident
+dorsal
+high
+low
+front
+back
+tenseretractedTongueRoot
+advancedTongueRoot
+periodicGlottalSource
+epilaryngealSource
+spreadGlottis
+constrictedGlottis
+fortis
+raisedLarynxEjective
+loweredLarynxImplosive
+click
+"""
+
+
+def get_language(l):
+    while l.level == Level.dialect:
+        l = l.parent
+    return l
+
+
+def name_in_source(lname, dname):
+    if dname:
+        lname += ' (%s)' % dname
+    return lname
 
 
 def main(args):
-    # determine if we run on a machine where other databases are available for lookup
-    # locally:
     data = Data()
-    genera = get_genera(data) if astroman else {}
-    glottocodes, lnames, geocoords = {}, {}, {}
-    if astroman:
-        for k, v in glottocodes_by_isocode(
-                'postgresql://robert@/glottolog3',
-                cols=['id', 'name', 'latitude', 'longitude']).items():
-            glottocodes[k] = v[0]
-            lnames[k] = v[1]
-            geocoords[k] = (v[2], v[3])
+    glottocodes, bibtex_keys = {}, defaultdict(set)
+    for d in reader(args.data_file(
+            'repos', 'mappings', 'InventoryID-ISO-gcode-Bibkey-Source.tsv')):
+        glottocodes[d['InventoryID']] = d['Glottocode']
+        bibtex_keys[d['InventoryID']].add(d['BibtexKey'])
 
+    glottolog = Glottolog(
+        Path(phoible.__file__).parent.parent.parent.parent.joinpath(
+            'glottolog3', 'glottolog'))
+    languoids = {l.id: l for l in glottolog.languoids()}
+
+    phonemes = sorted(
+        list(reader(args.data_file('repos', 'data', 'phoible-by-phoneme.tsv'))),
+        key=lambda r: (r['InventoryID'], r['GlyphID']))
+
+    inventories = defaultdict(set)
+    for p in phonemes:
+        if p['InventoryID'] in glottocodes:
+            inventories[
+                (languoids[glottocodes[p['InventoryID']]].name,
+                 p['SpecificDialect'],
+                 p['Source'].upper())
+            ].add((p['InventoryID'], p['LanguageName']))
+
+    inventory_names = {}
+    for (glname, dname, source), invids in inventories.items():
+        if len(invids) == 1:
+            invid, lname = invids.pop()
+            inventory_names[invid] = name_in_source(glname, dname) + ' [%s]' % source
+        else:
+            use_lname = len(set(r[1] for r in invids)) == len(invids)
+            for i, (invid, lname) in enumerate(sorted(invids, key=lambda j: int(j[0]))):
+                disambiguation = ' %s' % (i + 1,)
+                if use_lname:
+                    disambiguation = ' (%s)' % lname
+                inventory_names[invid] = name_in_source(glname, dname) + '%s [%s]' % (disambiguation, source)
+
+    for (invid, lname, dname, source), ps in groupby(
+        phonemes,
+        lambda p: (p['InventoryID'], p['LanguageName'], p['SpecificDialect'], p['Source'])
+    ):
+        if invid not in glottocodes:
+            continue
+        ps = list(ps)
+        gc = glottocodes[invid]
+        lang = data['Variety'].get(gc)
+        if not lang:
+            languoid = languoids[gc]
+            lang = data.add(
+                models.Variety,
+                gc,
+                id=gc,
+                language_code=ps[0]['LanguageCode'],
+                name=languoid.name,
+                level=text_type(languoid.level.name),
+                latitude=languoid.latitude,
+                longitude=languoid.longitude,
+            )
+            if lang.latitude is None and languoid.level == Level.dialect:
+                ll = get_language(languoid)
+                lang.latitude = ll.latitude
+                lang.longitude = ll.longitude
+
+        contrib = data.add(
+            models.Inventory, invid,
+            id=invid,
+            #language=lang,
+            source=source,
+            #source_url=source_urls.get(row.InventoryID),
+            #internetarchive_url=ia_urls.get(row.InventoryID),
+            name=inventory_names[invid],
+            description=name_in_source(lname, dname))
+
+    return
+
+
+
+
+    # FIXME: read from mappings file!
     refs = defaultdict(list)
     for row in get_rows(args, 'BibtexKey'):
         if row[1] == 'NO SOURCE GIVEN':
@@ -56,9 +199,9 @@ def main(args):
         id='phoible',
         name='PHOIBLE Online',
         description='PHOIBLE Online',
-        publisher_name="Max Planck Institute for Evolutionary Anthropology",
-        publisher_place="Leipzig",
-        publisher_url="http://www.eva.mpg.de",
+        publisher_name="Max Planck Institute for the Science of Human History",
+        publisher_place="Jena",
+        publisher_url="https://www.shh.mpg.de",
         domain='phoible.org',
         license='http://creativecommons.org/licenses/by-sa/3.0/',
         contact='steven.moran@uzh.ch',
@@ -77,14 +220,16 @@ def main(args):
             ord=i + 1,
             contributor=common.Contributor(id=spec[0], name=spec[1])))
 
-    squibs = defaultdict(list)
-    for row in get_rows(args, 'Squib'):
-        squibs[row[0]].append(row[1])
+    #squibs = defaultdict(list)
+    #for row in get_rows(args, 'Squib'):
+    #    squibs[row[0]].append(row[1])
 
     source_urls = dict(get_rows(args, 'URL'))
     ia_urls = dict(get_rows(args, 'InternetArchive'))
 
-    aggregated = list(reader(args.data_file('phoible-aggregated.tsv'), namedtuples=True))
+    # FIXME: group phoible-by-phoneme by LanguageCode, Source (make sure this is unique!)
+    aggregated = list(reader(
+        args.data_file('phoible-aggregated.tsv'), delimiter='\t', namedtuples=True))
     inventory_names = {}
     for key, items in groupby(
             sorted(aggregated, key=lambda t: (t.LanguageCode, t.Source)),
@@ -101,6 +246,8 @@ def main(args):
         else:
             for i, item in enumerate(items):
                 inventory_names[item.InventoryID] = '%s %s (%s)' % (lname, i + 1, key[1])
+
+    # pull in Glottolog families instead? or in addition?
 
     family_map = {
         ("Arawakan", "arwk"): "Arawakan",
@@ -186,15 +333,15 @@ def main(args):
         DBSession.add(common.ContributionContributor(
             contribution=contrib, contributor=contributor))
 
-        for j, squib in enumerate(squibs.get(row.InventoryID, [])):
-            f = common.Contribution_files(
-                object=contrib,
-                id='squib-%s-%s.pdf' % (contrib.id, j + 1),
-                name='Phonological squib',
-                description=squib,
-                mime_type='application/pdf')
-            assert f
-            # f.create(files_dir, file(args.data_file('phonological_squibs', src)).read())
+        #for j, squib in enumerate(squibs.get(row.InventoryID, [])):
+        #    f = common.Contribution_files(
+        #        object=contrib,
+        #        id='squib-%s-%s.pdf' % (contrib.id, j + 1),
+        #        name='Phonological squib',
+        #        description=squib,
+        #        mime_type='application/pdf')
+        #    assert f
+        #    # f.create(files_dir, file(args.data_file('phonological_squibs', src)).read())
 
     DBSession.flush()
     unknown_refs = {}
@@ -263,6 +410,9 @@ def main(args):
                     value=value,
                     ord=j,
                     object_pk=data['Segment'][row[0]].pk))
+
+    # FIXME: add allophones!
+
     DBSession.flush()
 
 
@@ -309,7 +459,7 @@ def prime_cache(args):
             joinedload(models.Variety.inventories)):
         variety.count_inventories = len(variety.inventories)
 
-    if astroman:
+    if 0:
         ia_func('update', args)
         gbs_func('update', args)
         print('added', add_wikipedia_urls(args), 'wikipedia urls')

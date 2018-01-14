@@ -5,8 +5,8 @@ from io import open
 
 from bs4 import BeautifulSoup as bs
 from sqlalchemy import create_engine
-from clld.util import slug, nfilter
-from clld.lib.dsv import reader
+from clldutils.misc import slug, nfilter
+from clldutils.dsv import reader
 from clld.lib.bibtex import Database, Record
 from clld.scripts.util import bibtex2source
 from clld.db.meta import DBSession
@@ -325,37 +325,9 @@ def feature_name(n):
     return ''.join(chars)
 
 
-def get_genera(data):
-    """
-    Zo'e: tupiguarani
-    """
-    sql = """select g.id, g.name, f.name
-from genus as g, family as f
-where g.family_pk = f.pk"""
-    walsdb = create_engine('postgresql://robert@/wals3')
-    genera = {}
-    for row in walsdb.execute(sql):
-        genus = data.add(models.Genus, row[0], id=row[0], name=row[1], description=row[2])
-        genera[row[0]] = genus
-        genera[slug(row[1])] = genus
-
-    sql = """select l.iso_codes, g.id
-from walslanguage as l, genus as g
-where l.genus_pk = g.pk and l.iso_codes is not null"""
-    for row in walsdb.execute(sql):
-        for code in row[0].split(', '):
-            if code not in genera:
-                genera[code] = genera[row[1]]
-
-    for row in walsdb.execute("select key, value from config"):
-        if row[0].startswith('__Genus_'):
-            gid = row[0].replace('_', '').split('Genus', 1)[1]
-            genera[gid] = None if row[1] == '__gone__' else genera[row[1]]
-    return genera
-
-
 def get_rows(args, name):
-    for i, row in enumerate(reader(args.data_file('InventoryID-%s.csv' % name))):
+    for i, row in enumerate(
+            reader(args.data_file('InventoryID-%s.csv' % name), delimiter='\t')):
         if i and row[1] != 'NA':
             yield row
 

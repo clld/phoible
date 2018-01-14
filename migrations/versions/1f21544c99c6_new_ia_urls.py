@@ -15,10 +15,10 @@ import datetime
 
 from alembic import op
 import sqlalchemy as sa
-from path import path
+from clldutils.path import Path
 
 from clld.db.migration import Connection
-from clld.lib.dsv import reader
+from csvw.dsv import reader
 from clld.db.models.common import Contribution
 
 import phoible
@@ -26,7 +26,7 @@ from phoible.models import Inventory
 
 
 def upgrade():
-    csv = path(phoible.__file__).dirname().joinpath(
+    csv = Path(phoible.__file__).parent.joinpath(
         '..', 'data', 'InventoryID-InternetArchive.csv')
     ia_urls = {row[0]: row[1] for row in reader(csv) if row[1] != 'NA'}
 
