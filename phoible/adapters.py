@@ -4,10 +4,15 @@ from sqlalchemy.orm import joinedload_all
 from clld import interfaces
 from clld.lib import bibtex
 from clld.web.adapters.geojson import GeoJsonParameterMultipleValueSets
+from clld.web.adapters.cldf import CldfConfig
 from clld.web.adapters import md
 from clld.db.models.common import ValueSet
 
 from phoible.models import Variety
+
+
+class PhoibleCldfConfig(CldfConfig):
+    module = 'StructureDataset'
 
 
 class GeoJsonFeature(GeoJsonParameterMultipleValueSets):
@@ -73,6 +78,7 @@ class TxtCitation(md.Metadata):
 
 def includeme(config):
     config.register_adapter(GeoJsonFeature, interfaces.IParameter)
+    config.registry.registerUtility(PhoibleCldfConfig(), interfaces.ICldfConfig)
 
     for cls in [BibTex, TxtCitation, ReferenceManager]:
         for if_ in [interfaces.IRepresentation, interfaces.IMetadata]:

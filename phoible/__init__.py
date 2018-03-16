@@ -74,5 +74,5 @@ def main(global_config, **settings):
     config.registry.registerUtility(PhoibleMapMarker(), interfaces.IMapMarker)
     config.registry.registerUtility(PhoibleCtxFactoryQuery(), interfaces.ICtxFactoryQuery)
     config.add_static_view('data', 'phoible:static/data')
-    config.register_download(RdfDump(Dataset, 'phoible', description='RDF dump'))
+    #config.register_download(RdfDump(Dataset, 'phoible', description='RDF dump'))
     return config.make_wsgi_app()

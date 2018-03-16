@@ -26,6 +26,12 @@
             href="https://cdstar.shh.mpg.de/bitstreams/EAEA0-DAEC-55A7-3896-0/phoible_dataset.n3.gz">RDF dump</a>
     </li>
     <li>
+        An export of the database in
+        ${h.external_link('http://cldf.clld.org', 'CLDF')}
+        is available here: <a
+            href="https://cdstar.shh.mpg.de/bitstreams/EAEA0-BE27-DAC8-9268-0/phoible_dataset.cldf.zip">PHOIBLE CLDF 1.0</a>
+    </li>
+    <li>
         Supplemental data for the paper
         <br/>
         Moran, Steven, Daniel McCloy and Richard Wright. 2012. Revisiting population size
