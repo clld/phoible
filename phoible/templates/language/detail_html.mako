@@ -17,7 +17,7 @@
 <h3>Inventories</h3>
 <ul>
     % for inventory in ctx.inventories:
-    <li>${h.link(request, inventory)}, ${inventory.description}, ${len(inventory.valuesets)} segments.</li>
+    <li>${h.link(request, inventory)}, ${len(inventory.valuesets)} segments.</li>
     % endfor
 </ul>
 
