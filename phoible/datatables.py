@@ -109,7 +109,7 @@ class Phonemes(Values):
     def get_options(self):
         opts = super(Values, self).get_options()
         if self.contribution:
-            opts['aaSorting'] = [[1, 'desc'], [0, 'asc']]
+            opts['aaSorting'] = [[4, 'desc'], [1, 'asc']]
         return opts
 
     def col_defs(self):
@@ -208,6 +208,9 @@ class Inventories(Contributions):
 
 
 class InventorySources(Contributors):
+    def base_query(self, query):
+        return query.filter(Contributor.id != 'mccloy')
+
     def col_defs(self):
         return [
             LinkCol(self, 'contributor'),
