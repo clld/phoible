@@ -7,24 +7,9 @@
 
 <table class="table table-nonfluid table-condensed">
     <tbody>
-    % if ctx.genus:
-        <tr>
-            % if ctx.genus.active:
-                <td>WALS genus:</td>
-                <td>${h.external_link(ctx.wals_genus_url, label=ctx.genus.name)}</td>
-            % else:
-                <td>Genus:</td>
-                <td>${ctx.genus.name}</td>
-            % endif
-        </tr>
-    % endif
     <tr>
-        <td>Area:</td>
-        <td>${ctx.area}</td>
-    </tr>
-    <tr>
-        <td>Country:</td>
-        <td>${ctx.country}</td>
+        <td>Macroarea:</td>
+        <td>${ctx.macroarea}</td>
     </tr>
     </tbody>
 </table>

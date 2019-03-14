@@ -1,8 +1,7 @@
-from __future__ import unicode_literals
 import re
 
 from sqlalchemy.orm import joinedload
-from six import text_type
+from markdown import markdown
 
 from clld.web.util.helpers import get_referents
 from clld.db.meta import DBSession
@@ -13,6 +12,17 @@ from clld.web.util.htmllib import HTML
 from phoible.models import Inventory
 
 
+def readme(text):
+    lines = []
+    for line in text.split('\n'):
+        if line.strip().startswith('# '):
+            continue
+        if line.strip().startswith('#'):
+            line = '##' + line
+        lines.append(line)
+    return markdown('\n'.join(lines))
+
+
 def source_detail_html(context=None, request=None, **kw):
     return dict(referents=get_referents(context, exclude=['sentence', 'valueset']))
 
@@ -20,19 +30,19 @@ def source_detail_html(context=None, request=None, **kw):
 def desc(req, d, sources=None):
     if sources is None:
         sources = {k: Source.get(k) for k in
-                   'moisikesling2011 hayes2009 moran2012a moranetal2012'.split()}
+                   'MoisikEsling2011 Hayes2009 Moran2012a Moran_etal2012'.split()}
     if not d:
         return d
     for k, v in sources.items():
         a = link(req, v)
-        d = re.sub('\*\*(?P<id>%s)\*\*' % k, text_type(a), d)
+        d = re.sub(r'\*\*(?P<id>%s)\*\*' % k, str(a), d)
     return d
 
 
 def dataset_detail_html(context=None, request=None, **kw):
-    res = dict(
-        (row[0], row[1]) for row in
-        DBSession.execute("select source, count(pk) from inventory group by source"))
+    res = {}#dict(
+        #(row[0], row[1]) for row in
+        #DBSession.execute("select source, count(pk) from inventory group by source"))
     res['inventory_count'] = DBSession.query(Inventory).count()
     res['segment_count'] = DBSession.query(Parameter).count()
     res['language_count'] = DBSession.query(Language).count()
@@ -41,8 +51,8 @@ def dataset_detail_html(context=None, request=None, **kw):
         joinedload(Contributor.references)).all()
     res['sources'] = {
         k: Source.get(k) for k in
-        ['moisikesling2011', 'ipa2005', 'hayes2009', 'moran2012a', 'moranetal2012',
-         'cysouwetal2012', 'mccloyetal2013']}
+        ['MoisikEsling2011', 'IPA2005', 'Hayes2009', 'Moran2012a', 'Moran_etal2012',
+         'Cysouw_etal2012', 'mccloy_etal2013']}
     res['descriptions'] = {c.id: desc(request, c.description, res['sources'])
                            for c in res['contributors']}
     return res

@@ -30,8 +30,8 @@ pytest_plugins = ['clld']
         ('get_dt', '/languages?sSearch_3=a&iSortingCols=1&iSortCol_0=3'),
         ('get_html', '/languages'),
         ('get_json', '/languages.geojson'),
-        ('get', '/languages/mij'),
-        ('get_xml', '/languages/mij.rdf'),
+        ('get', '/languages/cogu1240'),
+        ('get_xml', '/languages/cogu1240.rdf'),
         ('get_dt', '/values'),
         ('get_dt', '/values?parameter=5AE9663626770D1D4B97AAE5769AB83C'),
         ('get_dt', '/values?parameter=5AE9663626770D1D4B97AAE5769AB83C&sSearch_0=a&iSortingCols=1&iSortCol_0=0'),
@@ -45,3 +45,4 @@ def test_pages(app, method, path):
 def test_redirect(app):
     app.get('/parameters/1', status=301)
     app.get('/parameters/0', status=404)
+    app.get('/languages/mij', status=301)

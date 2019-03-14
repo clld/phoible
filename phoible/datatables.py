@@ -2,62 +2,27 @@ from sqlalchemy import Integer
 from sqlalchemy.sql.expression import cast
 from sqlalchemy.orm import joinedload_all, joinedload
 
-from clld.web.datatables.base import LinkCol, Col, filter_number, LinkToMapCol
+from clld.web.datatables.base import LinkCol, Col, filter_number, LinkToMapCol, RefsCol as BaseRefsCol
 from clld.web.datatables.language import Languages
 from clld.web.datatables.parameter import Parameters
 from clld.web.datatables.value import Values, RefsCol
 from clld.web.datatables.contribution import Contributions, ContributorsCol, CitationCol
-from clld.web.util.helpers import external_link, map_marker_img
-from clld.web.util.htmllib import HTML
+from clld.web.datatables.contributor import Contributors
+from clld.web.util.helpers import maybe_external_link
 from clld.db.meta import DBSession
 from clld.db.util import get_distinct_values, icontains
 from clld.db.models.common import (
     Contribution, ValueSet, Parameter, Contributor, ContributionContributor, Language,
     Value,
 )
+from clld_glottologfamily_plugin.datatables import FamilyCol
 
 
-from phoible.models import Segment, Variety, Inventory, Genus
+from phoible.models import Segment, Variety, Inventory, Phoneme
 
-
-class FamilyCol(Col):
-    __kw__ = dict(sTitle='WALS family')
-
-    def format(self, item):
-        return HTML.span(
-            map_marker_img(self.dt.req, item),
-            ' ',
-            item.genus.description if item.genus else '',
-        )
-
-    def order(self):
-        return Genus.description
-
-    def search(self, qs):
-        return icontains(Genus.description, qs)
-
-
-class GenusCol(Col):
-    __kw__ = dict(sTitle='WALS genus')
-
-    def format(self, item):
-        if not item.genus:
-            return ''
-        if not item.genus.active:
-            return item.genus.name
-        return external_link(item.wals_genus_url, label=item.genus.name)
-
-    def order(self):
-        return Genus.name
-
-    def search(self, qs):
-        return icontains(Genus.name, qs)
 
 
 class Varieties(Languages):
-    def base_query(self, query):
-        return query.outerjoin(Genus).options(joinedload(Variety.genus))
-
     def col_defs(self):
         return [
             LinkCol(self, 'name'),
@@ -66,14 +31,12 @@ class Varieties(Languages):
                 bSearchable=False,
                 sDescription='Number of inventories',
                 model_col=Variety.count_inventories),
-            GenusCol(self, 'WALS genus'),
-            FamilyCol(self, 'WALS family'),
+            FamilyCol(self, 'family', Variety),
             Col(self, 'latitude'),
             Col(self, 'longitude'),
-            Col(self, 'country', model_col=Variety.country),
-            Col(self, 'area',
-                model_col=Variety.area,
-                choices=get_distinct_values(Variety.area)),
+            Col(self, 'macroarea',
+                model_col=Variety.macroarea,
+                choices=get_distinct_values(Variety.macroarea)),
         ]
 
 
@@ -94,10 +57,7 @@ class FrequencyCol(Col):
 
     def format(self, item):
         segment = self.get_obj(item)
-        return '%s/%s (%.0f%%)' % (
-            segment.in_inventories,
-            segment.total_inventories,
-            segment.representation * 100)
+        return '%s (%.0f%%)' % (segment.in_inventories, segment.representation * 100)
 
     def search(self, qs):
         return filter_number(Segment.in_inventories, qs)
@@ -113,7 +73,6 @@ class Segments(Parameters):
             FrequencyCol(self, 'frequency'),
             DescCol(self, 'description'),
             ClassCol(self, 'segment_class', Segment.segment_class),
-            ClassCol(self, 'combined_class', Segment.combined_class),
         ]
 
     def get_options(self):
@@ -157,6 +116,8 @@ class Phonemes(Values):
         if self.parameter:
             return [
                 InventoryCol(self, 'inventory'),
+                Col(self, 'marginal', model_col=Phoneme.marginal),
+                Col(self, 'allophones', model_col=Phoneme.allophones),
                 LinkCol(self,
                         'language',
                         model_col=Language.name,
@@ -169,12 +130,12 @@ class Phonemes(Values):
         if self.contribution:
             param = lambda item: item.valueset.parameter
             return [
+                ClassCol(self, 'segment_class', Segment.segment_class, get_object=param),
                 DatapointCol(self, 'valueset'),
+                Col(self, 'marginal', model_col=Phoneme.marginal),
+                Col(self, 'allophones', model_col=Phoneme.allophones),
                 FrequencyCol(self, 'frequency', get_object=param),
-                ClassCol(
-                    self, 'segment_class', Segment.segment_class, get_object=param),
-                ClassCol(
-                    self, 'combined_class', Segment.combined_class, get_object=param)]
+            ]
         return res
 
     def base_query(self, query):
@@ -208,19 +169,33 @@ class PhoibleContributorsCol(ContributorsCol):
         return icontains(Contributor.name, qs)
 
 
+class LanguageCol(LinkCol):
+    def get_obj(self, item):
+        return item.language
+
+    def order(self):
+        return Language.name
+
+    def search(self, qs):
+        return icontains(Language.name, qs)
+
+
 class Inventories(Contributions):
     def base_query(self, query):
         return query\
             .join(ContributionContributor)\
             .join(Contributor)\
+            .join(Language)\
             .distinct()\
-            .options(joinedload_all(
-                Contribution.contributor_assocs, ContributionContributor.contributor))
+            .options(
+                joinedload(Contribution.contributor_assocs).joinedload(ContributionContributor.contributor),
+                joinedload(Inventory.language),
+        )
 
     def col_defs(self):
         res = [
-            LinkCol(self, 'name', sTitle='Language (Contributor)'),
-            Col(self, 'source_name', model_col=Inventory.description),
+            LinkCol(self, 'name', sTitle='Inventory'),
+            LanguageCol(self, 'language'),
             CountCol(self, 'all', bSearchable=False, bSortable=False)]
         for c in 'vowel consonant tone'.split():
             res.append(Col(
@@ -232,8 +207,19 @@ class Inventories(Contributions):
         return res
 
 
+class InventorySources(Contributors):
+    def col_defs(self):
+        return [
+            LinkCol(self, 'contributor'),
+            Col(self, 'description'),
+            BaseRefsCol(self, 'sources'),
+            Col(self, 'url', format=lambda i: maybe_external_link(i.url)),
+        ]
+
+
 def includeme(config):
     config.register_datatable('languages', Varieties)
     config.register_datatable('parameters', Segments)
     config.register_datatable('values', Phonemes)
+    config.register_datatable('contributors', InventorySources)
     config.register_datatable('contributions', Inventories)

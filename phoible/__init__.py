@@ -10,6 +10,7 @@ from clld.web.adapters.download import Download
 from clld.db.models.common import (
     Dataset, Contributor, ContributionContributor, Parameter, Config,
 )
+from clld.lib.svg import icon, data_url
 
 from phoible import models
 assert models
@@ -35,27 +36,21 @@ class PhoibleCtxFactoryQuery(CtxFactoryQuery):
             )
         return query
 
-    def __call__(self, model, req):
-        if model == Parameter:
-            # responses for no longer supported legacy codes
-            if re.match('[0-9]{1,4}$', req.matchdict['id']):
-                rec = req.db.query(Config)\
-                    .filter(Config.key == '__glyphid_%s__' % req.matchdict['id']).first()
-                if rec:
-                    raise HTTPMovedPermanently(
-                        location=req.route_url('parameter', id=rec.value))
-                else:
-                    raise HTTPNotFound()
-        return super(PhoibleCtxFactoryQuery, self).__call__(model, req)
-
 
 class PhoibleMapMarker(MapMarker):
-    def get_icon(self, ctx, req):
-        if interfaces.ILanguage.providedBy(ctx) and ctx.genus:
-            return ctx.genus.ficon
+    def __call__(self, ctx, req):
+        color = '#000000'
+        if interfaces.ILanguage.providedBy(ctx):
+            color = ctx.jsondata['color']
+        elif interfaces.IValueSet.providedBy(ctx):
+            color = ctx.language.jsondata['color']
+        elif isinstance(ctx, tuple):
+            try:
+                color = ctx[0].jsondata['color']
+            except KeyError:
+                raise ValueError(ctx)
 
-        if isinstance(ctx, (list, tuple)) and ctx[0].genus:
-            return ctx[0].genus.ficon
+        return data_url(icon('c' + color[1:]))
 
 
 class RdfDump(Download):

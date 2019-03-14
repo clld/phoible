@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from zope.interface import implementer
 from sqlalchemy import (
     Column,
@@ -17,55 +15,26 @@ from clld import interfaces
 from clld.lib.rdf import url_for_qname
 from clld.db.meta import Base, CustomModelMixin
 from clld.db.models.common import (
-    Parameter, Contribution, Language, Contributor, HasSourceMixin,
-    IdNameDescriptionMixin,
+    Parameter, Contribution, Language, Contributor, HasSourceMixin, Value,
 )
-
-
-class Genus(Base, IdNameDescriptionMixin):
-    __wals_map__ = {
-        'sumatra': 'northwestsumatrabarrierislands',
-        'malayic': 'malayosumbawan',
-        'southmindanao': 'bilic',
-        'northwestmalayopolynesian': 'northborneo',
-        'sundanese': 'malayosumbawan',
-        # 'transnewguinea': '',
-        # 'moklen': 'moklen',
-        # 'gayo': 'gayo',
-    }
-    gone = Column(Boolean, default=False)
-    ficon = Column(String)
-    gicon = Column(String)
-    root = Column(String)
-
-    def wals_url(self):
-        wid = self.__wals_map__.get(self.id, self.id)
-        return 'http://wals.info/languoid/genus/' + wid
+from clld_glottologfamily_plugin.models import HasFamilyMixin
 
 
 # ----------------------------------------------------------------------------
 # specialized common mapper classes
 # ----------------------------------------------------------------------------
 @implementer(interfaces.ILanguage)
-class Variety(CustomModelMixin, Language):
+class Variety(CustomModelMixin, HasFamilyMixin, Language):
     pk = Column(Integer, ForeignKey('language.pk'), primary_key=True)
 
-    country = Column(Unicode)
-    area = Column(Unicode)
     count_inventories = Column(Integer)
-    genus_pk = Column(Integer, ForeignKey('genus.pk'))
-    genus = relationship(Genus, backref='languages')
 
-    @property
-    def wals_genus_url(self):
-        if self.genus:
-            return self.genus.wals_url()
 
-    def __rdf__(self, request):
-        if self.genus:
-            yield 'skos:broader', self.wals_genus_url
-        if self.country:
-            yield 'dcterms:spatial', self.country
+@implementer(interfaces.IValue)
+class Phoneme(CustomModelMixin, Value):
+    pk = Column(Integer, ForeignKey('value.pk'), primary_key=True)
+    allophones = Column(Unicode)
+    marginal = Column(Boolean, nullable=True)
 
 
 @implementer(interfaces.IParameter)
@@ -73,7 +42,6 @@ class Segment(CustomModelMixin, Parameter):
     pk = Column(Integer, ForeignKey('parameter.pk'), primary_key=True)
     segment_class = Column(Unicode)  # consonant, ...
     equivalence_class = Column(Unicode)
-    combined_class = Column(Unicode)
 
     in_inventories = Column(Integer)
     total_inventories = Column(Integer)

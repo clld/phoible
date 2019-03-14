@@ -1,5 +1,5 @@
 from zope.interface import implementer
-from sqlalchemy.orm import joinedload_all
+from sqlalchemy.orm import joinedload
 
 from clld import interfaces
 from clld.lib import bibtex
@@ -18,7 +18,7 @@ class PhoibleCldfConfig(CldfConfig):
 class GeoJsonFeature(GeoJsonParameterMultipleValueSets):
     def get_query(self, ctx, req):
         query = GeoJsonParameterMultipleValueSets.get_query(self, ctx, req)
-        return query.options(joinedload_all(ValueSet.language, Variety.genus))
+        return query.options(joinedload(ValueSet.language).joinedload(Variety.family))
 
 
 class MetadataFromRec(md.Metadata):
