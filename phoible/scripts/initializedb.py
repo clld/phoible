@@ -25,6 +25,15 @@ from phoible.scripts.util import get_rows, add_wikipedia_urls, BIB, feature_name
 DS = Path(phoible.__file__).parent.parent.parent / 'phoible-cldf' / 'cldf' / 'StructureDataset-metadata.json'
 
 
+def descendants_from_nodemap(node, nodes):
+    if not node:
+        return set()
+    res = [
+        n for n in nodes.values() if
+        n.lineage and node.id in [li[1] for li in n.lineage]] + [node]
+    return set(n.id for n in res)
+
+
 def bibtex2source(rec):  # pragma: no cover
     year = rec.get('year', 'nd')
     fields = {}
@@ -165,6 +174,28 @@ def main(args):  # pragma: no cover
             equivalence_class=equivalence_class
         )
     DBSession.flush()
+
+    # Add redirects for old language pages! get relevant ISO codes and map to Glottocode!
+    for model, repls in load(Path(phoible.__file__).parent.parent / 'replacements.json').items():
+        if model == 'Language':
+            languoids = {l.id: l for l in glottolog.languoids()}
+            iso_languoids = {l.iso: l for l in languoids.values() if l.iso}
+            gl_in_phoible = set(data['Variety'].keys())
+            for oid, nid in repls.items():
+                gls = descendants_from_nodemap(iso_languoids.get(oid), languoids).intersection(gl_in_phoible)
+                if gls:
+                    nid = gls.pop()
+                    if len(gls) > 1:
+                        print('+++', oid, gls)
+                else:
+                    print('---', oid)
+                common.Config.add_replacement(oid, nid, common.Language)
+        elif model == 'Parameter':
+            segments_in_phoible = set(data['Segment'].keys())
+            for oid, nid in repls.items():
+                id_ = nid if nid in segments_in_phoible else None
+                common.Config.add_replacement(oid, id_, common.Parameter)
+
     for segment in ds['ParameterTable']:
         for i, (k, v) in enumerate(sorted(segment.items())):
             if k not in ['ID', 'Name', 'Description', 'SegmentClass']:
@@ -211,15 +242,6 @@ def main(args):  # pragma: no cover
             marginal=phoneme['Marginal'],
             valueset=vs))
 
-    # Add redirects for old language pages! get relevant ISO codes and map to Glottocode!
-    for model, repls in load(Path(phoible.__file__).parent.parent / 'replacements.json').items():
-        if model == 'Language':
-            languoids = {l.iso: l.id for l in glottolog.languoids() if l.iso}
-            for oid, nid in repls.items():
-                common.Config.add_replacement(oid, languoids.get(oid), common.Language)
-        elif model == 'Parameter':
-            for oid, nid in repls.items():
-                common.Config.add_replacement(oid, nid, common.Parameter)
     return
 
     ia_urls = dict(get_rows(args, 'InternetArchive'))
