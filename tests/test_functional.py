@@ -28,6 +28,7 @@ pytest_plugins = ['clld']
         ('get_dt', '/languages'),
         ('get_dt', '/languages?sSearch_2=a&iSortingCols=1&iSortCol_0=2'),
         ('get_dt', '/languages?sSearch_3=a&iSortingCols=1&iSortCol_0=3'),
+        ('get_dt', '/languages?iSortingCols=1&iSortCol_0=2'),
         ('get_html', '/languages'),
         ('get_json', '/languages.geojson'),
         ('get', '/languages/cogu1240'),

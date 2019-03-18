@@ -16,6 +16,7 @@ from clld.db.models.common import (
     Value,
 )
 from clld_glottologfamily_plugin.datatables import FamilyCol
+from clld_glottologfamily_plugin.models import Family
 
 
 from phoible.models import Segment, Variety, Inventory, Phoneme
@@ -23,6 +24,9 @@ from phoible.models import Segment, Variety, Inventory, Phoneme
 
 
 class Varieties(Languages):
+    def base_query(self, query):
+        return query.outerjoin(Family)
+
     def col_defs(self):
         return [
             LinkCol(self, 'name'),
