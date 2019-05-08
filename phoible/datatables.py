@@ -203,7 +203,11 @@ class Inventories(Contributions):
             CountCol(self, 'all', bSearchable=False, bSortable=False)]
         for c in 'vowel consonant tone'.split():
             res.append(Col(
-                self, c, model_col=getattr(Inventory, 'count_' + c), sTitle='# %ss' % c))
+                self,
+                c,
+                model_col=getattr(Inventory, 'count_' + c),
+                sTitle='# %ss' % c,
+            ))
         res.extend([
             PhoibleContributorsCol(self, 'contributor'),
             CitationCol(self, 'cite'),

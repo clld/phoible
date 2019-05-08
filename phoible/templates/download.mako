@@ -8,13 +8,12 @@
     by clicking the download buttons <i class="icon-download-alt"> </i> on the resource's
     pages, a bulk download of PHOIBLE data as ${h.external_link('https://cldf.clld.org', label='CLDF')}
     StructureDataset is available at ZENODO:<br>
-    <a href="https://doi.org/10.5281/zenodo.2593234"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.2593234.svg"
-                                                          alt="DOI"></a>
+    <a href="https://doi.org/10.5281/zenodo.2677911"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.2677911.svg" alt="DOI"></a>
 </p>
 
 <p>
     The data of PHOIBLE is curated in a
-    ${h.external_link('https://github.com/phoible/phoible', 'GitHub repository')}.
+    ${h.external_link('https://github.com/phoible/dev', 'GitHub repository')}.
 </p>
 
 <p>Please cite PHOIBLE as follows:</p>
@@ -22,8 +21,7 @@
 <%util:well>
     ${h.newline2br(h.text_citation(request, request.dataset))|n}
     ${h.cite_button(request, request.dataset)}
-    <a href="https://doi.org/10.5281/zenodo.2593234"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.2593234.svg"
-                                                          alt="DOI"></a>
+    <a href="https://doi.org/10.5281/zenodo.2677911"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.2677911.svg" alt="DOI"></a>
 </%util:well>
 
 <h4>Earlier versions of PHOIBLE</h4>

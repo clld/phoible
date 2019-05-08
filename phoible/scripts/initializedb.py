@@ -95,7 +95,6 @@ def main(args):  # pragma: no cover
         if rec.id not in data['Source']:
             data.add(common.Source, rec.id, _obj=bibtex2source(rec))
 
-
     for contrib in ds['contributors.csv']:
         o = data.add(
             common.Contributor,
@@ -216,6 +215,9 @@ def main(args):  # pragma: no cover
                 inventory['ID'],
             ),
             source_url=inventory['URL'],
+            count_tone=inventory['count_tones'],
+            count_vowel=inventory['count_vowels'],
+            count_consonant=inventory['count_consonants'],
         )
         DBSession.add(common.ContributionContributor(contribution=inv, contributor=data['Contributor'][inventory['Contributor_ID'].upper()]))
         for src in inventory['Source']:
@@ -244,26 +246,6 @@ def main(args):  # pragma: no cover
 
     return
 
-    ia_urls = dict(get_rows(args, 'InternetArchive'))
-
-    #squibs = defaultdict(list)
-    #for row in get_rows(args, 'Squib'):
-    #    squibs[row[0]].append(row[1])
-
-
-
-    #for row in aggregated:
-        #for j, squib in enumerate(squibs.get(row.InventoryID, [])):
-        #    f = common.Contribution_files(
-        #        object=contrib,
-        #        id='squib-%s-%s.pdf' % (contrib.id, j + 1),
-        #        name='Phonological squib',
-        #        description=squib,
-        #        mime_type='application/pdf')
-        #    assert f
-        #    # f.create(files_dir, file(args.data_file('phonological_squibs', src)).read())
-
-
 
 def prime_cache(args):  # pragma: no cover
     """If data needs to be denormalized for lookup, do that here.
@@ -281,18 +263,6 @@ def prime_cache(args):  # pragma: no cover
         segment.frequency = float(len(segment.valuesets)) / float(n)
         segment.in_inventories = len(segment.valuesets)
         segment.total_inventories = m
-
-    for inventory in DBSession.query(models.Inventory).options(
-            joinedload_all(common.Contribution.valuesets, common.ValueSet.parameter)
-    ):
-        if '(UPSID)' not in inventory.name:
-            inventory.count_tone = 0
-
-        for vs in inventory.valuesets:
-            attr = 'count_' + vs.parameter.segment_class
-            if hasattr(inventory, attr):
-                val = getattr(inventory, attr) or 0
-                setattr(inventory, attr, val + 1)
 
     for variety in DBSession.query(models.Variety).options(
             joinedload(models.Variety.inventories)):
