@@ -1,7 +1,5 @@
 import pytest
 
-pytest_plugins = ['clld']
-
 
 @pytest.mark.parametrize(
     "method,path",

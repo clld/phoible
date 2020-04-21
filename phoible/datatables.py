@@ -1,6 +1,6 @@
 from sqlalchemy import Integer
 from sqlalchemy.sql.expression import cast
-from sqlalchemy.orm import joinedload_all, joinedload
+from sqlalchemy.orm import joinedload
 
 from clld.web.datatables.base import LinkCol, Col, filter_number, LinkToMapCol, RefsCol as BaseRefsCol
 from clld.web.datatables.language import Languages
@@ -146,8 +146,8 @@ class Phonemes(Values):
         query = super(Phonemes, self).base_query(query)
         if self.parameter:
             query = query.join(ValueSet.contribution).options(
-                joinedload_all(Value.valueset, ValueSet.language),
-                joinedload_all(Value.valueset, ValueSet.contribution))
+                joinedload(Value.valueset).joinedload(ValueSet.language),
+                joinedload(Value.valueset).joinedload(ValueSet.contribution))
         return query
 
 

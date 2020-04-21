@@ -2,11 +2,11 @@ import sys
 from collections import defaultdict
 import unicodedata
 
-from sqlalchemy.orm import joinedload, joinedload_all
+from sqlalchemy.orm import joinedload
 from clld.scripts.util import initializedb, Data
 from clld.db.meta import DBSession
 from clld.db.models import common
-from clld.lib import color
+from clldutils import color
 
 from clld.lib.bibtex import EntryType, FIELDS, unescape, Record
 from pyglottolog.api import Glottolog

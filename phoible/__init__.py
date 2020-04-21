@@ -1,16 +1,11 @@
-import re
-
-from sqlalchemy.orm import joinedload_all
-from pyramid.httpexceptions import HTTPMovedPermanently, HTTPNotFound
+from sqlalchemy.orm import joinedload
 from pyramid.config import Configurator
 
 from clld.web.app import MapMarker, CtxFactoryQuery
 from clld import interfaces
 from clld.web.adapters.download import Download
-from clld.db.models.common import (
-    Dataset, Contributor, ContributionContributor, Parameter, Config,
-)
-from clld.lib.svg import icon, data_url
+from clld.db.models.common import Contributor, ContributionContributor
+from clldutils.svg import icon, data_url
 
 from phoible import models
 assert models
@@ -29,10 +24,7 @@ class PhoibleCtxFactoryQuery(CtxFactoryQuery):
     def refined_query(self, query, model, req):
         if model == Contributor:
             query = query.options(
-                joinedload_all(
-                    Contributor.contribution_assocs,
-                    ContributionContributor.contribution,
-                )
+                joinedload(Contributor.contribution_assocs).joinedload(ContributionContributor.contribution)
             )
         return query
 

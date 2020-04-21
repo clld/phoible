@@ -48,7 +48,7 @@ class BibTex(MetadataFromRec):
     mimetype = 'text/x-bibtex'
 
     def render(self, ctx, req):
-        return self.rec(ctx, req).__unicode__()
+        return str(self.rec(ctx, req))
 
 
 @implementer(interfaces.IRepresentation, interfaces.IMetadata)
