@@ -81,7 +81,7 @@ A Report of the Stanford Phonology Archive},
         Author = {Steven Moran},
         School = {University of Washington},
         Title = {Phonetics Information Base and Lexicon},
-        Url = {https://digital.lib.washington.edu/researchworks/handle/1773/22452}
+        Url = {https://digital.lib.washington.edu/researchworks/handle/1773/22452},
         Year = {2012}
 }
 @techreport{IPA2005,
@@ -105,11 +105,11 @@ A Report of the Stanford Phonology Archive},
     author = {{McCloy}, Daniel R. and Moran, Steven and Wright, Richard A.},
     title = {Revisiting `The role of features in phonological inventories'},
     year = {2013},
-    month = jan,
+    month = {Jan},
     howpublished = {CUNY Conference on the Feature in Phonology and Phonetics},
     address = {New York, {NY}},
     type = {paper},
-    url = {http://students.washington.edu/drmccloy/pubs/McCloyEtAl2013_cunyFeatureConf.pdf},
+    url = {https://dan.mccloy.info/pubs/McCloyEtAl2013_cunyFeatureConf.pdf}
 }
 @incollection{Moran2012b,
     Address = {Heidelberg},
