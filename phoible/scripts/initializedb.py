@@ -3,7 +3,7 @@ from collections import defaultdict
 import unicodedata
 
 from sqlalchemy.orm import joinedload
-from clld.scripts.util import initializedb, Data
+from clld.cliutil import Data
 from clld.db.meta import DBSession
 from clld.db.models import common
 from clldutils import color
@@ -270,7 +270,3 @@ def prime_cache(args):  # pragma: no cover
 
     print('added', add_wikipedia_urls(), 'wikipedia urls')
 
-
-if __name__ == '__main__':  # pragma: no cover
-    initializedb(create=main, prime_cache=prime_cache)
-    sys.exit(0)

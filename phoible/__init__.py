@@ -54,7 +54,7 @@ def main(global_config, **settings):
     """
     settings['route_patterns'] = {
         'contributions': '/inventories',
-        'contribution': '/inventories/view/{id:[^/\.]+}',
+        'contribution': r'/inventories/view/{id:[^/\.]+}',
     }
     config = Configurator(settings=settings)
     config.include('clldmpg')

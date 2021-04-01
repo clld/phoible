@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup as bs
-from clldutils.dsv import reader
+from csvw.dsv import reader
 from clld.db.meta import DBSession
 from clld.db.models.common import Parameter
 
