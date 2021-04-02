@@ -7,6 +7,9 @@ from clld.web.adapters.download import Download
 from clld.db.models.common import Contributor, ContributionContributor
 from clldutils.svg import icon, data_url
 
+from pyramid.view import view_config
+from pyramid.response import Response
+
 from phoible import models
 assert models
 
@@ -48,18 +51,24 @@ class PhoibleMapMarker(MapMarker):
 class RdfDump(Download):
     ext = 'n3'
 
-
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
+
     settings['route_patterns'] = {
         'contributions': '/inventories',
         'contribution': r'/inventories/view/{id:[^/\.]+}',
     }
     config = Configurator(settings=settings)
+    config.include('pyramid_mako')
+    config.add_route('faq', '/faq')
+    config.add_route('conventions', '/conventions')
+
     config.include('clldmpg')
     config.registry.registerUtility(PhoibleMapMarker(), interfaces.IMapMarker)
     config.registry.registerUtility(PhoibleCtxFactoryQuery(), interfaces.ICtxFactoryQuery)
     config.add_static_view('data', 'phoible:static/data')
     #config.register_download(RdfDump(Dataset, 'phoible', description='RDF dump'))
+
+    config.scan()
     return config.make_wsgi_app()
