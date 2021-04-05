@@ -56,25 +56,9 @@ class RdfDump(Download):
     ext = 'n3'
 
 
-def sync_clld_mako():
-    """ This function syncs project/templates/app.mako project/templates/util.mako with ones in the clld library.
-    """
-    clld_app_mako_path = os.path.dirname(clld.__file__) + "/web/templates/app.mako"
-    clld_util_mako_path = os.path.dirname(clld.__file__) + "/web/templates/util.mako"
-    project_templates_path = os.path.dirname(os.path.abspath(__file__)) + "/templates"
-    project_app_mako_path = project_templates_path + "/app.mako"
-    project_util_mako_path = project_templates_path + "/util.mako"
-
-    if not os.path.exists(project_app_mako_path) or not filecmp.cmp(clld_app_mako_path, project_app_mako_path):
-        copyfile(clld_app_mako_path, project_app_mako_path)
-    if not os.path.exists(project_util_mako_path) or not filecmp.cmp(clld_util_mako_path, project_util_mako_path):
-        copyfile(clld_util_mako_path, project_util_mako_path)
-
-
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
-    #sync_clld_mako()
     settings['route_patterns'] = {
         'contributions': '/inventories',
         'contribution': r'/inventories/view/{id:[^/\.]+}',
