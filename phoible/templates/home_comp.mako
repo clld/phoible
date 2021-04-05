@@ -10,15 +10,7 @@
     ${util.contextnavitem('about')}
     ${util.contextnavitem('credits')}
     ${util.contextnavitem('contact')}
-    % if hasattr(context.get('request'), 'conventions'):
-        <li class="active"><a href="/conventions">Conventions</a></li>
-    % else:
-        <li class><a href="/conventions">Conventions</a></li>
-    % endif
-    % if hasattr(context.get('request'), 'faq'):
-        <li class="active"><a href="/faq">FAQ</a></li>
-    % else:
-        <li class><a href="/faq">FAQ</a></li>
-    % endif
+    ${util.contextnavitem('conventions')}
+    ${util.contextnavitem('faq')}
 </%def>
 ${next.body()}
