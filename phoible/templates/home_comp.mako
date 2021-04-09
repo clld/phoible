@@ -10,7 +10,5 @@
     ${util.contextnavitem('about')}
     ${util.contextnavitem('credits')}
     ${util.contextnavitem('contact')}
-    ${util.contextnavitem('conventions')}
-    ${util.contextnavitem('faq')}
 </%def>
 ${next.body()}

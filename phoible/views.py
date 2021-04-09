@@ -10,9 +10,11 @@ with open('phoible/static/conventions.html', 'r') as file:
 
 @view_config(route_name='faq', renderer='faq.mako')
 def faq_view(request):
+    request.faq = True
     return {'content': faq_page}
 
 
 @view_config(route_name='conventions', renderer='conventions.mako')
 def conventions_view(request):
+    request.conventions = True
     return {'content': conventions_page}

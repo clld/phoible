@@ -17,14 +17,13 @@
 }
 
 code {
-    font-size: 1.0rem;
+    padding: 0 .475rem .025rem;
 }
 
-
-del {
-    text-decoration: none;
-}
-
-del code::before {
-    content: "　";
+mark {
+    font: normal .8rem "mplus-heavy","DejaVu Sans","FreeSans",sans-serif;
+    background-color: inherit;
+    color: #999;
+    border: none;
+    font-weight: bold;
 }
