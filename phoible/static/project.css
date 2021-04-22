@@ -31,7 +31,7 @@ mark {
 /* IPA glyphs and diacritics */
 .ipa, .dia {
     font-size: larger;
-    font-family: "charis";
+    font-family: CharisSILW, sans-serif;
     background-color: #e0e0e0;
     padding: 0.1rem 0.2rem;
     border-radius: 0.2rem;
