@@ -62,12 +62,3 @@ mark {
     font-size: smaller;
     color: #666;
 }
-
-/* To fix the problem that rst2html5 convert class "dataTable" to "datatable" */
-table.datatable {
-    width: 100%;
-    margin: 0 auto;
-    clear: both;
-    border-collapse: separate;
-    border-spacing: 0;
-}
