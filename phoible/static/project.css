@@ -28,6 +28,7 @@ mark {
     font-weight: bold;
 }
 
+/* Conventions Page CSS */
 /* IPA glyphs and diacritics */
 .ipa, .dia {
     font-size: larger;
@@ -35,6 +36,8 @@ mark {
     background-color: #e0e0e0;
     padding: 0.1rem 0.2rem;
     border-radius: 0.2rem;
+    /* To fix glyphs overlapping*/
+    line-height: normal;
 }
 
 .dia {
@@ -60,3 +63,11 @@ mark {
     color: #666;
 }
 
+/* To fix the problem that rst2html5 convert class "dataTable" to "datatable" */
+table.datatable {
+    width: 100%;
+    margin: 0 auto;
+    clear: both;
+    border-collapse: separate;
+    border-spacing: 0;
+}
