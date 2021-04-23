@@ -1,3 +1,4 @@
+/* Begin: Code highlighting CSS */
 .hljs-literal {
     color: #990073;
 }
@@ -15,11 +16,14 @@
 .hljs-string {
     color: #d14;
 }
+/* End: Code highlighting CSS */
 
+/* Begin: Site-wide CSS */
+/* Code tag CSS */
 code {
     padding: 0 .475rem .025rem;
 }
-
+/* Mark tag CSS */
 mark {
     font: normal .8rem "mplus-heavy","DejaVu Sans","FreeSans",sans-serif;
     background-color: inherit;
@@ -27,8 +31,14 @@ mark {
     border: none;
     font-weight: bold;
 }
+/* Entire site uses CharisSILW font*/
+body {
+    font-family: CharisSILW, sans-serif;
+}
 
-/* Conventions Page CSS */
+/* End: Site-wide CSS */
+
+/* Begin: Conventions Page CSS */
 /* IPA glyphs and diacritics */
 .ipa, .dia {
     font-size: larger;
@@ -62,3 +72,4 @@ mark {
     font-size: smaller;
     color: #666;
 }
+/* End: Conventions Page CSS */
