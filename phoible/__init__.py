@@ -6,13 +6,9 @@ from clld import interfaces
 from clld.web.adapters.download import Download
 from clld.db.models.common import Contributor, ContributionContributor
 from clldutils.svg import icon, data_url
+from clld.web.app import menu_item
 
-import clld
-import os
-import filecmp
-from shutil import copyfile
-
-
+import functools
 from phoible import models
 
 assert models
@@ -76,5 +72,16 @@ def main(global_config, **settings):
     home_comp = config.registry.settings['home_comp']
     home_comp.append('faq')
     home_comp.append('conventions')
+
+    config.register_menu(
+        ('dataset', functools.partial(menu_item, 'dataset', label='Home')),
+        ('contributors', functools.partial(menu_item, 'contributors', label='Contributors')),
+        ('contributions', functools.partial(menu_item, 'contributions', label='Inventories')),
+        ('languages', functools.partial(menu_item, 'languages', label='Languages')),
+        ('parameters', functools.partial(menu_item, 'parameters', label='Segments')),
+        ('sources', functools.partial(menu_item, 'sources', label='Sources')),
+        ('conventions', functools.partial(menu_item, 'conventions', label='Conventions')),
+        ('faq', functools.partial(menu_item, 'faq', label='FAQ')),
+    )
 
     return config.make_wsgi_app()
