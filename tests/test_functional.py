@@ -5,6 +5,8 @@ import pytest
     "method,path",
     [
         ('get_html', '/'),
+        ('get_html', '/faq'),
+        ('get_html', '/conventions'),
         ('get', '/void.md.txt'),
         ('get_html', '/contributors/GM'),
         ('get_dt', '/parameters'),
