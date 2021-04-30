@@ -6,8 +6,11 @@ from clld import interfaces
 from clld.web.adapters.download import Download
 from clld.db.models.common import Contributor, ContributionContributor
 from clldutils.svg import icon, data_url
+from clld.web.app import menu_item
 
+import functools
 from phoible import models
+
 assert models
 
 _ = lambda s: s
@@ -57,9 +60,28 @@ def main(global_config, **settings):
         'contribution': r'/inventories/view/{id:[^/\.]+}',
     }
     config = Configurator(settings=settings)
+
     config.include('clldmpg')
     config.registry.registerUtility(PhoibleMapMarker(), interfaces.IMapMarker)
     config.registry.registerUtility(PhoibleCtxFactoryQuery(), interfaces.ICtxFactoryQuery)
     config.add_static_view('data', 'phoible:static/data')
-    #config.register_download(RdfDump(Dataset, 'phoible', description='RDF dump'))
+    # config.register_download(RdfDump(Dataset, 'phoible', description='RDF dump'))
+
+    config.add_route('faq', '/faq')
+    config.add_route('conventions', '/conventions')
+    home_comp = config.registry.settings['home_comp']
+    home_comp.append('faq')
+    home_comp.append('conventions')
+
+    config.register_menu(
+        ('dataset', functools.partial(menu_item, 'dataset', label='Home')),
+        ('contributors', functools.partial(menu_item, 'contributors', label='Contributors')),
+        ('contributions', functools.partial(menu_item, 'contributions', label='Inventories')),
+        ('languages', functools.partial(menu_item, 'languages', label='Languages')),
+        ('parameters', functools.partial(menu_item, 'parameters', label='Segments')),
+        ('sources', functools.partial(menu_item, 'sources', label='Sources')),
+        ('conventions', functools.partial(menu_item, 'conventions', label='Conventions')),
+        ('faq', functools.partial(menu_item, 'faq', label='FAQ')),
+    )
+
     return config.make_wsgi_app()

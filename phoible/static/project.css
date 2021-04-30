@@ -1,1 +1,68 @@
+/* Begin: Code highlighting CSS */
+.hljs-literal {
+    color: #990073;
+}
+.hljs-number {
+    color: #099;
+}
+.hljs-comment {
+    color: #998;
+    font-style: italic;
+}
+.hljs-keyword {
+    color: #900;
+    font-weight: bold;
+}
+.hljs-string {
+    color: #d14;
+}
+/* End: Code highlighting CSS */
 
+/* Begin: Site-wide CSS */
+/* Code tag CSS */
+code {
+    padding: 0 .475rem .025rem;
+}
+
+/* Entire site uses CharisSILW font*/
+body {
+    font-family: CharisSILW, sans-serif;
+}
+
+/* End: Site-wide CSS */
+
+/* Begin: Conventions Page CSS */
+/* IPA glyphs and diacritics */
+.ipa, .dia {
+    font-size: larger;
+    font-family: CharisSILW, sans-serif;
+    background-color: #e0e0e0;
+    padding: 0.1rem 0.2rem;
+    border-radius: 0.2rem;
+    /* To fix glyphs overlapping*/
+    line-height: normal;
+}
+
+.dia {
+    padding: 0.1rem 0.3rem;
+}
+
+.dia::before {
+    content: "\2007";  /* figure-width non-breaking space */
+}
+
+/* ISO codes and glottocodes */
+.iso {
+    text-transform: lowercase;
+    font-variant: small-caps;
+    font-weight: bold;
+}
+
+/* unicode codepoints & descriptions */
+.codept {
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: smaller;
+    color: #666;
+}
+/* End: Conventions Page CSS */

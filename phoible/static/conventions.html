@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>PHOIBLE notational conventions</title>
+<meta charset="utf-8"/>
+</head>
+<body>
+<section id="phoible-notational-conventions">
+<h2>PHOIBLE notational conventions</h2>
+<p>In order to preserve distinctions both within and across language descriptions, additions to the approved International Phonetic Alphabet (IPA) glyph set were needed; wherever possible these were drawn from the <a href="https://www.internationalphoneticassociation.org/sites/default/files/extIPAChart2008.pdf">extIPA symbols for disordered speech</a>. This page describes our additions to the IPA glyph set, and also describes any idiosyncracies in our interpretation and usage of approved IPA glyphs, and conventions regarding glyph ordering. When we use the terms “official IPA”, “approved IPA glyphs”, or just “IPA” we are referring to <a href="https://www.internationalphoneticassociation.org/content/full-ipa-chart">the 2005 update of the full chart</a> unless otherwise indicated.</p>
+<section id="similar-looking-glyphs">
+<h3>Similar-looking glyphs</h3>
+<p>There are a number of IPA symbols that resemble ordinary keyboard glyphs. In all cases the data in PHOIBLE use the codepoints for the official glyphs. The most common of these are summarized here:</p>
+<table border="0" cellpadding="0" cellspacing="0" class="table table-bordered order-column compact stripe dataTable no-footer table-nonfluid" role="grid">
+<thead>
+<tr>
+<th role="row">Keyboard letter</th>
+<th role="row">Representation in PHOIBLE</th>
+<th role="row">Meaning in IPA</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="ipa">g</span> <span class="codept">0067 LATIN SMALL LETTER G</span></td>
+<td><span class="ipa">ɡ</span> <span class="codept">0261 LATIN SMALL LETTER SCRIPT G</span></td>
+<td>voiced velar stop</td>
+</tr>
+<tr class="even">
+<td><span class="ipa">!</span> <span class="codept">0021 EXCLAMATION POINT</span></td>
+<td><span class="ipa">ǃ</span> <span class="codept">01C3 LATIN LETTER RETROFLEX CLICK</span></td>
+<td>(post)alveolar click</td>
+</tr>
+<tr class="odd">
+<td><span class="ipa">|</span> <span class="codept">007C VERTICAL LINE</span></td>
+<td><span class="ipa">ǀ</span> <span class="codept">01C0 LATIN LETTER DENTAL CLICK</span></td>
+<td>dental click</td>
+</tr>
+<tr class="even">
+<td><span class="ipa">'</span> <span class="codept">0027 APOSTROPHE</span></td>
+<td><span class="ipa">ʼ</span> <span class="codept">02BC MODIFIER LETTER APOSTROPHE</span></td>
+<td>ejective</td>
+</tr>
+<tr class="odd">
+<td><span class="ipa">:</span> <span class="codept">003A COLON</span></td>
+<td><span class="ipa">ː</span> <span class="codept">02D0 MODIFIER LETTER TRIANGULAR COLON</span></td>
+<td>long</td>
+</tr>
+</tbody>
+</table>
+<p>In addition, PHOIBLE eschews the use of precomposed digraphs such as <span class="ipa">ʤ</span>, <span class="ipa">ʨ</span>, etc. to represent affricates. Note that since each entry in PHOIBLE represents a single phonologically contrastive sound in its doculect, there is never any risk that an entry such as <span class="ipa">tɕ</span> might be confused as a sequence of two phonemes (stop + fricative) rather than a single affricate.</p>
+</section>
+<section id="additions-to-the-ipa">
+<h3>Additions to the IPA</h3>
+<section id="fortis-lenis">
+<h4>Fortis / Lenis</h4>
+<p>Languages described as having a fortis/plain/lenis distinction that corresponds poorly with the traditional voiced/voiceless-unaspirated/voiceless-aspirated continuum are marked using the voiceless glyph for the “plain” phoneme, and either <span class="dia">͈</span> (<span class="codept">0348 COMBINING DOUBLE VERTICAL LINE BELOW</span>) to mark the fortis articulation, and/or <span class="dia">͉</span> (<span class="codept">0349 COMBINING LEFT ANGLE BELOW</span>) for the lenis articulation.</p>
+</section>
+<section id="frictionalized-sounds">
+<h4>Frictionalized sounds</h4>
+<p>The frictionalized diacritic <span class="dia">͓</span> (<span class="codept">0353 COMBINING X BELOW</span>) is used in PHOIBLE to represent three types of sounds:</p>
+<ul>
+<li>Click consonants where the release of the anterior closure involves an ingressive “sucking” sound similar to a fricative. In such cases the diacritic is placed on the click glyph, not on the glyph indicating the posterior closure location. Example: <span class="ipa">kǃ͓ʰ</span></li>
+<li>“Frictionalized” vowels (sounds that are phonologically vocalic, but with sufficiently close closures to create buzzing).</li>
+<li>Fricative sounds at places of articulation that do not have dedicated fricative glyphs (e.g., sounds with voiceless velar lateral frication: <span class="ipa">ʟ̥͓</span>, <span class="ipa">ɬʟ̥͓</span>, <span class="ipa">kʟ̥͓ʼ</span>).</li>
+</ul>
+</section>
+<section id="non-sibilant-fricatives">
+<h4>Non-sibilant fricatives</h4>
+<p>Languages described as having a sibilant/non-sibilant distinction among coronal fricatives and affricates are handled using <span class="dia">͇</span> (<span class="codept">0347 COMBINING EQUALS SIGN BELOW</span>) to mark the non-sibilant phoneme.</p>
+</section>
+<section id="retroflex-clicks">
+<h4>Retroflex clicks</h4>
+<p>Retroflex clicks are represented by <span class="ipa">‼</span> (<span class="codept">203C DOUBLE EXCLAMATION MARK</span>). Note that <span class="ipa">ǃ</span> (<span class="codept">01C3</span>, the symbol representing (post)alveolar clicks in the IPA) is confusingly referred to as <span class="codept">LATIN LETTER RETROFLEX CLICK</span> in the Unicode standard.</p>
+</section>
+<section id="glottalization">
+<h4>Glottalization</h4>
+<p>Sounds described as “glottalized” are marked with <span class="ipa">ˀ</span> (<span class="codept">02C0 MODIFIER LETTER GLOTTAL STOP</span>), unless it is clear from context that either “ejective” or “creaky voicing” are the intended meaning. See the section on <a href="#glottalization-laryngealization-and-creaky-voicing">Glottalization, laryngealization, and creaky voicing</a> for more details.</p>
+</section>
+<section id="summary-table-of-phoible-symbols-not-in-the-ipa">
+<h4>Summary table of PHOIBLE symbols not in the IPA</h4>
+<table border="0" cellpadding="0" cellspacing="0" class="table table-bordered order-column compact stripe dataTable no-footer table-nonfluid" role="grid">
+<thead>
+<tr>
+<th role="row">Glyph</th>
+<th role="row">Codepoint</th>
+<th role="row">Description</th>
+<th role="row">Meaning in PHOIBLE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="dia">͈</span></td>
+<td><span class="codept">0348</span></td>
+<td><span class="codept">COMBINING DOUBLE VERTICAL LINE BELOW</span></td>
+<td>Fortis</td>
+</tr>
+<tr class="even">
+<td><span class="dia">͉</span></td>
+<td><span class="codept">0349</span></td>
+<td><span class="codept">COMBINING LEFT ANGLE BELOW</span></td>
+<td>Lenis</td>
+</tr>
+<tr class="odd">
+<td><span class="dia">͓</span></td>
+<td><span class="codept">0353</span></td>
+<td><span class="codept">COMBINING X BELOW</span></td>
+<td>Frictionalized</td>
+</tr>
+<tr class="even">
+<td><span class="dia">͇</span></td>
+<td><span class="codept">0347</span></td>
+<td><span class="codept">COMBINING EQUALS SIGN BELOW</span></td>
+<td>Non-sibilant</td>
+</tr>
+<tr class="odd">
+<td><span class="ipa">‼</span></td>
+<td><span class="codept">203C</span></td>
+<td><span class="codept">DOUBLE EXCLAMATION MARK</span></td>
+<td>Retroflex click</td>
+</tr>
+<tr class="even">
+<td><span class="ipa">ˀ</span></td>
+<td><span class="codept">02C0</span></td>
+<td><span class="codept">MODIFIER LETTER GLOTTAL STOP</span></td>
+<td>(Pre-)glottalization</td>
+</tr>
+<tr class="odd">
+<td><span class="ipa">ʱ</span></td>
+<td><span class="codept">02B1</span></td>
+<td><span class="codept">MODIFIER LETTER SMALL H WITH HOOK</span></td>
+<td>Pre-aspirated voiced</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="idiosyncratic-usages">
+<h3>Idiosyncratic usages</h3>
+<section id="place-matching">
+<h4>Place matching</h4>
+<p>In PHOIBLE, all affricates, prenasalized stops, and pre-stopped nasals adhere to strict place-matching. For example, although it is common to use <span class="ipa">t</span> or <span class="ipa">d</span> to designate the stop portion of all coronal affricates, in PHOIBLE a palatal affricate will always be represented as <span class="ipa">cç</span> (not <span class="ipa">tç</span>). A similar constraint holds for dental affricates <span class="ipa">t̪s̪</span> and <span class="ipa">t̪θ</span>, post-alveolar affricates <span class="ipa">t̠ʃ</span>, and retroflex affricates <span class="ipa">ʈʂ</span>. Note that <span class="ipa">tɕ</span> is considered simultaneously (lamino-)alveolar and palatal, so no retraction diacritic is used on the <span class="ipa">t</span>.</p>
+</section>
+<section id="labialization-velarization-and-pharyngealization">
+<h4>Labialization, velarization and pharyngealization</h4>
+<p>In PHOIBLE we do not use <span class="dia">̴</span> (<span class="codept">0334 COMBINING TILDE OVERLAY</span>), which the IPA defines as a “velarized or pharyngealized” diacritic. For velarized articulations we use <span class="ipa">ˠ</span> (<span class="codept">02E0 MODIFIER LETTER SMALL GAMMA</span>), for pharyngealized articulations we use <span class="ipa">ˤ</span> (<span class="codept">02E4 MODIFIER LETTER REVERSED GLOTTAL STOP</span>).</p>
+<p>The diacritic <span class="ipa">ʷ</span> (<span class="codept">02B7 MODIFIER LETTER SMALL W</span>) is strictly used to mark <em>labialization</em> and not <em>labio-velarization</em>. If a source describes a sound as “labio-velarized” we use modifier letters <span class="ipa">ʷ</span> and <span class="ipa">ˠ</span> together.</p>
+</section>
+<section id="aspiration-murmur-and-breathy-voicing">
+<h4>Aspiration, murmur, and breathy voicing</h4>
+<p>Voiceless aspirated sounds are marked with the standard <span class="ipa">ʰ</span> (<span class="codept">02B0 MODIFIER LETTER SMALL H</span>). Voiceless sounds that are described as “pre-aspirated” are marked with the diacritic to the left of the base glyph: <span class="ipa">ʰt</span>. Voiced sounds described as either “aspirated”, “breathy”, or “murmured” are marked with <span class="dia">̤</span> (<span class="codept">0324 COMBINING DIARESIS BELOW</span>). Voiced sounds described as “pre-aspirated” are marked with <span class="ipa">ʱ</span> (<span class="codept">02B1 MODIFIER LETTER SMALL H WITH HOOK</span>) to the left of the base glyph: <span class="ipa">ʱd</span>.</p>
+</section>
+<section id="glottalization-laryngealization-and-creaky-voicing">
+<h4>Glottalization, laryngealization, and creaky voicing</h4>
+<p>Voiced sounds described as creaky or laryngealized are marked with <span class="dia">̰</span> (<span class="codept">0330 COMBINING TILDE BELOW</span>). Sounds described as “glottalized” are marked with <span class="ipa">ˀ</span> (<span class="codept">02C0 MODIFIER LETTER GLOTTAL STOP</span>), unless the sound is voiceless and it is evident from the surrounding description that what is meant is that the consonant is ejective, in which case we use <span class="ipa">ʼ</span> (<span class="codept">02BC MODIFIER LETTER APOSTROPHE</span>). Sounds described as “pre-glottalized” are marked with <span class="ipa">ˀ</span> to the left of the base glyphː <span class="ipa">ˀt</span>.</p>
+<p>## Lowered fricatives and raised approximants PHOIBLE somewhat grudgingly follows common practice in the literature in using the “uptack” and “downtack” to convert between fricative and approximant manners of articulation, when no suitable single glyph is available. For example, the Stanford Phonology Archive includes sounds described as “z-approximant” and “ɻ-fricative”, which we represent as <span class="ipa">z̞</span> and <span class="ipa">ɻ̝</span>, respectively. The raised diacritic is also used with the pharyngeal fricative to indicate a voiced pharyngeal plosive <span class="ipa">ʕ̝</span></p>
+</section>
+<section id="low-vowels">
+<h4>Low vowels</h4>
+<p>As with all representations in PHOIBLE, we privilege the textual description of the original authors over their choice of symbols. Consequently, sounds described as “low back unrounded vowels” are represented as <span class="ipa">ɑ</span> (<span class="codept">0251 LATIN SMALL LETTER ALPHA</span>), even if the author used the keyboard <span class="ipa">a</span> in his or her charts.</p>
+</section>
+<section id="diphthongs">
+<h4>Diphthongs</h4>
+<p>The glyphs <span class="ipa">j</span>, <span class="ipa">ɰ</span>, <span class="ipa">ɥ</span>, <span class="ipa">w</span> are used only for glide consonants, and never occur as on- or off-glides in diphthongs and triphthongs. Instead, polyphthong on- and off-glides use vowel symbols <span class="ipa">i</span>, <span class="ipa">ɯ</span>, <span class="ipa">y</span>, and <span class="ipa">u</span>. If necessary, the non-syllabic diacritic <span class="dia">̯</span> (<span class="codept">032F COMBINING INVERTED BREVE BELOW</span>) is used to disambiguate nucleus from glide portion (when such is indicated in the language description).</p>
+</section>
+<section id="clicks">
+<h4>Clicks</h4>
+<p>Clicks are always represented in PHOIBLE as a combination of anterior and posterior articulations. The posterior articulation is given first, and indicates both place (velar or uvular) and phonation during the click. Posterior click glyphs thus comprise the set <span class="ipa">k</span> <span class="ipa">q</span> <span class="ipa">ɡ</span> <span class="ipa">ɢ</span> <span class="ipa">ŋ</span> <span class="ipa">ɴ</span>. Laryngeal/phonatory modifiers are placed on the posterior glyph: <span class="ipa">ŋ̊ǃ</span>. The anterior place and manner of the click are then indicated with the usual IPA click symbols <span class="ipa">ʘ</span> <span class="ipa">ǀ</span> <span class="ipa">ǁ</span> <span class="ipa">ǃ</span> <span class="ipa">ǂ</span> and the PHOIBLE symbol for retroflex clicks <span class="ipa">‼</span>. Note also that alveolar and post-alveolar clicks are distinguished in PHOIBLE by the use of the retraction diacritic: <span class="ipa">kǃ</span> for alveolar, <span class="ipa">kǃ̠</span> for post-alveolar. See also the section on <a href="#frictionalized-sounds">frictionalized sounds</a> for notation of frictionalized clicks.</p>
+</section>
+<section id="epilaryngeal-phonation">
+<h4>Epilaryngeal phonation</h4>
+<p>There are some rare articulations that make use of an epilaryngeal phonation mechanism (e.g., the “sphincteric vowels” of !Xóõ). To represent these vowels, we use <span class="ipa">ᴱ</span> (<span class="codept">1D31 MODIFIER LETTER CAPITAL E</span>) to denote sphincteric phonation.</p>
+</section>
+<section id="apical-vowels">
+<h4>Apical vowels</h4>
+<p>The so-called “apical vowels” (most famously described in Modern Standard Chinese, a.k.a. “Mandarin”) have been traditionally represented by many Sinologists using non-standard glyphs <span class="ipa">ɿ</span> and <span class="ipa">ʅ</span>. In PHOIBLE we follow <a href="https://doi.org/10.1017/S0025100314000267">Lee-Kim 2014</a> in treating segments described as “apical vowels” as (possibly syllabic) approximants — in particular, as the dental approximant <span class="ipa">ɹ̪̩</span> and the retroflex approximant <span class="ipa">ɻ̩</span>.</p>
+</section>
+<section id="double-articulations-tie-bars">
+<h4>Double articulations / tie bars</h4>
+<p>The representations of speech sounds in PHOIBLE do not make use of the tie bar (<span class="codept">0361 COMBINING DOUBLE INVERTED BREVE</span> or <span class="codept">035C COMBINING DOUBLE BREVE BELOW</span>). The reasons for this choice are (1) it aids legibility when there are other diacritics, and (2) since the data are limited to single phonemes (i.e., there are no transcriptions of words or longer passages), there is no need to distinguish single phonemes from sequences. Put another way, every phoneme in PHOIBLE that is represented as a digraph has an implicit tiebar.</p>
+</section>
+</section>
+<section id="ordering-of-diacritics-and-modifier-letters">
+<h3>Ordering of diacritics and modifier letters</h3>
+<aside class="note">This section makes a distinction between “combining characters” and “spacing modifier letters”, which most linguists would group together under one term “diacritics”. Briefly, combining characters are diacritics that sit above or below the glyph they modify, or are superimposed on it (e.g., the tilde above a nasalized vowel <span class="dia">̃</span> is a combining character, encoded as <span class="codept">0303</span> in the Unicode standard). Spacing modifier letters are diacritics that sit next to the glyph they modify (e.g., the superscript <span class="ipa">ʰ</span> used to indicate aspiration is a modifier letter, encoded as <span class="codept">02B0</span>).</aside>
+<p>Each representation of a phoneme is first normalized into a canonical decomposition form that adheres to the <a href="http://unicode.org/reports/tr15/">Unicode Normalization Form D (NFD)</a>. However, the NFD algorithm does not define a prescribed order for all possible pairs of combining characters. For example, <span class="codept">0301</span> (combining acute accent) and <span class="codept">0308</span> (combining diaresis) are not re-ordered with respect to one another by the NFD algorithm, regardless of which order they occurred in the input string. PHOIBLE imposes an ordering that is consistent with NFD, but sets an explicit order for all combining characters used in the database. A rigid ordering for spacing modifier letters is also enforced. The chosen ordering is guided by the linguistic literature and typographical concerns, since to the best of our knowledge the IPA does not provide a recommended ordering for diacritics.</p>
+<p>The ordering conventions used in PHOIBLE are as follows:</p>
+<ol type="1">
+<li><strong>Place features:</strong> velarized/pharyngealized <span class="dia">̴</span>, linguolabial <span class="dia">̼</span>, dental <span class="dia">̪</span>, apical <span class="dia">̺</span>, laminal <span class="dia">̻</span>, advanced <span class="dia">̟</span>, retracted <span class="dia">̠</span></li>
+<li><strong>Manner features:</strong> non-sibilant <span class="dia">͇</span>, raised <span class="dia">̝</span>, lowered <span class="dia">̞</span>, advanced tongue root <span class="dia">̘</span>, retracted tongue root <span class="dia">̙</span>, frictionalized <span class="dia">͓</span></li>
+<li><strong>Secondary articulations:</strong> more round <span class="dia">̹</span>, less round <span class="dia">̜</span></li>
+<li><strong>Laryngeal settings:</strong> creaky <span class="dia">̰</span>, breathy <span class="dia">̤</span>, voiced <span class="dia">̬</span>, stiff <span class="dia">̬</span>, devoiced (below) <span class="dia">̥</span>, devoiced (above) <span class="dia">̊</span>, fortis <span class="dia">͈</span>, lenis <span class="dia">͉</span></li>
+<li><strong>Length:</strong> short <span class="dia">̆</span></li>
+<li><strong>Syllabicity:</strong> syllabic <span class="dia">̩</span> and non-syllabic markers <span class="dia">̯</span></li>
+<li><strong>Vowel quality modifications</strong>: nasalized <span class="dia">̃</span>, denasalized <span class="dia">͊</span>, centralized <span class="dia">̈</span>, mid-centralized <span class="dia">̽</span></li>
+<li><strong>Stop release:</strong> unreleased <span class="dia">̚</span></li>
+<li><strong>Spacing modifier letters:</strong> rhotic hook <span class="ipa">˞</span>, nasal release <span class="ipa">ⁿ</span>, lateral release <span class="ipa">ˡ</span>, labialized <span class="ipa">ʷ</span>, palatalized <span class="ipa">ʲ</span>, labial-palatalized <span class="ipa">ᶣ</span>, velarized <span class="ipa">ˠ</span>, pharyngealized <span class="ipa">ˤ</span>, glottalized <span class="ipa">ˀ</span>, schwa-like release <span class="ipa">ᵊ</span>, epilaryngeal source <span class="ipa">ᴱ</span>, aspirated <span class="ipa">ʰ</span>, breathy aspirated <span class="ipa">ʱ</span>, ejective <span class="ipa">ʼ</span>, long <span class="ipa">ː</span>, half long <span class="ipa">ˑ</span></li>
+</ol>
+</section>
+<section id="marginal-phonemes">
+<h3>Marginal phonemes</h3>
+<p>Marginal phonemes are those that are notably different phonologically from the majority of segments found in a particular language. For example, loanwords containing non-native sounds can introduce maringal phonemes into the borrowing language. Any type of phoneme described as “marginal”, “dubious” or “occurs only in loan words” is included in the database alongside other phonemes, but is marked with a boolean <code>TRUE</code> value in the <code>Marginal</code> column of the data file. Ordinary phonemes typically have the value <code>FALSE</code>, although for data sources that explicitly exclude marginal phonemes, the <code>Marginal</code> column is given <code>NA</code> values for those inventories.</p>
+</section>
+<section id="pitch-accent">
+<h3>Pitch accent</h3>
+<p>This section lists inventories that are known to have pitch accents among their tonemes, and describes how the pitch accents were encoded in PHOIBLE. This list should not be considered exhaustive; there may be doculects where the author chose not to describe pitch accent even though it was present in the object language, or (in doculects absorbed into PHOIBLE from other databases) cases where the original database aggregator ignored information about pitch accent when building their database.</p>
+<section id="nld-dutch">
+<h4><span class="iso">nld</span> (Dutch)</h4>
+<section id="hasselt-dialect">
+<h5>Hasselt dialect</h5>
+<p>Accent 1: no underlying tone. Accent 2: low tone. Peters 2006, p.121 (emphasis added):</p>
+<blockquote>
+<p>The timing difference between accent 1 and accent 2 can be accounted for by assuming that <strong>accent 2 words have a lexical L tone</strong>, while accent 1 words are lexically toneless. In nuclear position, the lexical L tone, which is pre-linked to the accented syllable, does not allow H∗ to associate.</p>
+</blockquote>
+</section>
+<section id="maastricht-dialect">
+<h5>Maastricht dialect</h5>
+<p>Accent 1: no underlying tone. Accent 2: high tone. Gussenhoven 1999, p.162 (emphasis added):</p>
+<blockquote>
+<p>... the fundamental frequency of syllables with Accent 2 differs from those with Accent 1. In view of its effect in utterances with Accent 2 as compared with equivalent utterances with Accent 1, <strong>it is reasonable to assume that Accent 2 is a H-tone</strong> occurring in or immediately after the stressed syllable.</p>
+</blockquote>
+</section>
+</section>
+</section>
+</section>
+</body>
+</html>

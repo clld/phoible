@@ -1,3 +1,5 @@
+*.iml
+.DS_Store
 .cache
 *.py[cod]
 geckodriver.log
