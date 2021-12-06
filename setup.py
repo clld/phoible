@@ -21,7 +21,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'clld>=8',
-        'rdflib<6',
+        'rdflib>=6',
         'clldmpg>=4.2',
         'pyglottolog>=3',
         'clld_glottologfamily_plugin',

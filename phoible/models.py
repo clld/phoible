@@ -79,7 +79,7 @@ class Inventory(CustomModelMixin, Contribution):
     def __rdf__(self, request):
         if self.source_url:
             yield 'dcterms:related', self.source_url
-        yield 'rdf:about', request.resource_url(self.language)
+        yield 'dcterms:subject', request.resource_url(self.language)
         for vs in self.valuesets:
             yield 'dcterms:hasPart', request.resource_url(vs)
 
