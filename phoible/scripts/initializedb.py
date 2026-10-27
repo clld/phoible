@@ -180,10 +180,6 @@ def main(args):  # pragma: no cover
                 gls = descendants_from_nodemap(iso_languoids.get(oid), languoids).intersection(gl_in_phoible)
                 if gls:
                     nid = gls.pop()
-                    if len(gls) > 1:
-                        print('+++', oid, gls)
-                else:
-                    print('---', oid)
                 common.Config.add_replacement(oid, nid, common.Language)
         elif model == 'Parameter':
             segments_in_phoible = set(data['Segment'].keys())

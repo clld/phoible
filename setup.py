@@ -27,6 +27,7 @@ setup(
         'clld_glottologfamily_plugin',
         'sqlalchemy',
         'waitress',
+        'psycopg2',
     ],
     extras_require={
         'dev': [
@@ -34,8 +35,6 @@ setup(
             'tox',
         ],
         'test': [
-            'mock',
-            'psycopg2',
             'pytest>=3.1',
             'pytest-clld',
             'pytest-mock',

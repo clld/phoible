@@ -117,7 +117,7 @@ A Report of the Stanford Phonology Archive},
     Booktitle = {Linked Data in Linguistics: Representing and Connecting Language Data and Language Metadata},
     Editor = {Chiarcos, Christian and Nordhoff, Sebastian and Hellmann, Sebastian},
     Isbn = {978-3-642-28249-2},
-    Note = {doi:10.1007/978-3-642-28249-2\_13},
+    Note = {doi:10.1007/978-3-642-28249-2_13},
     Pages = {129--138},
     Publisher = {Springer},
     Title = {{Using Linked Data to Create a Typological Knowledge Base}},
@@ -160,17 +160,21 @@ def get_rows(args, name):  # pragma: no cover
 
 def add_wikipedia_urls():  # pragma: no cover
     links = {}
-    for a in bs(requests.get('https://en.wikipedia.org/wiki/International_Phonetic_Alphabet').text).find_all('a', href=True):
+    ipa_page = requests.get(
+        'https://en.wikipedia.org/wiki/International_Phonetic_Alphabet',
+        headers={'User-Agent': 'PHOIBLE database update'},
+    ).text
+    for a in bs(ipa_page, features='lxml').find_all('a', href=True):
         links[a.text] = a['href']
 
     count = 0
     for p in DBSession.query(Parameter):
         if p.name in links:
-            p.update_jsondata(wikipedia_url='http://en.wikipedia.org' + links[p.name])
+            p.update_jsondata(wikipedia_url=links[p.name])
             count += 1
         elif p.equivalence_class in links:
             p.update_jsondata(
-                wikipedia_url='http://en.wikipedia.org' + links[p.equivalence_class])
+                wikipedia_url=links[p.equivalence_class])
             count += 1
 
     return count
