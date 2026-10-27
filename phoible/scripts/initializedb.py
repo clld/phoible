@@ -19,10 +19,8 @@ from clldutils.jsonlib import load
 
 import phoible
 from phoible import models
-from phoible.scripts.util import get_rows, add_wikipedia_urls, BIB, feature_name
+from phoible.scripts.util import add_wikipedia_urls, BIB, feature_name
 
-
-DS = Path(phoible.__file__).parent.parent.parent / 'phoible-cldf' / 'cldf' / 'StructureDataset-metadata.json'
 
 
 def descendants_from_nodemap(node, nodes):
@@ -65,7 +63,7 @@ def bibtex2source(rec):  # pragma: no cover
         authors = '%s%s%s' % (' and '.join(authors), etal, eds)
 
     if rec.genre == 'thesis':
-        if rec['type'] == 'phdthesis':
+        if rec.get('type') == 'phdthesis':
             rec.genre = 'phdthesis'
         else:
             rec.genre = 'mastersthesis'
@@ -85,7 +83,7 @@ def bibtex2source(rec):  # pragma: no cover
 
 
 def main(args):  # pragma: no cover
-    ds = StructureDataset.from_metadata(DS)
+    ds = args.cldf
     data = Data()
     for source in ds.sources:
         data.add(common.Source, source.id, _obj=bibtex2source(source))
@@ -113,9 +111,9 @@ def main(args):  # pragma: no cover
         id='phoible',
         name='PHOIBLE 2.0',
         description='PHOIBLE 2.0',
-        publisher_name="Max Planck Institute for the Science of Human History",
-        publisher_place="Jena",
-        publisher_url="https://www.shh.mpg.de",
+        publisher_name="Max Planck Institute for Evolutionary Anthropology",
+        publisher_place="Leipzig",
+        publisher_url="https://www.eva.mpg.de",
         domain='phoible.org',
         license='https://creativecommons.org/licenses/by-sa/3.0/',
         contact='steven.moran@uzh.ch',
@@ -133,9 +131,7 @@ def main(args):  # pragma: no cover
             contrib = common.Contributor(id=cid, name=name)
         DBSession.add(common.Editor(dataset=dataset, ord=i, contributor=contrib))
 
-    glottolog = Glottolog(
-        Path(phoible.__file__).parent.parent.parent.parent.joinpath(
-            'glottolog', 'glottolog'))
+    glottolog = Glottolog(args.glottolog)
 
     for lang in ds['LanguageTable']:
         l = data.add(
@@ -269,4 +265,3 @@ def prime_cache(args):  # pragma: no cover
         variety.count_inventories = len(variety.inventories)
 
     print('added', add_wikipedia_urls(), 'wikipedia urls')
-
